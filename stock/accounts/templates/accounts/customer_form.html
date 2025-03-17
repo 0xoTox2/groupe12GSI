@@ -2,19 +2,19 @@
 {% extends 'store/base.html' %}
 {% block content %}
   <div class="container m-5">
-    <h1 class="mb-4">{% if form.instance.pk %}Edit{% else %}Create{% endif %} Customer</h1>
+    <h1 class="mb-4">{% if form.instance.pk %}Modifier{% else %}Créer{% endif %} un client</h1>
     <form method="post">
       {% csrf_token %}
       <div class="row mb-3">
         <div class="col-md-6">
           <div class="form-group">
-            {{ form.first_name.label_tag }}
+            <label for="{{ form.first_name.id_for_label }}">Prénom</label>
             {{ form.first_name }}
           </div>
         </div>
         <div class="col-md-6">
           <div class="form-group">
-            {{ form.last_name.label_tag }}
+            <label for="{{ form.last_name.id_for_label }}">Nom</label>
             {{ form.last_name }}
           </div>
         </div>
@@ -22,7 +22,7 @@
       <div class="row mb-3">
         <div class="col-md-12">
           <div class="form-group">
-            {{ form.address.label_tag }}
+            <label for="{{ form.address.id_for_label }}">Adresse</label>
             {{ form.address }}
           </div>
         </div>
@@ -30,13 +30,13 @@
       <div class="row mb-3">
         <div class="col-md-6">
           <div class="form-group">
-            {{ form.email.label_tag }}
+            <label for="{{ form.email.id_for_label }}">E-mail</label>
             {{ form.email }}
           </div>
         </div>
         <div class="col-md-6">
           <div class="form-group">
-            {{ form.phone.label_tag }}
+            <label for="{{ form.phone.id_for_label }}">Téléphone</label>
             {{ form.phone }}
           </div>
         </div>
@@ -44,13 +44,13 @@
       <div class="row mb-3">
         <div class="col-md-6">
           <div class="form-group">
-            {{ form.loyalty_points.label_tag }}
+            <label for="{{ form.loyalty_points.id_for_label }}">Points de fidélité</label>
             {{ form.loyalty_points }}
           </div>
         </div>
       </div>
       <button type="submit" class="btn btn-primary">
-        <i class="fas fa-save"></i> Save
+        <i class="fas fa-save"></i> Enregistrer
       </button>
     </form>
   </div>

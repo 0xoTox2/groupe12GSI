@@ -1,5 +1,5 @@
 {% extends 'store/base.html' %}
-{% block title %}Staff Page{% endblock %}
+{% block title %}Page du Personnel{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -8,34 +8,34 @@
                 <div class="col-md-8">
                     <table class="table table-borderless">
                         <thead>
-                            <span class="h4">Profile Information</span class="h4">
-                            <a class="btn btn-outline-success btn-sm float-end" href="{% url 'user-profile-update' %}">Edit profile</a>
+                            <span class="h4">Informations du Profil</span class="h4">
+                            <a class="btn btn-outline-success btn-sm float-end" href="{% url 'user-profile-update' %}">Modifier le profil</a>
                             <hr>
                         </thead>
                         <tbody>
                             <tr>
-                                <th scope="row">username</th>
+                                <th scope="row">Nom d'utilisateur</th>
                                 <td>{{ user.username }}</td>
                             </tr>
                             <tr>
-                                <th scope="row">Staff role</th>
+                                <th scope="row">Rôle du personnel</th>
                                 <td>
                                     <span class="badge badge-pill bg-soft-success text-success me-2">
                                     {% if user.profile.role == 'AD' %}
-                                    Admin
+                                    Administrateur
                                     {% elif user.profile.role == 'EX' %}
-                                    Executive
+                                    Cadre
                                     {% else %}
-                                    Operative
+                                    Opérationnel
                                     {% endif %}
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="row">First name</th>
+                                <th scope="row">Prénom</th>
                                 <td>{{ user.profile.first_name }}</td>
                             </tr>
                             <tr>
-                                <th scope="row">Last name</th>
+                                <th scope="row">Nom</th>
                                 <td>{{ user.profile.last_name }}</td>
                             </tr>
                             <tr>
@@ -43,14 +43,14 @@
                                 <td>{{ user.email }}</td>
                             </tr>
                             <tr>
-                                <th scope="row">Phone</th>
+                                <th scope="row">Téléphone</th>
                                 <td>{{ user.profile.telephone }}</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="col-md-4">
-                    <img class="rounded-pill img-fluid" src="{{ user.profile.profile_picture.url }}" alt="profile-image">
+                    <img class="rounded-pill img-fluid" src="{{ user.profile.profile_picture.url }}" alt="image de profil">
                 </div>
             </div>
         </div>

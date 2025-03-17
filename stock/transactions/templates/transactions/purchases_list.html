@@ -1,19 +1,23 @@
-{% extends "store/base.html" %}{% load static %}{% load render_table from django_tables2 %}{% load querystring from django_tables2 %}{% block title %}Purchases{%endblock title%}
+{% extends "store/base.html" %}
+{% load static %}
+{% load render_table from django_tables2 %}
+{% load querystring from django_tables2 %}
+{% block title %}Achats{% endblock title %}
 
 {% block content %}
-<!-- Header Section -->
+<!-- Section d'en-tête -->
 <div class="container my-4">
     <div class="card shadow-sm rounded p-3">
         <div class="row align-items-center">
             <div class="col-md-6">
-                <h4 class="display-6 mb-0 text-success">Purchases</h4>
+                <h4 class="display-6 mb-0 text-success">Achats</h4>
             </div>
             <div class="col-md-6 d-flex justify-content-end gap-2">
                 <a class="btn btn-success btn-sm rounded-pill shadow-sm" href="{% url 'purchase-create' %}">
-                    <i class="fa-solid fa-plus"></i> Add Purchase Order
+                    <i class="fa-solid fa-plus"></i> Ajouter un achat
                 </a>
                 <a class="btn btn-success btn-sm rounded-pill shadow-sm" href="{% url 'purchases-export' %}">
-                    <i class="fa-solid fa-download"></i> Export to Excel
+                    <i class="fa-solid fa-download"></i> Exporter en Excel
                 </a>
             </div>
         </div>
@@ -22,20 +26,20 @@
 
 <div class="container">
     <style>
-      .table th, .table td {
-          text-align: center;
-      }
+        .table th, .table td {
+            text-align: center;
+        }
     </style>
     <table class="table table-sm table-striped table-bordered">
         <thead class="thead-light">
             <tr>
                 <th scope="col">ID <i class="fa-solid fa-sort"></i></th>
-                <th scope="col">Name <i class="fa-solid fa-sort"></i></th>
-                <th scope="col">Quantity <i class="fa-solid fa-sort"></i></th>
-                <th scope="col">Price <i class="fa-solid fa-sort"></i></th>
-                <th scope="col">Delivery Status <i class="fa-solid fa-sort"></i></th>
-                <th scope="col">Delivery Date <i class="fa-solid fa-sort"></i></th>
-                <th scope="col">Vendor <i class="fa-solid fa-sort"></i></th>
+                <th scope="col">Nom <i class="fa-solid fa-sort"></i></th>
+                <th scope="col">Quantité <i class="fa-solid fa-sort"></i></th>
+                <th scope="col">Prix <i class="fa-solid fa-sort"></i></th>
+                <th scope="col">Statut de livraison <i class="fa-solid fa-sort"></i></th>
+                <th scope="col">Date de livraison <i class="fa-solid fa-sort"></i></th>
+                <th scope="col">Fournisseur <i class="fa-solid fa-sort"></i></th>
                 <th scope="col">Action</th>
             </tr>
         </thead>
@@ -49,11 +53,11 @@
                 <td>
                     {% if purchase.delivery_status == 'P' %}
                         <span class="badge badge-pill bg-soft-danger text-danger me-2">
-                            Pending
+                            En attente
                         </span>
                     {% else %}
                         <span class="badge badge-pill bg-soft-success text-success me-2">
-                            Successful
+                            Livré
                         </span>
                     {% endif %}
                 </td>
@@ -71,27 +75,30 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <!-- Pagination -->
     <div class="mt-4">
         {% if is_paginated %}
-        <nav aria-label="Page navigation">
+        <nav aria-label="Navigation des pages">
             <ul class="pagination justify-content-center">
                 {% if page_obj.has_previous %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Précédent">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
                 {% else %}
                 <li class="page-item disabled">
-                    <span class="page-link" aria-label="Previous">
+                    <span class="page-link" aria-label="Précédent">
                         <span aria-hidden="true">&laquo;</span>
                     </span>
                 </li>
                 {% endif %}
+
                 {% for i in paginator.page_range %}
                 {% if page_obj.number == i %}
                 <li class="page-item active" aria-current="page">
-                    <span class="page-link">{{ i }} <span class="visually-hidden">(current)</span></span>
+                    <span class="page-link">{{ i }} <span class="visually-hidden">(actuel)</span></span>
                 </li>
                 {% else %}
                 <li class="page-item">
@@ -99,15 +106,16 @@
                 </li>
                 {% endif %}
                 {% endfor %}
+
                 {% if page_obj.has_next %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Suivant">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
                 {% else %}
                 <li class="page-item disabled">
-                    <span class="page-link" aria-label="Next">
+                    <span class="page-link" aria-label="Suivant">
                         <span aria-hidden="true">&raquo;</span>
                     </span>
                 </li>

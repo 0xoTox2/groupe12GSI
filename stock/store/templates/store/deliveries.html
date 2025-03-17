@@ -2,7 +2,7 @@
 {% load static %}
 {% load render_table from django_tables2 %}
 {% load querystring from django_tables2 %}
-{% block title %}Deliveries{% endblock title %}
+{% block title %}Livraisons{% endblock title %}
 {% block content %}
 <div class="container p-5">
     <style>
@@ -24,10 +24,10 @@
 
     <div class="d-flex justify-content-between mb-3">
         <a class="btn btn-success btn-sm" href="{% url 'delivery-create' %}">
-            Add Delivery
+            Ajouter une livraison
         </a>
         <a class="btn btn-success btn-sm" href="{% querystring '_export'='xlsx' %}">
-            <i class="fa-solid fa-download"></i> Export to Excel
+            <i class="fa-solid fa-download"></i> Exporter en Excel
         </a>
     </div>
 
@@ -36,12 +36,12 @@
             <thead class="thead-light">
                 <tr>
                     <th scope="col"><a href="{% querystring table.prefixed_order_by_field=column.order_by_alias.next %}">ID <i class="fa-solid fa-sort"></i></a></th>
-                    <th scope="col">Name <i class="fa-solid fa-sort"></i></th>
-                    <th scope="col">Customer Name <i class="fa-solid fa-sort"></i></th>
+                    <th scope="col">Nom <i class="fa-solid fa-sort"></i></th>
+                    <th scope="col">Nom du client <i class="fa-solid fa-sort"></i></th>
                     <th scope="col">Contact <i class="fa-solid fa-sort"></i></th>
-                    <th scope="col">Address <i class="fa-solid fa-sort"></i></th>
-                    <th scope="col">Delivery Date <i class="fa-solid fa-sort"></i></th>
-                    <th scope="col">Delivery Status <i class="fa-solid fa-sort"></i></th>
+                    <th scope="col">Adresse <i class="fa-solid fa-sort"></i></th>
+                    <th scope="col">Date de livraison <i class="fa-solid fa-sort"></i></th>
+                    <th scope="col">Statut de livraison <i class="fa-solid fa-sort"></i></th>
                     <th scope="col">Action <i class="fa-solid fa-sort"></i></th>
                 </tr>
             </thead>
@@ -56,17 +56,17 @@
                     <td>{{ delivery.date }}</td>
                     <td>
                         {% if delivery.is_delivered %}
-                        <span class="badge bg-success text-white">Delivered</span>
+                        <span class="badge bg-success text-white">Livré</span>
                         {% else %}
-                        <span class="badge bg-danger text-white">Pending</span>
+                        <span class="badge bg-danger text-white">En attente</span>
                         {% endif %}
                     </td>
                     <td>
                         <a class="btn btn-outline-info btn-sm" href="{% url 'delivery-update' delivery.pk %}">
-                            <i class="fa-solid fa-pen"></i> Edit
+                            <i class="fa-solid fa-pen"></i> Modifier
                         </a>
                         <a class="btn btn-outline-danger btn-sm float-end" href="{% url 'delivery-delete' delivery.pk %}">
-                            <i class="fa-solid fa-trash"></i> Delete
+                            <i class="fa-solid fa-trash"></i> Supprimer
                         </a>
                     </td>
                 </tr>
@@ -76,17 +76,17 @@
     </div>
 
     {% if is_paginated %}
-    <nav aria-label="Page navigation">
+    <nav aria-label="Navigation de page">
         <ul class="pagination justify-content-center">
             {% if page_obj.has_previous %}
             <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Précédent">
                     <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
             {% else %}
             <li class="page-item disabled">
-                <span class="page-link" aria-label="Previous">
+                <span class="page-link" aria-label="Précédent">
                     <span aria-hidden="true">&laquo;</span>
                 </span>
             </li>
@@ -94,7 +94,7 @@
             {% for i in paginator.page_range %}
             {% if page_obj.number == i %}
             <li class="page-item active" aria-current="page">
-                <span class="page-link">{{ i }} <span class="visually-hidden">(current)</span></span>
+                <span class="page-link">{{ i }} <span class="visually-hidden">(actuel)</span></span>
             </li>
             {% else %}
             <li class="page-item">
@@ -104,13 +104,13 @@
             {% endfor %}
             {% if page_obj.has_next %}
             <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Suivant">
                     <span aria-hidden="true">&raquo;</span>
                 </a>
             </li>
             {% else %}
             <li class="page-item disabled">
-                <span class="page-link" aria-label="Next">
+                <span class="page-link" aria-label="Suivant">
                     <span aria-hidden="true">&raquo;</span>
                 </span>
             </li>

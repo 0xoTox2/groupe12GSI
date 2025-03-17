@@ -17,51 +17,74 @@
 
         <!-- Styles pour la barre de navigation -->
         <style>
+            /* Pagination centrée */
             .paginator {
                 display: flex;
                 justify-content: center;
             }
-
-            /* Style pour la barre de navigation */
+        
+            /* Barre de navigation stylisée */
             .custom-navbar {
-                background-color: #5c3e35; /* Marron foncé */
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ombre légère */
-                padding: 15px 30px; /* Padding ajusté pour la barre */
-                margin-top: -1px; /* Monter la barre de 10px */
-                height: 80px; /* Hauteur de la barre inchangée */
+                background: rgba(56, 56, 56, 0.8); /* Fond gris foncé semi-transparent */
+                backdrop-filter: blur(10px); /* Effet de verre */
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Ombre portée */
+                padding: 8px 20px; /* Padding réduit pour une barre plus mince */
+                height: 60px; /* Réduire la hauteur de la barre */
                 display: flex;
                 align-items: center;
+                transition: all 0.3s ease-in-out;
+                margin-top: 10px; /* Remonter la barre */
+                border-radius: 5px; /* Coins arrondis pour un look moderne */
             }
-
+        
+            /* Effet de survol pour la barre */
+            .custom-navbar:hover {
+                background: rgba(56, 56, 56, 1); /* Fond plus intense au survol */
+            }
+        
+            /* Titre et logo */
             .navbar-brand {
-                font-size: 30px; /* Réduire la taille du texte (anciennement 50px) */
-                color: #d7ccc8; /* Beige clair */
-                font-weight: 600; /* Police semi-gras */
+                font-size: 26px; /* Taille du texte plus petite */
+                color: #f5f5f5; /* Texte blanc */
+                font-weight: 600;
                 display: flex;
                 align-items: center;
-                margin-left: auto; /* Pousser le nom et le logo à droite */
+                transition: all 0.3s ease;
             }
-
+        
             .navbar-brand:hover {
-                color: #ffffff; /* Blanc au survol */
+                color: #ffd54f; /* Jaune doré au survol */
             }
-
+        
             .navbar-brand img {
-                margin-left: 25px; /* Espace entre le texte et le logo */
-                width: auto; /* Largeur automatique pour conserver les proportions */
-                height: 120%; /* Hauteur du logo égale à la hauteur de la barre */
-                object-fit: cover; /* Conserver les proportions du logo */
-                border-radius: 0; /* Pas de coins arrondis */
+                margin-left: 10px; /* Réduire l'espace entre le texte et le logo */
+                width: auto;
+                height: 45px; /* Hauteur du logo plus petite */
+                object-fit: cover;
+                border-radius: 50%; /* Rendre le logo rond */
+                transition: transform 0.3s ease;
             }
-
+        
+            .navbar-brand:hover img {
+                transform: scale(1.1); /* Zoom du logo au survol */
+            }
+        
+            /* Bouton toggle pour mobile */
             .navbar-toggler {
-                color: #d7ccc8; /* Beige clair */
+                color: #f5f5f5;
+                border: none;
+                transition: all 0.3s ease;
             }
-
+        
             .navbar-toggler:hover {
-                color: #ffffff; /* Blanc au survol */
+                color: #ffd54f; /* Jaune doré au survol */
+            }
+        
+            .navbar-toggler:focus {
+                box-shadow: none;
             }
         </style>
+        
     </head>
     <body>
         {% include "store/sidebar.html" %}

@@ -2,26 +2,29 @@
 {% load static %}
 {% load render_table from django_tables2 %}
 {% load querystring from django_tables2 %}
-{% block title %}Sales{% endblock title %}
+{% block title %}Ventes{% endblock title %}
+
 {% block content %}
-<!-- Header Section -->
+<!-- Section d'en-tête -->
 <div class="container my-4">
     <div class="card shadow-sm rounded p-3">
         <div class="row align-items-center">
             <div class="col-md-6">
-                <h4 class="display-6 mb-0 text-success">Sales</h4>
+                <h4 class="display-6 mb-0 text-success">Ventes</h4>
             </div>
             <div class="col-md-6 d-flex justify-content-end gap-2">
                 <a class="btn btn-success btn-sm rounded-pill shadow-sm" href="{% url 'sale-create' %}">
-                    <i class="fa-solid fa-plus"></i> Add Sale Order
+                    <i class="fa-solid fa-plus"></i> Ajouter une vente
                 </a>
                 <a class="btn btn-primary btn-sm rounded-pill shadow-sm" href="{% url 'sales-export' %}">
-                    <i class="fa-solid fa-download"></i> Export to Excel
+                    <i class="fa-solid fa-download"></i> Exporter en Excel
                 </a>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Table des ventes -->
 <div class="container px-3">
     <style>
         .table th, .table td {
@@ -37,13 +40,13 @@
             <tr>
                 <th>ID</th>
                 <th>Date</th>
-                <th>Customer</th>
-                <th>Sub Total</th>
-                <th>Grand Total</th>
-                <th>Tax Amount</th>
-                <th>Tax Percentage</th>
-                <th>Amount Paid</th>
-                <th>Amount Change</th>
+                <th>Client</th>
+                <th>Sous-total</th>
+                <th>Total général</th>
+                <th>Montant de la taxe</th>
+                <th>Pourcentage de taxe</th>
+                <th>Montant payé</th>
+                <th>Montant rendu</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -61,34 +64,37 @@
                 <td>{{ sale.amount_change }}</td>
                 <td>
                     <a class="btn btn-outline-info btn-sm" href="{% url 'sale-detail' sale.id %}">
-                        <i class="fa-solid fa-eye"></i> View Details
+                        <i class="fa-solid fa-eye"></i> Voir les détails
                     </a>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <!-- Pagination -->
     <div class="d-flex justify-content-center mt-4">
         {% if is_paginated %}
-        <nav aria-label="Page navigation">
+        <nav aria-label="Navigation des pages">
             <ul class="pagination">
                 {% if page_obj.has_previous %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Précédent">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
                 {% else %}
                 <li class="page-item disabled">
-                    <span class="page-link" aria-label="Previous">
+                    <span class="page-link" aria-label="Précédent">
                         <span aria-hidden="true">&laquo;</span>
                     </span>
                 </li>
                 {% endif %}
+
                 {% for i in paginator.page_range %}
                 {% if page_obj.number == i %}
                 <li class="page-item active">
-                    <span class="page-link">{{ i }} <span class="sr-only">(current)</span></span>
+                    <span class="page-link">{{ i }} <span class="sr-only">(actuel)</span></span>
                 </li>
                 {% else %}
                 <li class="page-item">
@@ -96,15 +102,16 @@
                 </li>
                 {% endif %}
                 {% endfor %}
+
                 {% if page_obj.has_next %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Suivant">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
                 {% else %}
                 <li class="page-item disabled">
-                    <span class="page-link" aria-label="Next">
+                    <span class="page-link" aria-label="Suivant">
                         <span aria-hidden="true">&raquo;</span>
                     </span>
                 </li>

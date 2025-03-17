@@ -3,15 +3,15 @@
 
 {% block content %}
 <div class="container px-5">
-    <h1 class="my-4">Confirm Delete</h1>
-    <p>Are you sure you want to delete "{{ object.name }}"?</p>
+    <h1 class="my-4">Confirmation de suppression</h1>
+    <p>Voulez vous supprimer fournisseur "{{ object.name }}"?</p>
     <form method="post">
         {% csrf_token %}
         <button type="submit" class="btn btn-danger">
-            <i class="fas fa-trash-alt"></i> Confirm
+            <i class="fas fa-trash-alt"></i> Confirmer
         </button>
         <a href="{% url 'vendor-list' %}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Cancel
+            <i class="fas fa-arrow-left"></i> Retour
         </a>
     </form>
 </div>

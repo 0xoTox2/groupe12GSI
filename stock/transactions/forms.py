@@ -4,7 +4,7 @@ from .models import Purchase
 
 class BootstrapMixin(forms.ModelForm):
     """
-    A mixin to add Bootstrap classes to form fields.
+    Un mixin pour ajouter les classes Bootstrap aux champs du formulaire.
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -14,14 +14,23 @@ class BootstrapMixin(forms.ModelForm):
 
 class PurchaseForm(BootstrapMixin, forms.ModelForm):
     """
-    A form for creating and updating Purchase instances.
+    Formulaire pour créer et mettre à jour des achats.
     """
     class Meta:
         model = Purchase
         fields = [
-            'item',  'price', 'description', 'vendor',
+            'item', 'price', 'description', 'vendor',
             'quantity', 'delivery_date', 'delivery_status'
         ]
+        labels = {
+            'item': 'Article',
+            'price': 'Prix',
+            'description': 'Description',
+            'vendor': 'Fournisseur',
+            'quantity': 'Quantité',
+            'delivery_date': 'Date de livraison',
+            'delivery_status': 'Statut de livraison',
+        }
         widgets = {
             'delivery_date': forms.DateInput(
                 attrs={
@@ -30,15 +39,15 @@ class PurchaseForm(BootstrapMixin, forms.ModelForm):
                 }
             ),
             'description': forms.Textarea(
-                attrs={'rows': 1, 'cols': 40}
+                attrs={'rows': 1, 'cols': 40, 'class': 'form-control', 'placeholder': 'Ajouter une description'}
             ),
             'quantity': forms.NumberInput(
-                attrs={'class': 'form-control'}
+                attrs={'class': 'form-control', 'placeholder': 'Entrer la quantité'}
             ),
             'delivery_status': forms.Select(
                 attrs={'class': 'form-control'}
             ),
             'price': forms.NumberInput(
-                attrs={'class': 'form-control'}
+                attrs={'class': 'form-control', 'placeholder': 'Entrer le prix'}
             ),
         }

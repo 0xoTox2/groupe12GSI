@@ -1,7 +1,7 @@
 <div class="row">
     <div class="card shadow border-0 mb-7 col-md-6 col-lg-6">
         <div class="card-body">
-            <h5 class="card-title">Category Distribution</h5>
+            <h5 class="card-title">Répartition des catégories</h5>
             <div class="chart-container">
                 <canvas id="pieChart"></canvas>
             </div>
@@ -9,17 +9,17 @@
     </div>
     <div class="card shadow border-0 mb-7 col-md-6 col-lg-6">
         <div class="card-body">
-            <h5 class="card-title">Sales Over Time</h5>
+            <h5 class="card-title">Ventes au fil du temps</h5>
             <div class="chart-container">
                 <canvas id="lineChart"></canvas>
             </div>
         </div>
     </div>
-  </div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    // Pie Chart
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Diagramme circulaire
     var ctxPie = document.getElementById('pieChart').getContext('2d');
     var pieChart = new Chart(ctxPie, {
         type: 'doughnut',
@@ -50,7 +50,7 @@
                 },
                 title: {
                     display: true,
-                    text: 'Category Distribution',
+                    text: 'Répartition des catégories',
                     font: {
                         size: 16
                     }
@@ -61,14 +61,14 @@
         }
     });
 
-    // Line Chart
+    // Diagramme linéaire
     var ctxLine = document.getElementById('lineChart').getContext('2d');
     var lineChart = new Chart(ctxLine, {
         type: 'line',
         data: {
             labels: {{ sale_dates_labels|safe }},
             datasets: [{
-                label: 'Sales Over Time',
+                label: 'Ventes au fil du temps',
                 data: {{ sale_dates_values|safe }},
                 fill: false,
                 borderColor: '#4BC0C0',
@@ -84,13 +84,13 @@
                 tooltip: {
                     callbacks: {
                         label: function(tooltipItem) {
-                            return 'Sales: ' + tooltipItem.raw;
+                            return 'Ventes: ' + tooltipItem.raw;
                         }
                     }
                 },
                 title: {
                     display: true,
-                    text: 'Sales Over Time',
+                    text: 'Ventes au fil du temps',
                     font: {
                         size: 16
                     }
@@ -99,17 +99,17 @@
             maintainAspectRatio: false
         }
     });
-  </script>
+</script>
 
-  <style>
-  .chart-container {
+<style>
+.chart-container {
     position: relative;
     width: 100%;
     height: 400px;
-  }
+}
 
-  #pieChart, #lineChart {
+#pieChart, #lineChart {
     max-width: 100%;
     height: 100%;
-  }
-  </style>
+}
+</style>

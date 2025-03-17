@@ -1,7 +1,8 @@
 {% extends "store/base.html" %}
 {% load static %}
 {% load crispy_forms_tags %}
-{% block title %}Create staff{%endblock title%}{% block content %}
+{% block title %}Créer un membre du personnel{% endblock title %}
+{% block content %}
 <div class="col container p-5">
     <div class="row">
         <div class="col-md-3 col-lg-3"></div>
@@ -11,14 +12,14 @@
                 <section class="section-bg" id="plans">
                     <fieldset class="form-group">
                         <header class="section-header">
-                            <h1 class="text-success">Create staff profile</h1>
+                            <h1 class="text-success">Créer un profil de personnel</h1>
                             <hr>
                         </header>
                         {{ form.media }} {{ form|crispy }}
                     </fieldset>
                 </section>
                 <div class="form-group mt-4 text-center">
-                    <button class="btn btn-success" type="submit">Submit</button>
+                    <button class="btn btn-success" type="submit">Soumettre</button>
                 </div>
             </form>
         </div>

@@ -1,60 +1,61 @@
 {% extends 'store/base.html' %}
-{% block title %}Update sale transaction{% endblock %}
+{% block title %}Mettre à jour une transaction de vente{% endblock %}
 {% load crispy_forms_tags %}
+
 {% block content %}
 <div class="container mt-5">
-    <h2>Create or Update Sale</h2>
-    <form method="post">
+    <h2 class="text-center mb-4" style="color: #4b3c2f;">Créer ou mettre à jour une vente</h2>
+    <form method="post" class="shadow-lg p-4 rounded bg-light">
         {% csrf_token %}
         {{ form.non_field_errors }}
         <div class="row">
             <div class="col-md-6">
-                <div class="form-group">
-                    {{ form.item.label_tag }}
+                <div class="form-group mb-3">
+                    <label for="{{ form.item.id_for_label }}" class="form-label" style="color: #4b3c2f;">Article</label>
                     {{ form.item }}
-                    {{ form.item.errors }}
+                    <div class="text-danger">{{ form.item.errors }}</div>
                 </div>
-                <div class="form-group">
-                    {{ form.customer_name.label_tag }}
+                <div class="form-group mb-3">
+                    <label for="{{ form.customer_name.id_for_label }}" class="form-label" style="color: #4b3c2f;">Nom du client</label>
                     {{ form.customer_name }}
-                    {{ form.customer_name.errors }}
+                    <div class="text-danger">{{ form.customer_name.errors }}</div>
                 </div>
-                <div class="form-group">
-                    {{ form.payment_method.label_tag }}
+                <div class="form-group mb-3">
+                    <label for="{{ form.payment_method.id_for_label }}" class="form-label" style="color: #4b3c2f;">Mode de paiement</label>
                     {{ form.payment_method }}
-                    {{ form.payment_method.errors }}
+                    <div class="text-danger">{{ form.payment_method.errors }}</div>
                 </div>
-                <div class="form-group">
-                    {{ form.quantity.label_tag }}
+                <div class="form-group mb-3">
+                    <label for="{{ form.quantity.id_for_label }}" class="form-label" style="color: #4b3c2f;">Quantité</label>
                     {{ form.quantity }}
-                    {{ form.quantity.errors }}
+                    <div class="text-danger">{{ form.quantity.errors }}</div>
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="form-group">
-                    {{ form.amount_received.label_tag }}
+                <div class="form-group mb-3">
+                    <label for="{{ form.amount_received.id_for_label }}" class="form-label" style="color: #4b3c2f;">Montant reçu</label>
                     {{ form.amount_received }}
-                    {{ form.amount_received.errors }}
+                    <div class="text-danger">{{ form.amount_received.errors }}</div>
                 </div>
-                <div class="form-group">
-                    {{ form.price.label_tag }}
+                <div class="form-group mb-3">
+                    <label for="{{ form.price.id_for_label }}" class="form-label" style="color: #4b3c2f;">Prix unitaire</label>
                     {{ form.price }}
-                    {{ form.price.errors }}
+                    <div class="text-danger">{{ form.price.errors }}</div>
                 </div>
-                <div class="form-group">
-                    {{ form.total_value.label_tag }}
+                <div class="form-group mb-3">
+                    <label for="{{ form.total_value.id_for_label }}" class="form-label" style="color: #4b3c2f;">Valeur totale</label>
                     {{ form.total_value }}
-                    {{ form.total_value.errors }}
+                    <div class="text-danger">{{ form.total_value.errors }}</div>
                 </div>
-                <div class="form-group">
-                    {{ form.balance.label_tag }}
+                <div class="form-group mb-3">
+                    <label for="{{ form.balance.id_for_label }}" class="form-label" style="color: #4b3c2f;">Solde restant</label>
                     {{ form.balance }}
-                    {{ form.balance.errors }}
+                    <div class="text-danger">{{ form.balance.errors }}</div>
                 </div>
             </div>
         </div>
-        <button type="submit" class="mt-3 btn btn-primary">
-            <i class="fas fa-save"></i> Save
+        <button type="submit" class="mt-3 btn btn-success btn-lg w-100 shadow-sm" style="font-size: 16px;">
+            <i class="fas fa-save"></i> Enregistrer
         </button>
     </form>
 </div>

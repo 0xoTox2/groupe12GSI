@@ -3,7 +3,7 @@
 {% load render_table from django_tables2 %}
 {% load querystring from django_tables2 %}
 
-{% block title %}Staff{% endblock title %}
+{% block title %}Personnel{% endblock title %}
 
 {% block content %}
 <div class="container p-5">
@@ -14,22 +14,22 @@
       </style>
     <div class="d-flex justify-content-between mb-3">
         <a class="btn btn-success btn-sm" href="{% url 'profile-create' %}">
-            <i class="fa-solid fa-user-plus me-2"></i>Add Staff
+            <i class="fa-solid fa-user-plus me-2"></i>Ajouter personnel
         </a>
         <a class="btn btn-success btn-sm" href="{% querystring '_export'='xlsx' %}">
-            <i class="fa-solid fa-download me-2"></i>Export to Excel
+            <i class="fa-solid fa-download me-2"></i>Exporter vers l'Excel
         </a>
     </div>
     <table class="table table-sm table-bordered table-striped">
         <thead class="thead-light">
             <tr>
                 <th scope="col">Id <i class="fa-solid fa-sort"></i></th>
-                <th scope="col">Profile Image</th>
-                <th scope="col">Username <i class="fa-solid fa-sort"></i></th>
-                <th scope="col">Phone Number</th>
+                <th scope="col">image de profil</th>
+                <th scope="col">nom d'utilisateur <i class="fa-solid fa-sort"></i></th>
+                <th scope="col">Numéro de téléphone</th>
                 <th scope="col">Status <i class="fa-solid fa-sort"></i></th>
                 <th scope="col">Role <i class="fa-solid fa-sort"></i></th>
-                {% if user.profile.role == 'AD' or user.profile.role == 'EX' %}
+                {% if user.profile.role == 'RGS' or user.profile.role == 'RPA' %}
                 <th scope="col">Action</th>
                 {% endif %}
             </tr>
@@ -53,21 +53,21 @@
                     {% endif %}
                 </td>
                 <td>
-                    {% if profile.role == 'AD' %}
-                    Admin
-                    {% elif profile.role == 'EX' %}
-                    Executive
+                    {% if profile.role == 'RGS' %}
+                    Responsable gestion de stock
+                    {% elif profile.role == 'RPA' %}
+                    Responsable Production/Approvisionnement
                     {% else %}
-                    Operative
+                    Magasinier
                     {% endif %}
                 </td>
                 <td>
-                    {% if user.profile.role == 'AD' or user.profile.role == 'EX' %}
+                    {% if user.profile.role == 'RGS' or user.profile.role == 'RPA' %}
                     <a class="text-info" href="{% url 'profile-update' profile.id %}">
                         <i class="fa-solid fa-pen"></i>
                     </a>
                     {% endif %}
-                    {% if user.profile.role == 'AD' %}
+                    {% if user.profile.role == 'RGS' %}
                     <a class="text-danger float-end" href="{% url 'profile-delete' profile.id %}">
                         <i class="fa-solid fa-trash"></i>
                     </a>
