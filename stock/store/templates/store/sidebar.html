@@ -72,12 +72,12 @@
                     {{ request.user.username }}{% if request.user.profile.role == 'AD' %} <i class="fa-solid fa-circle-check text-success"></i>{% endif %}
                 </h5>
                 <span class="badge" style="background: linear-gradient(90deg, var(--nav-link-active-bg), var(--dropdown-item-active-bg)); color: #ffffff; padding: 5px 10px; border-radius: 12px;">
-                    {% if request.user.profile.role == 'AD' %}
-                        Administrateur
-                    {% elif request.user.profile.role == 'EX' %}
-                        Exécutif
+                    {% if profile.role == 'RGS' %}
+                        Responsable Gestion Stock
+                    {% elif profile.role == 'RPA' %}
+                        Responsable Production/Approvisionnement
                     {% else %}
-                        Opérateur
+                        Magasinier
                     {% endif %}
                 </span>
             </div>
@@ -88,54 +88,53 @@
     <div class="nav-container">
         <!-- Navigation Links -->
         <ul class="nav flex-column mt-3">
+            <!-- Tableau de bord -->
             <li class="nav-item mb-2">
                 <a class="nav-link text-light {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}" style="padding: 12px 20px; border-radius: 8px;">
                     <i class="fas fa-tachometer-alt me-2"></i> Tableau de bord
                 </a>
             </li>
-            <li class="nav-item mb-2 dropdown">
-                <a class="nav-link text-light {% if request.resolver_match.url_name == 'productslist' %}active{% endif %} dropdown-toggle" href="#" id="productsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 12px 20px; border-radius: 8px;">
+
+            <!-- Produits -->
+            <li class="nav-item mb-2">
+                <a class="nav-link text-light {% if request.resolver_match.url_name == 'productslist' %}active{% endif %}" href="{% url 'productslist' %}" style="padding: 12px 20px; border-radius: 8px;">
                     <i class="fas fa-boxes me-2"></i> Produits
                 </a>
-                <ul class="dropdown-menu" aria-labelledby="productsDropdown">
-                    <li><a class="dropdown-item text-light {% if request.resolver_match.url_name == 'productslist' %}active{% endif %}" href="{% url 'productslist' %}" style="padding: 10px 20px;">
-                        <i class="fas fa-list me-2"></i> Tous les produits
-                    </a></li>
-                    <li><a class="dropdown-item text-light" href="{% url 'category-list' %}" style="padding: 10px 20px;">
-                        <i class="fas fa-tags me-2"></i> Catégories
-                    </a></li>
-                </ul>
             </li>
+
+            <!-- Commandes de vente "Sortie" -->
             <li class="nav-item mb-2">
                 <a class="nav-link text-light {% if request.resolver_match.url_name == 'saleslist' %}active{% endif %}" href="{% url 'saleslist' %}" style="padding: 12px 20px; border-radius: 8px;">
-                    <i class="fas fa-shopping-bag me-2"></i> Commandes de vente
+                    <i class="fas fa-shopping-bag me-2"></i> Commandes de vente (Sortie)
                 </a>
             </li>
+
+            <!-- Commandes d'achat "Entrée" -->
             <li class="nav-item mb-2">
                 <a class="nav-link text-light {% if request.resolver_match.url_name == 'purchaseslist' %}active{% endif %}" href="{% url 'purchaseslist' %}" style="padding: 12px 20px; border-radius: 8px;">
-                    <i class="fas fa-shopping-cart me-2"></i> Commandes d'achat
+                    <i class="fas fa-shopping-cart me-2"></i> Commandes d'achat (Entrée)
                 </a>
             </li>
+
+            <!-- Personnels -->
             <li class="nav-item mb-2">
-                <a class="nav-link text-light {% if request.resolver_match.url_name == 'deliveries' %}active{% endif %}" href="{% url 'deliveries' %}" style="padding: 12px 20px; border-radius: 8px;">
-                    <i class="fas fa-truck me-2"></i> Colis
+                <a class="nav-link text-light {% if request.resolver_match.url_name == 'profile_list' %}active{% endif %}" href="{% url 'profile_list' %}" style="padding: 12px 20px; border-radius: 8px;">
+                    <i class="fas fa-user-friends me-2"></i> Personnels
                 </a>
             </li>
-            <li class="nav-item mb-2 dropdown">
-                <a class="nav-link text-light {% if request.resolver_match.url_name == 'profile_list' or request.resolver_match.url_name == 'customer_list' or request.resolver_match.url_name == 'vendor-list' %} active{% endif %} dropdown-toggle" href="#" id="accountsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 12px 20px; border-radius: 8px;">
-                    <i class="fas fa-users me-2"></i> Comptes
+
+            <!-- Fournisseurs -->
+            <li class="nav-item mb-2">
+                <a class="nav-link text-light {% if request.resolver_match.url_name == 'vendor-list' %}active{% endif %}" href="{% url 'vendor-list' %}" style="padding: 12px 20px; border-radius: 8px;">
+                    <i class="fas fa-truck-loading me-2"></i> Fournisseurs
                 </a>
-                <ul class="dropdown-menu" aria-labelledby="accountsDropdown">
-                    <li><a class="dropdown-item text-light {% if request.resolver_match.url_name == 'profile_list' %}active{% endif %}" href="{% url 'profile_list' %}" style="padding: 10px 20px;">
-                        <i class="fas fa-user-friends me-2"></i> Tout le personnel
-                    </a></li>
-                    <li><a class="dropdown-item text-light {% if request.resolver_match.url_name == 'customer_list' %}active{% endif %}" href="{% url 'customer_list' %}" style="padding: 10px 20px;">
-                        <i class="fas fa-user-tie me-2"></i> Clients
-                    </a></li>
-                    <li><a class="dropdown-item text-light {% if request.resolver_match.url_name == 'customer_list' %}active{% endif %}" href="{% url 'vendor-list' %}" style="padding: 10px 20px;">
-                        <i class="fas fa-truck-loading me-2"></i> Fournisseurs
-                    </a></li>
-                </ul>
+            </li>
+
+            <!-- Clients -->
+            <li class="nav-item mb-2">
+                <a class="nav-link text-light {% if request.resolver_match.url_name == 'customer_list' %}active{% endif %}" href="{% url 'customer_list' %}" style="padding: 12px 20px; border-radius: 8px;">
+                    <i class="fas fa-user-tie me-2"></i> Clients
+                </a>
             </li>
         </ul>
     </div>
@@ -147,6 +146,5 @@
         </a>
     </div>
 </aside>
-
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">

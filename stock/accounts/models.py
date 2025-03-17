@@ -1,36 +1,33 @@
 from django.db import models
 from django.contrib.auth.models import User
-
 from django_extensions.db.fields import AutoSlugField
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
 from phonenumber_field.modelfields import PhoneNumberField
 
-
 # Define choices for profile status and roles
 STATUS_CHOICES = [
-    ('INA', 'Inactive'),
-    ('A', 'Active'),
-    ('OL', 'On leave')
+    ('INA', 'Inactif'),
+    ('A', 'Actif'),
+    ('OL', 'En congé')
 ]
 
 ROLE_CHOICES = [
-    ('OP', 'Operative'),
-    ('EX', 'Executive'),
-    ('AD', 'Admin')
+    ('RGS', 'Responsable Gestion Stock'),
+    ('RPA', 'Responsable Production/Approvisionnement'),
+    ('MAG', 'Magasinier')
 ]
-
 
 class Profile(models.Model):
     """
-    Represents a user profile containing personal and account-related details.
+    Représente un profil utilisateur contenant des informations personnelles et liées au compte.
     """
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, verbose_name='User'
+        User, on_delete=models.CASCADE, verbose_name='Utilisateur'
     )
     slug = AutoSlugField(
         unique=True,
-        verbose_name='Account ID',
+        verbose_name='ID du compte',
         populate_from='email'
     )
     profile_picture = ProcessedImageField(
@@ -41,36 +38,36 @@ class Profile(models.Model):
         options={'quality': 100}
     )
     telephone = PhoneNumberField(
-        null=True, blank=True, verbose_name='Telephone'
+        null=True, blank=True, verbose_name='Téléphone'
     )
     email = models.EmailField(
         max_length=150, blank=True, null=True, verbose_name='Email'
     )
     first_name = models.CharField(
-        max_length=30, blank=True, verbose_name='First Name'
+        max_length=30, blank=True, verbose_name='Prénom'
     )
     last_name = models.CharField(
-        max_length=30, blank=True, verbose_name='Last Name'
+        max_length=30, blank=True, verbose_name='Nom de famille'
     )
     status = models.CharField(
         choices=STATUS_CHOICES,
         max_length=12,
         default='INA',
-        verbose_name='Status'
+        verbose_name='Statut'
     )
     role = models.CharField(
         choices=ROLE_CHOICES,
         max_length=12,
         blank=True,
         null=True,
-        verbose_name='Role'
+        verbose_name='Rôle'
     )
 
     @property
     def image_url(self):
         """
-        Returns the URL of the profile picture.
-        Returns an empty string if the image is not available.
+        Retourne l'URL de l'image de profil.
+        Retourne une chaîne vide si l'image n'est pas disponible.
         """
         try:
             return self.profile_picture.url
@@ -79,17 +76,15 @@ class Profile(models.Model):
 
     def __str__(self):
         """
-        Returns a string representation of the profile.
+        Retourne une représentation en chaîne du profil.
         """
-        return f"{self.user.username} Profile"
+        return f"Profil de {self.user.username}"
 
     class Meta:
-        """Meta options for the Profile model."""
+        """Options Meta pour le modèle Profile."""
         ordering = ['slug']
-        verbose_name = 'Profile'
+        verbose_name = 'Profil'
         verbose_name_plural = 'Profiles'
-
-
 class Vendor(models.Model):
     """
     Represents a vendor with contact and address information.

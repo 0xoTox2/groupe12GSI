@@ -8,6 +8,12 @@ import imagekit.models.fields
 import phonenumber_field.modelfields
 
 
+def update_roles(apps, schema_editor):
+    Profile = apps.get_model('accounts', 'Profile')
+    Profile.objects.filter(role='OP').update(role='MAG')  # Opératif -> Magasinier
+    Profile.objects.filter(role='EX').update(role='RPA')  # Executive -> Responsable Production/Approvisionnement
+    Profile.objects.filter(role='AD').update(role='RGS')  # Admin -> Responsable Gestion Stock
+
 class Migration(migrations.Migration):
 
     initial = True
