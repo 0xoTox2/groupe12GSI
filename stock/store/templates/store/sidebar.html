@@ -34,11 +34,24 @@
         <ul class="nav flex-column mt-3">
             <!-- Produits -->
             <li class="nav-item mb-2">
-                <a class="nav-link text-dark {% if request.resolver_match.url_name == 'productslist' %}active{% endif %}" href="{% url 'productslist' %}" style="padding: 12px 20px; border-radius: 8px; transition: all 0.3s ease;">
-                    <i class="fas fa-boxes me-2"></i> Produits
-                </a>
-            </li>
-
+            
+                <li class="nav-item mb-2 dropdown">
+                    <a class="nav-link text-dark {% if request.resolver_match.url_name == 'productslist' %}active{% endif %} dropdown-toggle" href="#" id="productsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 12px 20px; border-radius: 8px; transition: all 0.3s ease;">
+                        <i class="fas fa-boxes me-2"></i> Produits
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="productsDropdown">
+                        <li>
+                            <a class="dropdown-item text-dark {% if request.resolver_match.url_name == 'productslist' %}active{% endif %}" href="{% url 'productslist' %}" style="padding: 10px 20px; transition: all 0.3s ease;">
+                                <i class="fas fa-list me-2"></i> Tous les produits
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-dark" href="{% url 'category-list' %}" style="padding: 10px 20px; transition: all 0.3s ease;">
+                                <i class="fas fa-tags me-2"></i> Catégories
+                            </a>
+                        </li>
+                    </ul>
+                </li>
             <!-- Commandes de vente "Sortie" -->
             <li class="nav-item mb-2">
                 <a class="nav-link text-dark {% if request.resolver_match.url_name == 'saleslist' %}active{% endif %}" href="{% url 'saleslist' %}" style="padding: 12px 20px; border-radius: 8px; transition: all 0.3s ease;">
