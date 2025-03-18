@@ -47,7 +47,7 @@ def register(request):
         if form.is_valid():
             user = form.save()  # Save the new user
             login(request, user)  # Log the user in
-            return redirect('dashboard')  # Redirect to the dashboard
+            return redirect('module.html')  # Redirect to the dashboard
     else:
         form = CreateUserForm()
 

@@ -114,7 +114,7 @@ USE_I18N = True
 USE_TZ = True
 
 LOGIN_URL = 'user-login'
-LOGIN_REDIRECT_URL = 'dashboard'
+LOGIN_REDIRECT_URL = 'module'
 LOGOUT_URL = 'logout'
 
 # Static files (CSS, JavaScript, Images)

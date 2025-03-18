@@ -49,6 +49,10 @@ def home(request):
     return render(request, 'store/home.html')
 
 @login_required
+def module(request):
+    return render(request, 'store/module.html')
+
+
 def dashboard(request):
     profiles = Profile.objects.all()
     Category.objects.annotate(nitem=Count("item"))
@@ -94,6 +98,185 @@ def dashboard(request):
     }
     return render(request, "store/dashboard.html", context)
 
+def stock(request):
+    profiles = Profile.objects.all()
+    Category.objects.annotate(nitem=Count("item"))
+    items = Item.objects.all()
+    total_items = (
+        Item.objects.all()
+        .aggregate(Sum("quantity"))
+        .get("quantity__sum", 0.00)
+    )
+    items_count = items.count()
+    profiles_count = profiles.count()
+
+    # Prepare data for charts
+    category_counts = Category.objects.annotate(
+        item_count=Count("item")
+    ).values("name", "item_count")
+    categories = [cat["name"] for cat in category_counts]
+    category_counts = [cat["item_count"] for cat in category_counts]
+
+    sale_dates = (
+        Sale.objects.values("date_added__date")
+        .annotate(total_sales=Sum("grand_total"))
+        .order_by("date_added__date")
+    )
+    sale_dates_labels = [
+        date["date_added__date"].strftime("%Y-%m-%d") for date in sale_dates
+    ]
+    sale_dates_values = [float(date["total_sales"]) for date in sale_dates]
+
+    context = {
+        "items": items,
+        "profiles": profiles,
+        "profiles_count": profiles_count,
+        "items_count": items_count,
+        "total_items": total_items,
+        "vendors": Vendor.objects.all(),
+        "delivery": Delivery.objects.all(),
+        "sales": Sale.objects.all(),
+        "categories": categories,
+        "category_counts": category_counts,
+        "sale_dates_labels": sale_dates_labels,
+        "sale_dates_values": sale_dates_values,
+    }
+    return render(request, "store/stock.html", context)
+
+def fournisseurs_clients(request):
+    profiles = Profile.objects.all()
+    Category.objects.annotate(nitem=Count("item"))
+    items = Item.objects.all()
+    total_items = (
+        Item.objects.all()
+        .aggregate(Sum("quantity"))
+        .get("quantity__sum", 0.00)
+    )
+    items_count = items.count()
+    profiles_count = profiles.count()
+
+    # Prepare data for charts
+    category_counts = Category.objects.annotate(
+        item_count=Count("item")
+    ).values("name", "item_count")
+    categories = [cat["name"] for cat in category_counts]
+    category_counts = [cat["item_count"] for cat in category_counts]
+
+    sale_dates = (
+        Sale.objects.values("date_added__date")
+        .annotate(total_sales=Sum("grand_total"))
+        .order_by("date_added__date")
+    )
+    sale_dates_labels = [
+        date["date_added__date"].strftime("%Y-%m-%d") for date in sale_dates
+    ]
+    sale_dates_values = [float(date["total_sales"]) for date in sale_dates]
+
+    context = {
+        "items": items,
+        "profiles": profiles,
+        "profiles_count": profiles_count,
+        "items_count": items_count,
+        "total_items": total_items,
+        "vendors": Vendor.objects.all(),
+        "delivery": Delivery.objects.all(),
+        "sales": Sale.objects.all(),
+        "categories": categories,
+        "category_counts": category_counts,
+        "sale_dates_labels": sale_dates_labels,
+        "sale_dates_values": sale_dates_values,
+    }
+    return render(request, "store/fournisseurs_clients.html", context)
+
+def personnels(request):
+    profiles = Profile.objects.all()
+    Category.objects.annotate(nitem=Count("item"))
+    items = Item.objects.all()
+    total_items = (
+        Item.objects.all()
+        .aggregate(Sum("quantity"))
+        .get("quantity__sum", 0.00)
+    )
+    items_count = items.count()
+    profiles_count = profiles.count()
+
+    # Prepare data for charts
+    category_counts = Category.objects.annotate(
+        item_count=Count("item")
+    ).values("name", "item_count")
+    categories = [cat["name"] for cat in category_counts]
+    category_counts = [cat["item_count"] for cat in category_counts]
+
+    sale_dates = (
+        Sale.objects.values("date_added__date")
+        .annotate(total_sales=Sum("grand_total"))
+        .order_by("date_added__date")
+    )
+    sale_dates_labels = [
+        date["date_added__date"].strftime("%Y-%m-%d") for date in sale_dates
+    ]
+    sale_dates_values = [float(date["total_sales"]) for date in sale_dates]
+
+    context = {
+        "items": items,
+        "profiles": profiles,
+        "profiles_count": profiles_count,
+        "items_count": items_count,
+        "total_items": total_items,
+        "vendors": Vendor.objects.all(),
+        "delivery": Delivery.objects.all(),
+        "sales": Sale.objects.all(),
+        "categories": categories,
+        "category_counts": category_counts,
+        "sale_dates_labels": sale_dates_labels,
+        "sale_dates_values": sale_dates_values,
+    }
+    return render(request, "store/personnels.html", context)
+
+def facturation(request):
+    profiles = Profile.objects.all()
+    Category.objects.annotate(nitem=Count("item"))
+    items = Item.objects.all()
+    total_items = (
+        Item.objects.all()
+        .aggregate(Sum("quantity"))
+        .get("quantity__sum", 0.00)
+    )
+    items_count = items.count()
+    profiles_count = profiles.count()
+
+    # Prepare data for charts
+    category_counts = Category.objects.annotate(
+        item_count=Count("item")
+    ).values("name", "item_count")
+    categories = [cat["name"] for cat in category_counts]
+    category_counts = [cat["item_count"] for cat in category_counts]
+
+    sale_dates = (
+        Sale.objects.values("date_added__date")
+        .annotate(total_sales=Sum("grand_total"))
+        .order_by("date_added__date")
+    )
+    sale_dates_labels = [
+        date["date_added__date"].strftime("%Y-%m-%d") for date in sale_dates
+    ]
+    sale_dates_values = [float(date["total_sales"]) for date in sale_dates]
+
+    context = {
+        "items": items,
+        "profiles": profiles,
+        "profiles_count": profiles_count,
+        "items_count": items_count,
+        "total_items": total_items,
+        "vendors": Vendor.objects.all(),
+        "delivery": Delivery.objects.all(),
+        "sales": Sale.objects.all(),
+        "categories": categories,
+        "category_counts": category_counts,
+        "sale_dates_labels": sale_dates_labels,
+        "sale_dates_values": sale_dates_values,
+    }
+    return render(request, "store/facturation.html", context)
 
 class ProductListView(LoginRequiredMixin, ExportMixin, tables.SingleTableView):
     """

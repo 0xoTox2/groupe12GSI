@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil - Optistock</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #F5F5F5;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #353535;
+        }
+        header {
+            background-color: #f8f9fa;
+            color: #353535;
+            box-shadow: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1030;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+        }
+        header img {
+            height: 50px;
+            margin-right: 10px;
+        }
+        .container {
+            margin-top: 100px; /* Augmente l'espace sous le header */
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            justify-items: center;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            width: 80%;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 10px;
+            color: white;
+            background-color: #AB7442;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            background-color: #8C5A2F;
+        }
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 576px) {
+            .container {
+                grid-template-columns: repeat(1, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a class="navbar-brand" href="#">
+            <img src="{% static 'images/logo/logo.png' %}" alt="Logo Optistock">
+            <strong>Opti<span class="text-warning">stock</span></strong>
+        </a>
+    </header>
+    <div class="container">
+        <div class="section">
+            <h3>Achat et Approvisionnement</h3>
+            <a href="{% url 'dashboard' %}" class="btn">Accéder</a>
+        </div>
+        <div class="section">
+            <h3>Gestion de Stocks</h3>
+            <a href="{% url 'stock' %}" class="btn">Accéder</a>
+        </div>
+        <div class="section">
+            <h3>Fournisseurs / Clients</h3>
+            <a href="{% url 'fournisseurs_clients' %}" class="btn">Accéder</a>
+        </div>
+        <div class="section">
+            <h3>Espace Personnels</h3>
+            <a href="{% url 'personnels' %}" class="btn">Accéder</a>
+        </div>
+        <div class="section">
+            <h3>Facturation</h3>
+            <a href="{% url 'facturation' %}" class="btn">Accéder</a>
+        </div>
+    </div>
+</body>
+</html>

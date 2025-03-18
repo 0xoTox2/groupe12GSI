@@ -1,0 +1,133 @@
+{% load static %}
+<aside class="sidebar position-fixed top-0 left-0 overflow-auto h-100" id="show-side-navigation1" style="width: 250px; background: linear-gradient(135deg, #cfcfcf, #d8d2c5); color: #333333; border-radius: 0 25px 25px 0; box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
+    <!-- Close Button -->
+    <button class="btn btn-dark d-md-none d-lg-none position-absolute top-0 end-0 mt-2 me-2 rounded-circle" data-close="show-side-navigation1" aria-label="Close">
+        <i class="fa fa-times text-white"></i>
+    </button>
+
+    <!-- Sidebar Header -->
+    <div class="sidebar-header d-flex flex-column align-items-center px-3 py-4 border-bottom border-secondary" style="background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(5px);">
+        <a href="{% url 'user-profile' %}" class="d-flex align-items-center text-decoration-none text-center">
+            <img class="rounded-circle img-fluid" id="sidebar-img" width="80" height="80" 
+                 src="{% static 'images/default_profile_picture.png' %}" 
+                 alt="Photo de profil" 
+                 style="border: 3px solid #d7c7b9; object-fit: cover;" />
+            <div class="ms-3 mt-2">
+                <h5 class="fs-6 mb-0" style="font-weight: 600; color: #4b3c2f;"> <!-- Plus foncé ici -->
+                    {{ request.user.username }}{% if request.user.profile.role == 'AD' %} <i class="fa-solid fa-circle-check text-success"></i>{% endif %}
+                </h5>
+                <span class="badge" style="background-color: #b59a8f; color: #fff; padding: 5px 10px; border-radius: 12px;">
+                    {% if profile.role == 'RGS' %}
+                        Responsable Gestion Stock
+                    {% elif profile.role == 'RPA' %}
+                        Responsable Production/Approvisionnement
+                    {% else %}
+                        Magasinier
+                    {% endif %}
+                </span>
+            </div>
+        </a>
+    </div>
+
+    <!-- Navigation Container -->
+    <div class="nav-container">
+        <ul class="nav flex-column mt-3">
+            <!-- Produits -->
+            <li class="nav-item mb-2">
+                <a class="nav-link text-dark {% if request.resolver_match.url_name == 'productslist' %}active{% endif %}" href="{% url 'productslist' %}" style="padding: 12px 20px; border-radius: 8px; transition: all 0.3s ease;">
+                    <i class="fas fa-boxes me-2"></i> Produits
+                </a>
+            </li>
+
+            <!-- Commandes de vente "Sortie" -->
+            <li class="nav-item mb-2">
+                <a class="nav-link text-dark {% if request.resolver_match.url_name == 'saleslist' %}active{% endif %}" href="{% url 'saleslist' %}" style="padding: 12px 20px; border-radius: 8px; transition: all 0.3s ease;">
+                    <i class="fas fa-shopping-bag me-2"></i> Commandes de vente (Sortie)
+                </a>
+            </li>
+
+            <!-- Commandes d'achat "Entrée" -->
+            <li class="nav-item mb-2">
+                <a class="nav-link text-dark {% if request.resolver_match.url_name == 'purchaseslist' %}active{% endif %}" href="{% url 'purchaseslist' %}" style="padding: 12px 20px; border-radius: 8px; transition: all 0.3s ease;">
+                    <i class="fas fa-shopping-cart me-2"></i> Commandes d'achat (Entrée)
+                </a>
+            </li>
+
+            <!-- Personnels -->
+            <li class="nav-item mb-2">
+                <a class="nav-link text-dark {% if request.resolver_match.url_name == 'profile_list' %}active{% endif %}" href="{% url 'profile_list' %}" style="padding: 12px 20px; border-radius: 8px; transition: all 0.3s ease;">
+                    <i class="fas fa-user-friends me-2"></i> Personnels
+                </a>
+            </li>
+
+            <!-- Fournisseurs -->
+            <li class="nav-item mb-2">
+                <a class="nav-link text-dark {% if request.resolver_match.url_name == 'vendor-list' %}active{% endif %}" href="{% url 'vendor-list' %}" style="padding: 12px 20px; border-radius: 8px; transition: all 0.3s ease;">
+                    <i class="fas fa-truck-loading me-2"></i> Fournisseurs
+                </a>
+            </li>
+
+            <!-- Clients -->
+            <li class="nav-item mb-2">
+                <a class="nav-link text-dark {% if request.resolver_match.url_name == 'customer_list' %}active{% endif %}" href="{% url 'customer_list' %}" style="padding: 12px 20px; border-radius: 8px; transition: all 0.3s ease;">
+                    <i class="fas fa-user-tie me-2"></i> Clients
+                </a>
+            </li>
+
+            <!-- Tableau de bord -->
+            <li class="nav-item mb-2">
+                <a class="nav-link text-dark {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}" style="padding: 12px 20px; border-radius: 8px; transition: all 0.3s ease;">
+                    <i class="fas fa-tachometer-alt me-2"></i> Tableau de bord
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer position-absolute bottom-0 w-100 text-center py-3" style="background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(5px); border-top: 1px solid #d7c7b9;">
+        <a class="btn btn-danger btn-sm w-75" href="{% url 'user-logout' %}" style="background-color: #d32f2f; color: #ffffff; padding: 10px 20px; border-radius: 8px; transition: all 0.3s ease;">
+            <i class="fas fa-sign-out-alt me-2"></i> Déconnexion
+        </a>
+    </div>
+</aside>
+
+<!-- Fonts -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<style>
+    /* Animation et effets de survol pour les liens de la sidebar */
+    .nav-link {
+        position: relative;
+        padding: 12px 20px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+    }
+
+    .nav-link:hover {
+        background: rgba(0, 0, 0, 0.1); /* Légère ombre au survol */
+        transform: translateX(10px); /* Déplacement vers la droite */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Ombre pour donner un effet de profondeur */
+    }
+
+    .nav-link i {
+        margin-right: 10px; /* Espacement entre l'icône et le texte */
+    }
+
+    .nav-link.active {
+        background: rgba(0, 0, 0, 0.1); /* Fond actif */
+        color: #8c7b6e; /* Accent gris clair */
+    }
+
+    /* Modification du style de la sidebar */
+    .sidebar {
+        border-radius: 0 25px 25px 0;
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+
+
+<!-- FontAwesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">

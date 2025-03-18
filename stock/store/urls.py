@@ -2,7 +2,7 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import dashboard
+from .views import dashboard, module,stock,facturation,personnels,fournisseurs_clients
 # Local app imports
 from . import views
 from .views import (
@@ -27,8 +27,14 @@ from .views import (
 
 # URL patterns
 urlpatterns = [
+    path('module/',module, name='module'),
+
     # Dashboard
     path('dashboard/',dashboard, name='dashboard'),
+    path('stock/',stock, name='stock'),
+    path('facturation/',facturation, name='facturation'),
+    path('personnels/',personnels, name='personnels'),
+    path('fournisseurs_clients/',fournisseurs_clients, name='fournisseurs_clients'),
 
     # Product URLs
     path(
