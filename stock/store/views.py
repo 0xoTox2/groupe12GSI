@@ -337,32 +337,21 @@ class ProductDetailView(LoginRequiredMixin, FormMixin, DetailView):
     def get_success_url(self):
         return reverse("product-detail", kwargs={"slug": self.object.slug})
 
+# Dans views.py
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
-    """
-    View class to create a new product.
-
-    Attributes:
-    - model: The model associated with the view.
-    - template_name: The HTML template used for rendering the view.
-    - form_class: The form class used for data input.
-    - success_url: The URL to redirect to upon successful form submission.
-    """
-
     model = Item
     template_name = "store/productcreate.html"
     form_class = ItemForm
-    success_url = "/products"
+    success_url = reverse_lazy("productslist")  # Utilisez reverse_lazy pour éviter les problèmes de chargement
 
-    def test_func(self):
-        # item = Item.objects.get(id=pk)
-        if self.request.POST.get("quantity") < 1:
-            return False
-        else:
-            return True
+    def form_valid(self, form):
+        # Ajoutez des logs pour déboguer
+        print("Form is valid, saving product...")
+        return super().form_valid(form)
 
 
-class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class ProductUpdateView(LoginRequiredMixin,  UpdateView):
     """
     View class to update product information.
 
@@ -376,16 +365,15 @@ class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Item
     template_name = "store/productupdate.html"
     form_class = ItemForm
-    success_url = "/products"
+    ssuccess_url = reverse_lazy("productslist")
 
     def test_func(self):
-        if self.request.user.is_superuser:
-            return True
-        else:
-            return False
+        # Autoriser tous les utilisateurs authentifiés à mettre à jour
+        return self.request.user.is_authenticated
 
 
-class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+
+class ProductDeleteView(LoginRequiredMixin,  DeleteView):
     """
     View class to delete a product.
 
@@ -397,13 +385,10 @@ class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     model = Item
     template_name = "store/productdelete.html"
-    success_url = "/products"
-
+    success_url = reverse_lazy("productslist")
     def test_func(self):
-        if self.request.user.is_superuser:
-            return True
-        else:
-            return False
+        # Autoriser tous les utilisateurs authentifiés à mettre à jour
+        return self.request.user.is_authenticated
 
 
 class DeliveryListView(

@@ -58,11 +58,14 @@ class Item(models.Model):
             f"Quantity: {self.quantity}"
         )
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
     def get_absolute_url(self):
         """
         Returns the absolute URL for an item detail view.
         """
-        return reverse('item-detail', kwargs={'slug': self.slug})
+        return reverse('product-detail', kwargs={'slug': self.slug})
 
     def to_json(self):
         product = model_to_dict(self)

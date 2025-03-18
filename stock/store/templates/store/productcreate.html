@@ -2,79 +2,98 @@
 {% load static %}
 
 {% block title %}
-    Ajouter produit
+    {% if form.instance.pk %}Mise à jour produit{% else %}Ajouter produit{% endif %}
 {% endblock title %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-10">
-            <div class="card shadow-lg border-0" style="border-radius: 12px; background-color: #f5f5f5;">
-                <div class="card-body">
-                    <h1 class="text-center mb-4" style="color: #4b3c2f;">
-                        Ajouter produit
-                    </h1>
-                    <form method="POST" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.name.id_for_label }}" class="form-label" style="color: #4b3c2f;">
-                                    Nom du produit
-                                </label>
-                                {{ form.name }}
-                                <div class="text-danger">{{ form.name.errors }}</div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col mb-3">
-                                <label for="{{ form.description.id_for_label }}" class="form-label" style="color: #4b3c2f;">
-                                    Description
-                                </label>
-                                {{ form.description }}
-                                <div class="text-danger">{{ form.description.errors }}</div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.quantity.id_for_label }}" class="form-label" style="color: #4b3c2f;">
-                                    Quantité
-                                </label>
-                                {{ form.quantity }}
-                                <div class="text-danger">{{ form.quantity.errors }}</div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.price.id_for_label }}" class="form-label" style="color: #4b3c2f;">
-                                    Prix de vente
-                                </label>
-                                {{ form.price }}
-                                <div class="text-danger">{{ form.price.errors }}</div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.expiring_date.id_for_label }}" class="form-label" style="color: #4b3c2f;">
-                                    Date d'expiration
-                                </label>
-                                {{ form.expiring_date }}
-                                <div class="text-danger">{{ form.expiring_date.errors }}</div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.vendor.id_for_label }}" class="form-label" style="color: #4b3c2f;">
-                                    Fournisseur
-                                </label>
-                                {{ form.vendor }}
-                                <div class="text-danger">{{ form.vendor.errors }}</div>
-                            </div>
-                        </div>
-                        <div class="form-group text-center">
-                            <button class="btn btn-success btn-lg rounded-3 shadow-sm" type="submit" style="padding: 12px 30px; background-color: #4CAF50; border-radius: 50px; font-size: 16px;">
-                                <i class="fas fa-check"></i> Envoyer
-                            </button>
-                        </div>
-                    </form>
-                </div>
+<!-- Section d'en-tête -->
+<div class="container my-4">
+    <div class="card shadow-sm rounded p-3">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h4 class="display-6 mb-0 text-success">
+                    {% if form.instance.pk %}Mise à jour du produit{% else %}Ajouter un produit{% endif %}
+                </h4>
+            </div>
+            <div class="col-md-6 d-flex justify-content-end gap-2">
+                <a class="btn btn-secondary btn-sm rounded-pill shadow-sm" href="{% url 'productslist' %}">
+                    <i class="fas fa-arrow-left me-2"></i> Retour
+                </a>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="container px-3">
+    <div class="card shadow-sm rounded p-3">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.name.id_for_label }}" class="form-label">
+                        Nom du produit
+                    </label>
+                    {{ form.name }}
+                    <div class="text-danger">{{ form.name.errors }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.category.id_for_label }}" class="form-label">
+                        Catégorie
+                    </label>
+                    {{ form.category }}
+                    <div class="text-danger">{{ form.category.errors }}</div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.quantity.id_for_label }}" class="form-label">
+                        Quantité
+                    </label>
+                    {{ form.quantity }}
+                    <div class="text-danger">{{ form.quantity.errors }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.price.id_for_label }}" class="form-label">
+                        Prix de vente
+                    </label>
+                    {{ form.price }}
+                    <div class="text-danger">{{ form.price.errors }}</div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.expiring_date.id_for_label }}" class="form-label">
+                        Date d'expiration
+                    </label>
+                    {{ form.expiring_date }}
+                    <div class="text-danger">{{ form.expiring_date.errors }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.vendor.id_for_label }}" class="form-label">
+                        Fournisseur
+                    </label>
+                    {{ form.vendor }}
+                    <div class="text-danger">{{ form.vendor.errors }}</div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col mb-3">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">
+                        Description
+                    </label>
+                    {{ form.description }}
+                    <div class="text-danger">{{ form.description.errors }}</div>
+                </div>
+            </div>
+            <div class="form-group text-center">
+                <button class="btn btn-success btn-sm rounded-pill shadow-sm" type="submit">
+                    <i class="fas fa-save me-2"></i> Enregistrer
+                </button>
+                <a href="{% url 'productslist' %}" class="btn btn-secondary btn-sm rounded-pill shadow-sm">
+                    <i class="fas fa-arrow-left me-2"></i> Annuler
+                </a>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock content %}
