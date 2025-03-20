@@ -15,6 +15,8 @@ import operator
 from functools import reduce
 
 # Django core imports
+from django.shortcuts import redirect
+from django.contrib import messages
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.http import JsonResponse
@@ -54,6 +56,11 @@ def module(request):
 
 
 def dashboard(request):
+    if not request.user.profile.role == 'RPA':  # RPA = Responsable Production/Approvisionnement
+        messages.error(request, "Vous n'avez pas la permission d'accéder à cette page.")
+        return redirect('home') 
+
+
     profiles = Profile.objects.all()
     Category.objects.annotate(nitem=Count("item"))
     items = Item.objects.all()

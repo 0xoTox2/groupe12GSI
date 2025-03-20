@@ -79,26 +79,30 @@
         </a>
     </header>
     <div class="container">
-        <div class="section">
-            <h3>Achat et Approvisionnement</h3>
-            <a href="{% url 'dashboard' %}" class="btn">Accéder</a>
-        </div>
+        {% if request.user.profile.role == 'RPA' %}
+            <div class="section">
+                <h3>Achat et Approvisionnement</h3>
+                <a href="{% url 'dashboard' %}" class="btn">Accéder</a>
+            </div>
+        {% endif %}
+        {% if request.user.profile.role == 'RGS' %}
         <div class="section">
             <h3>Gestion de Stocks</h3>
             <a href="{% url 'stock' %}" class="btn">Accéder</a>
         </div>
-        <div class="section">
-            <h3>Fournisseurs / Clients</h3>
-            <a href="{% url 'fournisseurs_clients' %}" class="btn">Accéder</a>
-        </div>
-        <div class="section">
-            <h3>Espace Personnels</h3>
-            <a href="{% url 'personnels' %}" class="btn">Accéder</a>
-        </div>
-        <div class="section">
-            <h3>Facturation</h3>
-            <a href="{% url 'facturation' %}" class="btn">Accéder</a>
-        </div>
+        {% endif %}
+            <div class="section">
+                <h3>Fournisseurs / Clients</h3>
+                <a href="{% url 'fournisseurs_clients' %}" class="btn">Accéder</a>
+            </div>
+            <div class="section">
+                <h3>Espace Personnels</h3>
+                <a href="{% url 'personnels' %}" class="btn">Accéder</a>
+            </div>
+            <div class="section">
+                <h3>Facturation</h3>
+                <a href="{% url 'facturation' %}" class="btn">Accéder</a>
+            </div>
     </div>
 </body>
 </html>
