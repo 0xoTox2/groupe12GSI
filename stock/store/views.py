@@ -46,6 +46,11 @@ from .models import Category, Item, Delivery
 from .forms import ItemForm, CategoryForm, DeliveryForm
 from .tables import ItemTable
 
+#fabrication 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.db.models import F, Sum
+from .models import Nomenclature, Fabrication, Item
 
 def home(request):
     return render(request, 'store/home.html')
@@ -103,6 +108,102 @@ def personnels(request):
 def facturation(request):
     return render(request, "store/facturation.html", get_common_context(module_name="facturation"))
 
+def fabrication(request):
+    nomenclatures = Nomenclature.objects.all()
+    selected_product = request.GET.get("product_filter")
+
+    # Filtrer les nomenclatures si un produit est sélectionné
+    if selected_product:
+        nomenclatures = nomenclatures.filter(product__name=selected_product)
+
+    # Récupérer les statistiques de fabrication
+    total_fabrications = Fabrication.objects.count()
+    total_quantity_produced = Fabrication.objects.aggregate(Sum("quantity"))["quantity__sum"] or 0
+
+    if request.method == "POST":
+        # Si le formulaire de nomenclature est soumis
+        if "product_name" in request.POST:
+            product_name = request.POST.get("product_name")
+            components = request.POST.getlist("component[]")
+            quantities = request.POST.getlist("quantity[]")
+
+            # Récupérer ou créer le produit fini
+            product, created = Item.objects.get_or_create(name=product_name)
+
+            # Enregistrer chaque élément dans la base de données
+            for component_name, quantity in zip(components, quantities):
+                component, created = Item.objects.get_or_create(name=component_name)
+                Nomenclature.objects.create(
+                    product=product,
+                    component=component,
+                    quantity=quantity
+                )
+
+            messages.success(request, f"Nomenclature enregistrée pour {product_name}.")
+            return redirect("fabrication")
+
+        # Si le formulaire de lancement de fabrication est soumis
+        elif "product_to_manufacture" in request.POST:
+            product_to_manufacture = request.POST.get("product_to_manufacture")
+            quantity_to_produce = int(request.POST.get("quantity"))
+
+            # Récupérer le produit fini
+            try:
+                product = Item.objects.get(name=product_to_manufacture)
+            except Item.DoesNotExist:
+                messages.error(request, f"{product_to_manufacture} n'existe pas en stock.")
+                return redirect("fabrication")
+
+            # Récupérer la nomenclature du produit
+            nomenclatures_for_product = Nomenclature.objects.filter(product=product)
+
+            # Vérifier la disponibilité des matières premières
+            can_produce = True
+            for nomenclature in nomenclatures_for_product:
+                component = nomenclature.component
+                required_quantity = nomenclature.quantity * quantity_to_produce
+
+                if component.quantity < required_quantity:
+                    can_produce = False
+                    messages.error(request, f"Stock insuffisant pour {component.name}.")
+                    break
+
+            # Si toutes les matières premières sont disponibles, procéder à la fabrication
+            if can_produce:
+                # Diminuer les quantités des matières premières
+                for nomenclature in nomenclatures_for_product:
+                    component = nomenclature.component
+                    required_quantity = nomenclature.quantity * quantity_to_produce
+
+                    component.quantity = F("quantity") - required_quantity
+                    component.save()
+
+                # Augmenter la quantité du produit fini
+                product.quantity = F("quantity") + quantity_to_produce
+                product.save()
+
+                # Enregistrer le lancement de fabrication
+                Fabrication.objects.create(
+                    product=product,
+                    quantity=quantity_to_produce
+                )
+
+                messages.success(request, f"Fabrication de {quantity_to_produce} unités de {product.name} lancée.")
+            return redirect("fabrication")
+
+    # Récupérer la liste des produits pour le filtre
+    products = Nomenclature.objects.values_list("product__name", flat=True).distinct()
+
+    # Contexte pour masquer la sidebar et passer les données
+    context = {
+        "hide_sidebar": True,
+        "nomenclatures": nomenclatures,
+        "products": products,
+        "selected_product": selected_product,
+        "total_fabrications": total_fabrications,
+        "total_quantity_produced": total_quantity_produced
+    }
+    return render(request, "store/fabrication.html", context)
 class ProductListView(LoginRequiredMixin, ExportMixin, tables.SingleTableView):
     """
     View class to display a list of products.

@@ -1,5 +1,6 @@
 # Django core imports
 from django.urls import path
+from .views import fabrication
 from django.conf import settings
 from django.conf.urls.static import static
 from .views import dashboard, module,stock,facturation,personnels,fournisseurs_clients
@@ -130,7 +131,10 @@ urlpatterns = [
         CategoryDeleteView.as_view(),
         name='category-delete'
     ),
+    # Autres routes existantes...
+    path('fabrication/', fabrication, name='fabrication'),
 ]
+
 
 # Static media files configuration for development
 if settings.DEBUG:

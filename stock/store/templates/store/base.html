@@ -87,7 +87,11 @@
         
     </head>
     <body>
-        {% include "store/sidebar.html" %}
+        <!-- Condition pour masquer la sidebar -->
+        {% if not hide_sidebar %}
+            {% include "store/sidebar.html" %}
+        {% endif %}
+
         <section id="wrapper">
             <!-- Barre de navigation -->
             <nav class="navbar navbar-expand-md custom-navbar">

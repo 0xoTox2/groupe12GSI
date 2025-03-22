@@ -1,0 +1,165 @@
+{% extends "store/base.html" %}
+{% load static %}
+{% block title %}Fabrication{% endblock title %}
+
+{% block content %}
+<div class="d-flex flex-column flex-lg-row h-lg-full bg-surface-secondary">
+    <div class="h-screen flex-grow-1 overflow-y-lg-auto">
+        <main class="py-6 bg-surface-secondary">
+            <div class="container-fluid">
+                <!-- Titre de la page -->
+                <h1>Fabrication</h1>
+
+                <!-- Partie 1 : Nomenclature -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="card-title">Nomenclature</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'fabrication' %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="product_name" class="form-label">Nom du produit</label>
+                                <input type="text" class="form-control" id="product_name" name="product_name" required>
+                            </div>
+
+                            <!-- Liste des éléments avec leurs quantités -->
+                            <div id="components-list">
+                                <div class="component-item mb-3">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label for="component_1" class="form-label">Élément</label>
+                                            <input type="text" class="form-control" name="component[]" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="quantity_1" class="form-label">Quantité</label>
+                                            <input type="number" class="form-control" name="quantity[]" min="1" required>
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-end">
+                                            <button type="button" class="btn btn-danger btn-remove-component" disabled>
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bouton pour ajouter un nouvel élément -->
+                            <button type="button" id="add-component" class="btn btn-secondary mb-3">
+                                <i class="fas fa-plus"></i> Ajouter un élément
+                            </button>
+
+                            <!-- Bouton pour soumettre le formulaire -->
+                            <button type="submit" class="btn btn-primary">Enregistrer la nomenclature</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Affichage des nomenclatures existantes -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="card-title">Nomenclatures enregistrées</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Nom du produit</th>
+                                    <th>Élément</th>
+                                    <th>Quantité</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for nomenclature in nomenclatures %}
+                                <tr>
+                                    <td>{{ nomenclature.product.name }}</td>
+                                    <td>{{ nomenclature.component.name }}</td>
+                                    <td>{{ nomenclature.quantity }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Partie 2 : Lancement de la fabrication -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Lancement de la fabrication</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'fabrication' %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="product_to_manufacture" class="form-label">Produit à fabriquer</label>
+                                <select class="form-control" id="product_to_manufacture" name="product_to_manufacture" required>
+                                    <option value="">Sélectionnez un produit</option>
+                                    {% for product in products %}
+                                        <option value="{{ product }}">{{ product }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="quantity" class="form-label">Quantité</label>
+                                <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
+                            </div>
+                            <button type="submit" class="btn btn-success">Lancer la fabrication</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Script pour gérer les éléments dynamiques -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const componentsList = document.getElementById("components-list");
+        const addComponentButton = document.getElementById("add-component");
+
+        // Compteur pour générer des IDs uniques
+        let componentCounter = 1;
+
+        // Ajouter un nouvel élément
+        addComponentButton.addEventListener("click", function () {
+            componentCounter++;
+
+            const newComponent = document.createElement("div");
+            newComponent.classList.add("component-item", "mb-3");
+
+            newComponent.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="component_${componentCounter}" class="form-label">Élément</label>
+                        <input type="text" class="form-control" name="component[]" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="quantity_${componentCounter}" class="form-label">Quantité</label>
+                        <input type="number" class="form-control" name="quantity[]" min="1" required>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-danger btn-remove-component">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            componentsList.appendChild(newComponent);
+
+            // Activer le bouton de suppression pour tous les éléments sauf le premier
+            const removeButtons = document.querySelectorAll(".btn-remove-component");
+            removeButtons.forEach(button => button.disabled = false);
+        });
+
+        // Supprimer un élément
+        componentsList.addEventListener("click", function (event) {
+            if (event.target.classList.contains("btn-remove-component")) {
+                const componentItem = event.target.closest(".component-item");
+                componentItem.remove();
+            }
+        });
+    });
+</script>
+{% endblock content %}

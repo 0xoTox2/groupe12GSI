@@ -104,3 +104,49 @@ class Delivery(models.Model):
             f"Delivery of {self.item} to {self.customer_name} "
             f"at {self.location} on {self.date}"
         )
+
+
+from django.db import models
+from django.urls import reverse
+
+class Nomenclature(models.Model):
+    """
+    Modèle pour stocker les nomenclatures des produits.
+    """
+    product = models.ForeignKey(
+        Item,
+        on_delete=models.CASCADE,
+        related_name="nomenclatures",
+        verbose_name="Produit fini",
+        default=1  # Valeur par défaut (ID d'un Item existant)
+    )
+    component = models.ForeignKey(
+        Item,
+        on_delete=models.CASCADE,
+        related_name="used_in_nomenclatures",
+        verbose_name="Matière première",
+        default=1  # Valeur par défaut (ID d'un Item existant)
+    )
+    quantity = models.PositiveIntegerField(verbose_name="Quantité nécessaire")
+
+    def __str__(self):
+        return f"{self.product.name} - {self.component.name} ({self.quantity})"
+
+    class Meta:
+        verbose_name = "Nomenclature"
+        verbose_name_plural = "Nomenclatures"
+
+class Fabrication(models.Model):
+    """
+    Modèle pour stocker les lancements de fabrication.
+    """
+    product = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="fabrications", verbose_name="Produit fini")
+    quantity = models.PositiveIntegerField(verbose_name="Quantité fabriquée")
+    date_created = models.DateTimeField(auto_now_add=True, verbose_name="Date de création")
+
+    def __str__(self):
+        return f"{self.product.name} - {self.quantity} unités (le {self.date_created.strftime('%d/%m/%Y')})"
+
+    class Meta:
+        verbose_name = "Fabrication"
+        verbose_name_plural = "Fabrications"
