@@ -1,5 +1,5 @@
 """
-WSGI config for InventoryMS project.
+WSGI config for OptiStock project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'InventoryMS.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'OptiStock.settings')
 
 application = get_wsgi_application()

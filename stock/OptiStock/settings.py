@@ -50,7 +50,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'InventoryMS.urls'
+ROOT_URLCONF = 'OptiStock.urls'
 
 TEMPLATES = [
     {
@@ -68,7 +68,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'InventoryMS.wsgi.application'
+WSGI_APPLICATION = 'OptiStock.wsgi.application'
 
 
 # Database
