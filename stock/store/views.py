@@ -89,7 +89,7 @@ def get_common_context(module_name=None):
 
 def dashboard(request):
     
-    return render(request, "store/dashboard.html", get_common_context(module_name="dashboard"))
+    return render(request, "store/dashboard.html", get_common_context(module_name="achat"))
 
 def stock(request):
     return render(request, "store/stock.html", get_common_context(module_name="stock"))
