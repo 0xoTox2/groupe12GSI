@@ -33,6 +33,7 @@
     <div class="nav-container">
         <ul class="nav flex-column mt-3">
             <!-- Produits -->
+            {% if module_name == "achat" or module_name == "stock" or module_name == "fournisseurs_clients"%}
             <li class="nav-item mb-2">
                 <li class="nav-item mb-2 dropdown">
                     <a class="nav-link text-dark {% if request.resolver_match.url_name == 'productslist' %}active{% endif %} dropdown-toggle" href="#" id="productsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 12px 20px; border-radius: 8px; transition: all 0.3s ease;">
@@ -51,15 +52,18 @@
                         </li>
                     </ul>
                 </li>
+                {% endif %}
             <!-- Commandes de vente "Sortie" -->
-            {% if module_name == "achat" or module_name == "stock" %}
+            {% if module_name == "stock" %}
             <li class="nav-item mb-2">
                 <a class="nav-link text-dark {% if request.resolver_match.url_name == 'saleslist' %}active{% endif %}" href="{% url 'saleslist' %}" style="padding: 12px 20px; border-radius: 8px; transition: all 0.3s ease;">
                     <i class="fas fa-shopping-bag me-2"></i> Commandes de vente (Sortie)
                 </a>
             </li>
+            {% endif %}
 
             <!-- Commandes d'achat "Entrée" -->
+            {% if module_name == "achat" or module_name == "stock" %}
             <li class="nav-item mb-2">
                 <a class="nav-link text-dark {% if request.resolver_match.url_name == 'purchaseslist' %}active{% endif %}" href="{% url 'purchaseslist' %}" style="padding: 12px 20px; border-radius: 8px; transition: all 0.3s ease;">
                     <i class="fas fa-shopping-cart me-2"></i> Commandes d'achat (Entrée)
@@ -67,7 +71,7 @@
             </li>
             {% endif %}
 
-            {% if module_name == "Personnels" or module_name == "stock" %}
+            {% if module_name == "personnels" or module_name == "stock" %}
             <!-- Personnels -->
             <li class="nav-item mb-2">
                 <a class="nav-link text-dark {% if request.resolver_match.url_name == 'profile_list' %}active{% endif %}" href="{% url 'profile_list' %}" style="padding: 12px 20px; border-radius: 8px; transition: all 0.3s ease;">
@@ -76,7 +80,7 @@
             </li>
             {% endif %}
 
-            {% if module_name == "Fournisseurs_clients" or module_name == "achat" or module_name == "facturation" %}
+            {% if module_name == "fournisseurs_clients" or module_name == "achat" or module_name == "facturation" %}
             <!-- Fournisseurs -->
             <li class="nav-item mb-2">
                 <a class="nav-link text-dark {% if request.resolver_match.url_name == 'vendor-list' %}active{% endif %}" href="{% url 'vendor-list' %}" style="padding: 12px 20px; border-radius: 8px; transition: all 0.3s ease;">
@@ -85,7 +89,7 @@
             </li>
             {% endif %}
 
-            {% if module_name == "Fournisseurs_clients" or module_name == "achat" or module_name == "facturation" %}
+            {% if module_name == "fournisseurs_clients" or module_name == "achat" or module_name == "facturation" %}
             <!-- Clients -->
             <li class="nav-item mb-2">
                 <a class="nav-link text-dark {% if request.resolver_match.url_name == 'customer_list' %}active{% endif %}" href="{% url 'customer_list' %}" style="padding: 12px 20px; border-radius: 8px; transition: all 0.3s ease;">
@@ -146,8 +150,3 @@
         box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
     }
 </style>
-
-
-
-<!-- FontAwesome for Icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
