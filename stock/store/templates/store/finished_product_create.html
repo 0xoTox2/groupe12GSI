@@ -1,0 +1,16 @@
+{% extends "store/base.html" %}
+{% load static %}
+{% block title %}Ajouter un produit fini{% endblock title %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="card shadow-sm rounded p-3">
+        <h4 class="display-6 mb-0 text-success">Ajouter un produit fini</h4>
+        <form method="post" class="mt-4">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success">Ajouter</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}

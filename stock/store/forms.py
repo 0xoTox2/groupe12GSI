@@ -13,7 +13,7 @@ class ItemForm(forms.ModelForm):
             'description',
             'category',
             'quantity',
-            'price',
+            'price',  # Ce champ sera utilisé pour le prix d'achat
             'expiring_date',
             'vendor'
         ]
@@ -100,3 +100,46 @@ class DeliveryForm(forms.ModelForm):
                 'label': 'Mark as delivered',
             }),
         }
+
+
+# forms.py
+
+# forms.py
+
+class FinishedProductForm(forms.ModelForm):
+    """
+    Formulaire pour ajouter un produit fini.
+    """
+    class Meta:
+        model = Item
+        fields = ['name', 'price', 'quantity', 'expiring_date', 'description', 'category']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'rows': 2
+                }
+            ),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
+            'price': forms.NumberInput(
+                attrs={
+                    'class': 'form-control',
+                    'step': '0.01'
+                }
+            ),
+            'expiring_date': forms.DateTimeInput(
+                attrs={
+                    'class': 'form-control',
+                    'type': 'datetime-local'
+                }
+            ),
+            'category': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['is_finished_product'] = forms.BooleanField(
+            initial=True,  # Définir la valeur par défaut à True
+            widget=forms.HiddenInput()  # Masquer le champ dans le formulaire
+        )

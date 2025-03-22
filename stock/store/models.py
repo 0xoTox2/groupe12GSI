@@ -36,6 +36,8 @@ class Category(models.Model):
         verbose_name_plural = 'Categories'
 
 
+# models.py
+
 class Item(models.Model):
     """
     Represents an item in the inventory.
@@ -48,25 +50,16 @@ class Item(models.Model):
     price = models.FloatField(default=0)
     expiring_date = models.DateTimeField(null=True, blank=True)
     vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True)
+    is_finished_product = models.BooleanField(default=False)  # Nouveau champ
 
     def __str__(self):
-        """
-        String representation of the item.
-        """
-        return (
-            f"{self.name} - Category: {self.category}, "
-            f"Quantity: {self.quantity}"
-        )
+        return f"{self.name} - Category: {self.category}, Quantity: {self.quantity}"
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        """
-        Returns the absolute URL for an item detail view.
-        """
         return reverse('product-detail', kwargs={'slug': self.slug})
-
     def to_json(self):
         product = model_to_dict(self)
         product['id'] = self.id

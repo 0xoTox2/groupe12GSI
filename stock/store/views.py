@@ -1,22 +1,8 @@
-"""
-Module: store.views
-
-Contains Django views for managing items, profiles,
-and deliveries in the store application.
-
-Classes handle product listing, creation, updating,
-deletion, and delivery management.
-The module integrates with Django's authentication
-and querying functionalities.
-"""
-
 # Standard library imports
 import operator
 from functools import reduce
 
 # Django core imports
-
-
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.http import JsonResponse
@@ -207,21 +193,23 @@ def fabrication(request):
 class ProductListView(LoginRequiredMixin, ExportMixin, tables.SingleTableView):
     """
     View class to display a list of products.
-
-    Attributes:
-    - model: The model associated with the view.
-    - table_class: The table class used for rendering.
-    - template_name: The HTML template used for rendering the view.
-    - context_object_name: The variable name for the context object.
-    - paginate_by: Number of items per page for pagination.
     """
-
     model = Item
     table_class = ItemTable
     template_name = "store/productslist.html"
     context_object_name = "items"
     paginate_by = 10
     SingleTableView.table_pagination = False
+
+    def get_queryset(self):
+        # Filtrer les matières premières (is_finished_product=False)
+        return Item.objects.filter(is_finished_product=False)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Ajouter les produits finis au contexte
+        context['finished_items'] = Item.objects.filter(is_finished_product=True)
+        return context
 
 
 class ItemSearchListView(ProductListView):
@@ -493,3 +481,25 @@ def get_items_ajax_view(request):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
     return JsonResponse({'error': 'Not an AJAX request'}, status=400)
+
+
+
+from django.urls import reverse_lazy
+from .forms import FinishedProductForm
+from .models import Category
+
+class FinishedProductCreateView(LoginRequiredMixin, CreateView):
+    """
+    Vue pour ajouter un produit fini.
+    """
+    model = Item
+    form_class = FinishedProductForm
+    template_name = "store/finished_product_create.html"
+    success_url = reverse_lazy("productslist")
+
+    def form_valid(self, form):
+        # Définir une catégorie par défaut pour les produits finis
+        default_category, created = Category.objects.get_or_create(name="Produits finis")
+        form.instance.category = default_category  # Associer la catégorie par défaut
+        form.instance.is_finished_product = True  # Marquer comme produit fini
+        return super().form_valid(form)

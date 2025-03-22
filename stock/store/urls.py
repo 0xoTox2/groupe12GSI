@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 from .views import dashboard, module,stock,facturation,personnels,fournisseurs_clients
 # Local app imports
 from . import views
+from .views import FinishedProductCreateView
 from .views import (
     ProductListView,
     ProductDetailView,
@@ -29,6 +30,11 @@ from .views import (
 # URL patterns
 urlpatterns = [
     path('module/',module, name='module'),
+     path(
+        'new-finished-product/',
+        FinishedProductCreateView.as_view(),
+        name='finished-product-create'
+    ),
 
     # Dashboard
     path('dashboard/',dashboard, name='dashboard'),
