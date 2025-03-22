@@ -15,8 +15,8 @@ import operator
 from functools import reduce
 
 # Django core imports
-from django.shortcuts import redirect
-from django.contrib import messages
+
+
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.http import JsonResponse
@@ -88,9 +88,7 @@ def get_common_context(module_name=None):
     return context
 
 def dashboard(request):
-    if request.user.profile.role != 'RPA':  # Vérification du rôle utilisateur
-        messages.error(request, "Vous n'avez pas la permission d'accéder à cette page.")
-        return redirect('home')
+    
     return render(request, "store/dashboard.html", get_common_context(module_name="dashboard"))
 
 def stock(request):
