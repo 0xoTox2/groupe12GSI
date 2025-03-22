@@ -101,7 +101,7 @@ def personnels(request):
     return render(request, "store/personnels.html", get_common_context(module_name="personnels"))
 
 def facturation(request):
-    return render(request, "store/facturation.html", get_common_context(module_name="achat"))
+    return render(request, "store/facturation.html", get_common_context(module_name="facturation"))
 
 class ProductListView(LoginRequiredMixin, ExportMixin, tables.SingleTableView):
     """
