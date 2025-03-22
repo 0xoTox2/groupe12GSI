@@ -10,7 +10,7 @@
         <link rel="stylesheet" type="text/css" href="https://unpkg.com/@webpixels/css@1.1.5/dist/index.css">
         <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css">
         {% block stylesheets %}{% endblock stylesheets %}
-        <title>IMS: {% block title %} {% endblock title %}</title>
+        <title>Optistock: {% block title %} {% endblock title %}</title>
 
         <!-- Favicon -->
         <link rel="icon" href="{% static 'images/logo/favicon.png' %}" type="image/png">
@@ -25,7 +25,7 @@
         
             /* Barre de navigation stylisée */
             .custom-navbar {
-                background: rgba(56, 56, 56, 0.8); /* Fond gris foncé semi-transparent */
+                background: #AB7442;
                 backdrop-filter: blur(10px); /* Effet de verre */
                 box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Ombre portée */
                 padding: 8px 20px; /* Padding réduit pour une barre plus mince */
@@ -39,7 +39,7 @@
         
             /* Effet de survol pour la barre */
             .custom-navbar:hover {
-                background: rgba(56, 56, 56, 1); /* Fond plus intense au survol */
+                background: #353535; /* Fond plus intense au survol */
             }
         
             /* Titre et logo */
@@ -87,7 +87,7 @@
         
     </head>
     <body>
-        {% include "store/sidebar5.html" %}
+        {% include "store/sidebar.html" %}
         <section id="wrapper">
             <!-- Barre de navigation -->
             <nav class="navbar navbar-expand-md custom-navbar">

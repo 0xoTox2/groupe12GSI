@@ -54,236 +54,56 @@ def home(request):
 def module(request):
     return render(request, 'store/module.html')
 
+def get_common_context(module_name=None):
+    profiles = Profile.objects.all()
+    items = Item.objects.all()
+    total_items = items.aggregate(Sum("quantity")).get("quantity__sum", 0.00)
+    
+    # Préparation des données pour les graphiques
+    category_counts = Category.objects.annotate(item_count=Count("item"))
+    categories = [cat.name for cat in category_counts]
+    category_counts_values = [cat.item_count for cat in category_counts]
+
+    sale_dates = Sale.objects.values("date_added__date").annotate(total_sales=Sum("grand_total")).order_by("date_added__date")
+    sale_dates_labels = [date["date_added__date"].strftime("%Y-%m-%d") for date in sale_dates]
+    sale_dates_values = [float(date["total_sales"]) for date in sale_dates]
+    
+    context = {
+        "items": items,
+        "profiles": profiles,
+        "profiles_count": profiles.count(),
+        "items_count": items.count(),
+        "total_items": total_items,
+        "vendors": Vendor.objects.all(),
+        "delivery": Delivery.objects.all(),
+        "sales": Sale.objects.all(),
+        "categories": categories,
+        "category_counts": category_counts,
+        "sale_dates_labels": sale_dates_labels,
+        "sale_dates_values": sale_dates_values,
+    }
+    if module_name:
+        context["module_name"] = module_name  # Ajout du module_name si fourni
+
+    return context
 
 def dashboard(request):
-    if not request.user.profile.role == 'RPA':  # RPA = Responsable Production/Approvisionnement
+    if request.user.profile.role != 'RPA':  # Vérification du rôle utilisateur
         messages.error(request, "Vous n'avez pas la permission d'accéder à cette page.")
-        return redirect('home') 
-
-
-    profiles = Profile.objects.all()
-    Category.objects.annotate(nitem=Count("item"))
-    items = Item.objects.all()
-    total_items = (
-        Item.objects.all()
-        .aggregate(Sum("quantity"))
-        .get("quantity__sum", 0.00)
-    )
-    items_count = items.count()
-    profiles_count = profiles.count()
-
-    # Prepare data for charts
-    category_counts = Category.objects.annotate(
-        item_count=Count("item")
-    ).values("name", "item_count")
-    categories = [cat["name"] for cat in category_counts]
-    category_counts = [cat["item_count"] for cat in category_counts]
-
-    sale_dates = (
-        Sale.objects.values("date_added__date")
-        .annotate(total_sales=Sum("grand_total"))
-        .order_by("date_added__date")
-    )
-    sale_dates_labels = [
-        date["date_added__date"].strftime("%Y-%m-%d") for date in sale_dates
-    ]
-    sale_dates_values = [float(date["total_sales"]) for date in sale_dates]
-
-    context = {
-        "items": items,
-        "profiles": profiles,
-        "profiles_count": profiles_count,
-        "items_count": items_count,
-        "total_items": total_items,
-        "vendors": Vendor.objects.all(),
-        "delivery": Delivery.objects.all(),
-        "sales": Sale.objects.all(),
-        "categories": categories,
-        "category_counts": category_counts,
-        "sale_dates_labels": sale_dates_labels,
-        "sale_dates_values": sale_dates_values,
-    }
-    return render(request, "store/dashboard.html", context)
+        return redirect('home')
+    return render(request, "store/dashboard.html", get_common_context(module_name="dashboard"))
 
 def stock(request):
-    profiles = Profile.objects.all()
-    Category.objects.annotate(nitem=Count("item"))
-    items = Item.objects.all()
-    total_items = (
-        Item.objects.all()
-        .aggregate(Sum("quantity"))
-        .get("quantity__sum", 0.00)
-    )
-    items_count = items.count()
-    profiles_count = profiles.count()
-
-    # Prepare data for charts
-    category_counts = Category.objects.annotate(
-        item_count=Count("item")
-    ).values("name", "item_count")
-    categories = [cat["name"] for cat in category_counts]
-    category_counts = [cat["item_count"] for cat in category_counts]
-
-    sale_dates = (
-        Sale.objects.values("date_added__date")
-        .annotate(total_sales=Sum("grand_total"))
-        .order_by("date_added__date")
-    )
-    sale_dates_labels = [
-        date["date_added__date"].strftime("%Y-%m-%d") for date in sale_dates
-    ]
-    sale_dates_values = [float(date["total_sales"]) for date in sale_dates]
-
-    context = {
-        "items": items,
-        "profiles": profiles,
-        "profiles_count": profiles_count,
-        "items_count": items_count,
-        "total_items": total_items,
-        "vendors": Vendor.objects.all(),
-        "delivery": Delivery.objects.all(),
-        "sales": Sale.objects.all(),
-        "categories": categories,
-        "category_counts": category_counts,
-        "sale_dates_labels": sale_dates_labels,
-        "sale_dates_values": sale_dates_values,
-    }
-    return render(request, "store/stock.html", context)
+    return render(request, "store/stock.html", get_common_context(module_name="stock"))
 
 def fournisseurs_clients(request):
-    profiles = Profile.objects.all()
-    Category.objects.annotate(nitem=Count("item"))
-    items = Item.objects.all()
-    total_items = (
-        Item.objects.all()
-        .aggregate(Sum("quantity"))
-        .get("quantity__sum", 0.00)
-    )
-    items_count = items.count()
-    profiles_count = profiles.count()
-
-    # Prepare data for charts
-    category_counts = Category.objects.annotate(
-        item_count=Count("item")
-    ).values("name", "item_count")
-    categories = [cat["name"] for cat in category_counts]
-    category_counts = [cat["item_count"] for cat in category_counts]
-
-    sale_dates = (
-        Sale.objects.values("date_added__date")
-        .annotate(total_sales=Sum("grand_total"))
-        .order_by("date_added__date")
-    )
-    sale_dates_labels = [
-        date["date_added__date"].strftime("%Y-%m-%d") for date in sale_dates
-    ]
-    sale_dates_values = [float(date["total_sales"]) for date in sale_dates]
-
-    context = {
-        "items": items,
-        "profiles": profiles,
-        "profiles_count": profiles_count,
-        "items_count": items_count,
-        "total_items": total_items,
-        "vendors": Vendor.objects.all(),
-        "delivery": Delivery.objects.all(),
-        "sales": Sale.objects.all(),
-        "categories": categories,
-        "category_counts": category_counts,
-        "sale_dates_labels": sale_dates_labels,
-        "sale_dates_values": sale_dates_values,
-    }
-    return render(request, "store/fournisseurs_clients.html", context)
+    return render(request, "store/fournisseurs_clients.html", get_common_context(module_name="fournisseurs_clients"))
 
 def personnels(request):
-    profiles = Profile.objects.all()
-    Category.objects.annotate(nitem=Count("item"))
-    items = Item.objects.all()
-    total_items = (
-        Item.objects.all()
-        .aggregate(Sum("quantity"))
-        .get("quantity__sum", 0.00)
-    )
-    items_count = items.count()
-    profiles_count = profiles.count()
-
-    # Prepare data for charts
-    category_counts = Category.objects.annotate(
-        item_count=Count("item")
-    ).values("name", "item_count")
-    categories = [cat["name"] for cat in category_counts]
-    category_counts = [cat["item_count"] for cat in category_counts]
-
-    sale_dates = (
-        Sale.objects.values("date_added__date")
-        .annotate(total_sales=Sum("grand_total"))
-        .order_by("date_added__date")
-    )
-    sale_dates_labels = [
-        date["date_added__date"].strftime("%Y-%m-%d") for date in sale_dates
-    ]
-    sale_dates_values = [float(date["total_sales"]) for date in sale_dates]
-
-    context = {
-        "items": items,
-        "profiles": profiles,
-        "profiles_count": profiles_count,
-        "items_count": items_count,
-        "total_items": total_items,
-        "vendors": Vendor.objects.all(),
-        "delivery": Delivery.objects.all(),
-        "sales": Sale.objects.all(),
-        "categories": categories,
-        "category_counts": category_counts,
-        "sale_dates_labels": sale_dates_labels,
-        "sale_dates_values": sale_dates_values,
-    }
-    return render(request, "store/personnels.html", context)
+    return render(request, "store/personnels.html", get_common_context(module_name="personnels"))
 
 def facturation(request):
-    profiles = Profile.objects.all()
-    Category.objects.annotate(nitem=Count("item"))
-    items = Item.objects.all()
-    total_items = (
-        Item.objects.all()
-        .aggregate(Sum("quantity"))
-        .get("quantity__sum", 0.00)
-    )
-    items_count = items.count()
-    profiles_count = profiles.count()
-
-    # Prepare data for charts
-    category_counts = Category.objects.annotate(
-        item_count=Count("item")
-    ).values("name", "item_count")
-    categories = [cat["name"] for cat in category_counts]
-    category_counts = [cat["item_count"] for cat in category_counts]
-
-    sale_dates = (
-        Sale.objects.values("date_added__date")
-        .annotate(total_sales=Sum("grand_total"))
-        .order_by("date_added__date")
-    )
-    sale_dates_labels = [
-        date["date_added__date"].strftime("%Y-%m-%d") for date in sale_dates
-    ]
-    sale_dates_values = [float(date["total_sales"]) for date in sale_dates]
-
-    context = {
-        "items": items,
-        "profiles": profiles,
-        "profiles_count": profiles_count,
-        "items_count": items_count,
-        "total_items": total_items,
-        "vendors": Vendor.objects.all(),
-        "delivery": Delivery.objects.all(),
-        "sales": Sale.objects.all(),
-        "categories": categories,
-        "category_counts": category_counts,
-        "sale_dates_labels": sale_dates_labels,
-        "sale_dates_values": sale_dates_values,
-    }
-    return render(request, "store/facturation.html", context)
+    return render(request, "store/facturation.html", get_common_context(module_name="achat"))
 
 class ProductListView(LoginRequiredMixin, ExportMixin, tables.SingleTableView):
     """
