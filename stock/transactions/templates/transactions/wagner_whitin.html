@@ -1,11 +1,62 @@
+
 {% extends "store/base.html" %}
 {% block content %}
-<div class="container">
-    <h2>Planification des commandes avec Wagner-Whitin</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Calculer</button>
-    </form>
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Planification des commandes avec Wagner-Whitin</h2>
+    
+    <!-- Formulaire -->
+    <div class="card shadow-sm p-4">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-calculator"></i> Calculer
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
+
+<!-- Ajout de FontAwesome pour les icônes -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<!-- Styles supplémentaires -->
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+        background-color: #f8f9fa; /* Fond léger */
+    }
+
+    .form-control {
+        border-radius: 5px;
+        padding: 0.75rem;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        padding: 0.75rem 2rem;
+        font-size: 1.1rem;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        font-weight: 500;
+        color: #495057;
+    }
+
+    .form-group input, .form-group select {
+        width: 100%;
+    }
+</style>
 {% endblock %}
