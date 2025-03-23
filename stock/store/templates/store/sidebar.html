@@ -13,10 +13,10 @@
                  alt="Photo de profil" 
                  style="border: 3px solid #d7c7b9; object-fit: cover;" />
             <div class="ms-3 mt-2">
-                <h5 class="fs-6 mb-0" style="font-weight: 600; color: #4b3c2f;"> <!-- Plus foncé ici -->
+                <h5 class="fs-6 mb-0" style="font-weight: 600; color: #353535;"> <!-- Plus foncé ici -->
                     {{ request.user.username }}{% if request.user.profile.role == 'AD' %} <i class="fa-solid fa-circle-check text-success"></i>{% endif %}
                 </h5>
-                <span class="badge" style="background-color: #b59a8f; color: #fff; padding: 5px 10px; border-radius: 12px;">
+                <span class="badge" style="background-color: #b59a8f; color: #fff; ">
                     {% if profile.role == 'RGS' %}
                         Responsable Gestion Stock
                     {% elif profile.role == 'RPA' %}
@@ -108,7 +108,7 @@
     </div>
 
     <!-- Sidebar Footer -->
-    <div class="sidebar-footer position-absolute bottom-0 w-100 text-center py-3" style="background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(5px); border-top: 1px solid #d7c7b9;">
+    <div class="sidebar-footer position-absolute bottom-0 w-100 text-center py-3" style="background: #353535; backdrop-filter: blur(5px); border-top: 1px solid #d7c7b9;">
         <a class="btn btn-danger btn-sm w-75" href="{% url 'user-logout' %}" style="background-color: #d32f2f; color: #ffffff; padding: 10px 20px; border-radius: 8px; transition: all 0.3s ease;">
             <i class="fas fa-sign-out-alt me-2"></i> Déconnexion
         </a>
@@ -130,9 +130,9 @@
     }
 
     .nav-link:hover {
-        background: rgba(0, 0, 0, 0.1); /* Légère ombre au survol */
+        background: #353535; /* Légère ombre au survol */
         transform: translateX(10px); /* Déplacement vers la droite */
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Ombre pour donner un effet de profondeur */
+        box-shadow: 0 4px 12px #353533; /* Ombre pour donner un effet de profondeur */
     }
 
     .nav-link i {
@@ -140,13 +140,13 @@
     }
 
     .nav-link.active {
-        background: rgba(0, 0, 0, 0.1); /* Fond actif */
+        background: #353535; /* Fond actif */
         color: #8c7b6e; /* Accent gris clair */
     }
 
     /* Modification du style de la sidebar */
     .sidebar {
-        border-radius: 0 25px 25px 0;
-        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+    
+        box-shadow: 4px 0 15px #353535;
     }
 </style>

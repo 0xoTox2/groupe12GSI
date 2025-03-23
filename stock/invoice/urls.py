@@ -21,19 +21,17 @@ urlpatterns = [
         name='invoicelist'
     ),
     path(
-        'invoice/<slug:slug>/',
+        'invoice/<int:pk>/', 
         InvoiceDetailView.as_view(),
-        name='invoice-detail'
-    ),
+        name='invoice-detail'),
+    path(
+        'invoice/<int:pk>/update/', 
+        InvoiceUpdateView.as_view(), 
+        name='invoice-update'),
     path(
         'new-invoice/',
         InvoiceCreateView.as_view(),
         name='invoice-create'
-    ),
-    path(
-        'invoice/<slug:slug>/update/',
-        InvoiceUpdateView.as_view(),
-        name='invoice-update'
     ),
     path(
         'invoice/<int:pk>/delete/',

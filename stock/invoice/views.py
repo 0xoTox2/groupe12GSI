@@ -41,7 +41,7 @@ class InvoiceDetailView(DetailView):
         """
         Return the URL to redirect to after a successful action.
         """
-        return reverse('invoice-detail', kwargs={'slug': self.object.pk})
+        return reverse('invoice-detail', kwargs={'pk': self.object.pk})
 
 
 class InvoiceCreateView(LoginRequiredMixin, CreateView):
@@ -92,7 +92,6 @@ class InvoiceDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     """
     model = Invoice
     template_name = 'invoice/invoicedelete.html'
-    success_url = '/products'  # Can be overridden in get_success_url()
 
     def get_success_url(self):
         """

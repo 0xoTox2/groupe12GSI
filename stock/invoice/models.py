@@ -52,3 +52,7 @@ class Invoice(models.Model):
         Return the invoice's slug.
         """
         return self.slug
+    
+class Meta:
+    ordering = ['-date']
+
