@@ -6,7 +6,8 @@ from django.conf.urls.static import static
 from .views import dashboard, module,stock,facturation,personnels,fournisseurs_clients
 # Local app imports
 from . import views
-from .views import FinishedProductCreateView
+from .views import finished_products_list , fabrication_history
+from .views import FinishedProductCreateView, raw_materials_list
 from .views import (
     ProductListView,
     ProductDetailView,
@@ -138,6 +139,9 @@ urlpatterns = [
         name='category-delete'
     ),
     # Autres routes existantes...
+    path('finished-products/', finished_products_list, name='finished_products_list'),
+    path('raw-materials/', raw_materials_list, name='raw_materials_list'),
+    path('fabrication-history/', fabrication_history, name='fabrication_history'),
     path('fabrication/', fabrication, name='fabrication'),
 ]
 

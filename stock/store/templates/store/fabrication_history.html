@@ -1,0 +1,26 @@
+{% extends "store/base.html" %}
+{% block title %}Historique des Fabrications{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <h1>Historique des Fabrications</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Produit</th>
+                <th>Quantité</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for fabrication in fabrications %}
+            <tr>
+                <td>{{ fabrication.product.name }}</td>
+                <td>{{ fabrication.quantity }}</td>
+                <td>{{ fabrication.date_created }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}
