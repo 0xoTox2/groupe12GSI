@@ -1,0 +1,12 @@
+{% extends "store/base.html" %}
+{% block content %}
+<h2>Résultats de la Méthode de Recomplètement</h2>
+<p>Niveau cible (NC) : {{ niveau_cible|floatformat:2 }}</p>
+<p>Quantité à commander (Qc) : {{ quantite_commander|floatformat:2 }}</p>
+<p>Nombre de commandes dans une année (N) : {{ nombre_commandes_annuelles|floatformat:2 }}</p>
+
+<!-- Bouton pour saisir l'achat avec la quantité à commander -->
+<a href="{% url 'purchase-create' %}?quantity={{ quantite_commander|floatformat:0 }}" class="btn btn-success">
+    <i class="fa-solid fa-cart-plus"></i> Saisir l'achat avec la quantité à commander
+</a>
+{% endblock %}

@@ -13,9 +13,6 @@ class BootstrapMixin(forms.ModelForm):
 
 
 class PurchaseForm(BootstrapMixin, forms.ModelForm):
-    """
-    Formulaire pour créer et mettre à jour des achats.
-    """
     class Meta:
         model = Purchase
         fields = [
@@ -32,22 +29,45 @@ class PurchaseForm(BootstrapMixin, forms.ModelForm):
             'delivery_status': 'Statut de livraison',
         }
         widgets = {
-            'delivery_date': forms.DateInput(
-                attrs={
-                    'class': 'form-control',
-                    'type': 'datetime-local'
-                }
-            ),
-            'description': forms.Textarea(
-                attrs={'rows': 1, 'cols': 40, 'class': 'form-control', 'placeholder': 'Ajouter une description'}
-            ),
-            'quantity': forms.NumberInput(
-                attrs={'class': 'form-control', 'placeholder': 'Entrer la quantité'}
-            ),
-            'delivery_status': forms.Select(
-                attrs={'class': 'form-control'}
-            ),
-            'price': forms.NumberInput(
-                attrs={'class': 'form-control', 'placeholder': 'Entrer le prix'}
-            ),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Entrer la quantité'}),
+            'delivery_date': forms.DateTimeInput(attrs={
+                'type': 'datetime-local',  # Utilisez 'date' pour un champ de date uniquement
+                'class': 'form-control',
+            }),
         }
+
+
+POLICY_CHOICES = [
+    ('fixed', 'Méthode de Réapprovisionnement Fixe'),
+    ('point', 'Méthode de Point de Commande'),
+    ('replenishment', 'Méthode de Recomplètement'),
+]
+
+class PolicySelectionForm(forms.Form):
+    policy = forms.ChoiceField(choices=POLICY_CHOICES, label="Choisissez une politique d'approvisionnement")
+
+class FixedReplenishmentForm(forms.Form):
+    delai_livraison = forms.IntegerField(label="Délai de livraison (en jours)")
+    consommation_annuelle = forms.IntegerField(label="Consommation annuelle (en unités)")
+    prix_achat_unitaire = forms.FloatField(label="Prix d’achat unitaire (en DH)")
+    taux_possession = forms.FloatField(label="Taux de possession des stocks (en décimal, par exemple 0.08 pour 8%)")
+    cout_lancement = forms.FloatField(label="Coût de lancement des commandes (en DH)")
+
+class PointReplenishmentForm(forms.Form):
+    stock_actuel = forms.IntegerField(label="Stock actuel (en unités)")
+    delai_livraison = forms.IntegerField(label="Délai de livraison (en jours)")
+    taille_lot = forms.IntegerField(label="Taille de lot (en unités)")
+    consommation_annuelle = forms.IntegerField(label="Consommation annuelle (en unités)")
+    prix_achat_unitaire = forms.FloatField(label="Prix d’achat unitaire (en DH)")
+    taux_possession = forms.FloatField(label="Taux de possession des stocks (en décimal, par exemple 0.08 pour 8%)")
+    cout_lancement = forms.FloatField(label="Coût de lancement des commandes (en DH)")
+    stock_securite = forms.FloatField(label="Stock de sécurité (en unités)")
+
+#recompletement
+class ReplenishmentForm(forms.Form):
+    demande_moyenne = forms.FloatField(label="Demande moyenne par période (D)")
+    periode_reapprovisionnement = forms.FloatField(label="Période de réapprovisionnement (T) en jours")
+    delai_livraison = forms.FloatField(label="Délai de livraison (L) en jours")
+    stock_securite = forms.FloatField(label="Stock de sécurité (Ss)")
+    stock_actuel = forms.FloatField(label="Niveau de stock actuel (M)")
+    taille_lot = forms.FloatField(label="Taille de lot")

@@ -312,18 +312,50 @@ class PurchaseDetailView(LoginRequiredMixin, DetailView):
     template_name = "transactions/purchasedetail.html"
 
 
-class PurchaseCreateView(LoginRequiredMixin, CreateView):
-    """
-    View to create a new purchase.
-    """
+from django.shortcuts import redirect
+from django.urls import reverse
+from django.views.generic.edit import CreateView
+from .forms import PurchaseForm
 
+from django.urls import reverse
+from django.views.generic.edit import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Purchase
+from .forms import PurchaseForm
+
+class PurchaseCreateView(LoginRequiredMixin, CreateView):
     model = Purchase
     form_class = PurchaseForm
     template_name = "transactions/purchases_form.html"
 
+    def get_initial(self):
+        """
+        Récupère la quantité passée dans l'URL et la pré-remplit dans le formulaire.
+        """
+        initial = super().get_initial()
+        quantity = self.request.GET.get('quantity')  # Récupère la quantité depuis l'URL
+        if quantity:
+            initial['quantity'] = int(float(quantity))  # Convertit en entier
+        return initial
+
+    def form_valid(self, form):
+        """
+        Calcule total_value avant d'enregistrer l'objet.
+        """
+        # Récupère l'instance de l'achat sans l'enregistrer dans la base de données
+        purchase = form.save(commit=False)
+
+        # Calcule total_value en fonction du prix et de la quantité
+        purchase.total_value = purchase.price * purchase.quantity
+
+        # Enregistre l'objet dans la base de données
+        purchase.save()
+
+        return super().form_valid(form)
+
     def get_success_url(self):
         """
-        Redirect to the purchases list after successful form submission.
+        Redirige vers la liste des achats après la création.
         """
         return reverse("purchaseslist")
 
@@ -363,3 +395,159 @@ class PurchaseDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         Allow deletion only for superusers.
         """
         return self.request.user.is_superuser
+
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from .forms import PolicySelectionForm
+
+
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from .forms import PolicySelectionForm
+
+def select_policy(request):
+    if request.method == 'POST':
+        form = PolicySelectionForm(request.POST)
+        if form.is_valid():
+            policy = form.cleaned_data['policy']
+            if policy == 'fixed':
+                return redirect(reverse('fixed-replenishment'))
+            elif policy == 'point':
+                return redirect(reverse('point-replenishment'))
+            elif policy == 'replenishment':  # Ajoutez cette condition
+                return redirect(reverse('replenishment'))
+    else:
+        form = PolicySelectionForm()
+    
+    return render(request, 'transactions/select_policy.html', {'form': form})
+
+from django.shortcuts import render
+from .forms import FixedReplenishmentForm, PointReplenishmentForm, ReplenishmentForm
+from .models import Purchase, Item
+from .policies import ReapprovisionnementPointCommande ,ReapprovisionnementFixe
+
+
+
+def fixed_replenishment(request):
+    if request.method == 'POST':
+        form = FixedReplenishmentForm(request.POST)
+        if form.is_valid():
+            # Récupérer les données du formulaire
+            delai_livraison = form.cleaned_data['delai_livraison']
+            consommation_annuelle = form.cleaned_data['consommation_annuelle']
+            prix_achat_unitaire = form.cleaned_data['prix_achat_unitaire']
+            taux_possession = form.cleaned_data['taux_possession']
+            cout_lancement = form.cleaned_data['cout_lancement']
+
+            # Créer l'objet ReapprovisionnementFixe
+            stock_fixe = ReapprovisionnementFixe(
+                delai_livraison=delai_livraison,
+                consommation_annuelle=consommation_annuelle,
+                prix_achat_unitaire=prix_achat_unitaire,
+                taux_possession=taux_possession,
+                cout_lancement=cout_lancement
+            )
+
+            # Calculer les résultats
+            qec = stock_fixe.calculer_qec()
+            periode = stock_fixe.calculer_periode_reapprovisionnement()
+            cout_lancement = stock_fixe.calculer_cout_lancement()
+            cout_possession = stock_fixe.calculer_cout_possession()
+            cout_total = stock_fixe.calculer_cout_total_stock()
+
+            # Afficher les résultats
+            return render(request, 'transactions/fixed_replenishment_results.html', {
+                'qec': qec,
+                'periode': periode,
+                'cout_lancement': cout_lancement,
+                'cout_possession': cout_possession,
+                'cout_total': cout_total,
+            })
+    else:
+        form = FixedReplenishmentForm()
+    
+    return render(request, 'transactions/fixed_replenishment.html', {'form': form})
+
+def point_replenishment(request):
+    if request.method == 'POST':
+        form = PointReplenishmentForm(request.POST)
+        if form.is_valid():
+            # Récupérer les données du formulaire
+            stock_actuel = form.cleaned_data['stock_actuel']
+            delai_livraison = form.cleaned_data['delai_livraison']
+            taille_lot = form.cleaned_data['taille_lot']
+            consommation_annuelle = form.cleaned_data['consommation_annuelle']
+            prix_achat_unitaire = form.cleaned_data['prix_achat_unitaire']
+            taux_possession = form.cleaned_data['taux_possession']
+            cout_lancement = form.cleaned_data['cout_lancement']
+            stock_securite = form.cleaned_data['stock_securite']
+
+            # Créer l'objet ReapprovisionnementPointCommande
+            stock_point_commande = ReapprovisionnementPointCommande(
+                stock_actuel=stock_actuel,
+                delai_livraison=delai_livraison,
+                taille_lot=taille_lot,
+                consommation_annuelle=consommation_annuelle,
+                prix_achat_unitaire=prix_achat_unitaire,
+                taux_possession=taux_possession,
+                cout_lancement=cout_lancement,
+                stock_securite=stock_securite
+            )
+
+            # Calculer les résultats
+            qec = stock_point_commande.calculer_qec()
+            quantite_ajustee = stock_point_commande.ajuster_quantite_lot(qec)
+            point_commande = stock_point_commande.calculer_point_commande()
+            cout_lancement = stock_point_commande.calculer_cout_lancement()
+            cout_possession = stock_point_commande.calculer_cout_possession()
+            cout_total = stock_point_commande.calculer_cout_total_stock()
+
+            # Afficher les résultats
+            return render(request, 'transactions/point_replenishment_results.html', {
+                'qec': qec,
+                'quantite_ajustee': quantite_ajustee,
+                'point_commande': point_commande,
+                'cout_lancement': cout_lancement,
+                'cout_possession': cout_possession,
+                'cout_total': cout_total,
+            })
+    else:
+        form = PointReplenishmentForm()
+    
+    return render(request, 'transactions/point_replenishment.html', {'form': form})
+
+import math
+def replenishment(request):
+    if request.method == 'POST':
+        form = ReplenishmentForm(request.POST)
+        if form.is_valid():
+            # Récupérer les données du formulaire
+            demande_moyenne = form.cleaned_data['demande_moyenne']
+            periode_reapprovisionnement = form.cleaned_data['periode_reapprovisionnement']
+            delai_livraison = form.cleaned_data['delai_livraison']
+            stock_securite = form.cleaned_data['stock_securite']
+            stock_actuel = form.cleaned_data['stock_actuel']
+            taille_lot = form.cleaned_data['taille_lot']
+
+            # Calculer le niveau cible (NC)
+            niveau_cible = demande_moyenne * periode_reapprovisionnement + demande_moyenne * delai_livraison + stock_securite
+
+            # Calculer la quantité à commander (Qc)
+            qc = demande_moyenne * (periode_reapprovisionnement + delai_livraison) + stock_securite - stock_actuel
+            if qc < 0:
+                qc = 0
+            qc_ajuste = math.ceil(qc / taille_lot) * taille_lot
+
+            # Calculer le nombre de commandes dans une année (N)
+            nombre_commandes_annuelles = 365 / periode_reapprovisionnement
+
+            # Afficher les résultats
+            return render(request, 'transactions/replenishment_results.html', {
+                'niveau_cible': niveau_cible,
+                'quantite_commander': qc_ajuste,
+                'nombre_commandes_annuelles': nombre_commandes_annuelles,
+            })
+    else:
+        form = ReplenishmentForm()
+    
+    return render(request, 'transactions/replenishment.html', {'form': form})

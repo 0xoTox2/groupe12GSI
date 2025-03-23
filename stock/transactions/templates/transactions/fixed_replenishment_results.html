@@ -1,0 +1,13 @@
+{% extends "store/base.html" %}
+{% block content %}
+<h2>Résultats de la Méthode de Réapprovisionnement Fixe</h2>
+<p>Quantité Économique de Commande (QEC) : {{ qec|floatformat:2 }} unités</p>
+<p>Période de réapprovisionnement : {{ periode|floatformat:2 }} jours</p>
+<p>Coût de lancement des commandes : {{ cout_lancement|floatformat:2 }} DH</p>
+<p>Coût de possession des stocks : {{ cout_possession|floatformat:2 }} DH</p>
+<p>Coût total de stock : {{ cout_total|floatformat:2 }} DH</p>
+
+<a href="{% url 'purchase-create' %}?quantity={{ qec|floatformat:0 }}" class="btn btn-success">
+    <i class="fa-solid fa-cart-plus"></i> Saisir l'achat avec la quantité économique
+</a>
+{% endblock %}

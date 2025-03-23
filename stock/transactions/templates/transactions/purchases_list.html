@@ -1,9 +1,5 @@
-{% extends "store/base.html" %}
-{% load static %}
-{% load render_table from django_tables2 %}
-{% load querystring from django_tables2 %}
-{% block title %}Achats{% endblock title %}
 
+{% extends "store/base.html" %}
 {% block content %}
 <!-- Section d'en-tête -->
 <div class="container my-4">
@@ -15,6 +11,9 @@
             <div class="col-md-6 d-flex justify-content-end gap-2">
                 <a class="btn btn-success btn-sm rounded-pill shadow-sm" href="{% url 'purchase-create' %}">
                     <i class="fa-solid fa-plus"></i> Ajouter un achat
+                </a>
+                <a class="btn btn-success btn-sm rounded-pill shadow-sm" href="{% url 'select-policy' %}">
+                    <i class="fa-solid fa-calculator"></i> Choisir une politique d'approvisionnement
                 </a>
                 <a class="btn btn-success btn-sm rounded-pill shadow-sm" href="{% url 'purchases-export' %}">
                     <i class="fa-solid fa-download"></i> Exporter en Excel
@@ -33,13 +32,13 @@
     <table class="table table-sm table-striped table-bordered">
         <thead class="thead-light">
             <tr>
-                <th scope="col">ID <i class="fa-solid fa-sort"></i></th>
-                <th scope="col">Nom <i class="fa-solid fa-sort"></i></th>
-                <th scope="col">Quantité <i class="fa-solid fa-sort"></i></th>
-                <th scope="col">Prix <i class="fa-solid fa-sort"></i></th>
-                <th scope="col">Statut de livraison <i class="fa-solid fa-sort"></i></th>
-                <th scope="col">Date de livraison <i class="fa-solid fa-sort"></i></th>
-                <th scope="col">Fournisseur <i class="fa-solid fa-sort"></i></th>
+                <th scope="col">ID</th>
+                <th scope="col">Nom</th>
+                <th scope="col">Quantité</th>
+                <th scope="col">Prix</th>
+                <th scope="col">Statut de livraison</th>
+                <th scope="col">Date de livraison</th>
+                <th scope="col">Fournisseur</th>
                 <th scope="col">Action</th>
             </tr>
         </thead>
@@ -70,59 +69,50 @@
                     <a class="text-danger float-end" href="{% url 'purchase-delete' purchase.id %}">
                         <i class="fa-solid fa-trash"></i>
                     </a>
+                    <!-- Bouton pour ouvrir la modal -->
+                    <button class="text-primary btn btn-link" data-bs-toggle="modal" data-bs-target="#purchaseModal{{ purchase.id }}">
+                        <i class="fa-solid fa-eye"></i> Détails
+                    </button>
                 </td>
             </tr>
+
+            <!-- Modal pour afficher les détails de l'achat -->
+            <div class="modal fade" id="purchaseModal{{ purchase.id }}" tabindex="-1" aria-labelledby="purchaseModalLabel{{ purchase.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="purchaseModalLabel{{ purchase.id }}">Détails de l'Achat #{{ purchase.id }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>Article :</strong> {{ purchase.item.name }}</p>
+                            <p><strong>Quantité :</strong> {{ purchase.quantity }}</p>
+                            <p><strong>Prix total :</strong> {{ purchase.total_value }}</p>
+                            <p><strong>Statut de livraison :</strong> {{ purchase.get_delivery_status_display }}</p>
+                            <p><strong>Date de livraison :</strong> {{ purchase.delivery_date }}</p>
+                            <p><strong>Fournisseur :</strong> {{ purchase.vendor.name }}</p>
+
+                            <h3>Politique Utilisée</h3>
+                            {% if purchase.policy_used %}
+                                <p><strong>Politique :</strong> {{ purchase.policy_used }}</p>
+                                <p><strong>Paramètres :</strong></p>
+                                <ul>
+                                    {% for key, value in purchase.policy_parameters.items %}
+                                    <li><strong>{{ key }} :</strong> {{ value }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>Aucune politique utilisée pour cet achat.</p>
+                            {% endif %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             {% endfor %}
         </tbody>
     </table>
-
-    <!-- Pagination -->
-    <div class="mt-4">
-        {% if is_paginated %}
-        <nav aria-label="Navigation des pages">
-            <ul class="pagination justify-content-center">
-                {% if page_obj.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Précédent">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-                {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link" aria-label="Précédent">
-                        <span aria-hidden="true">&laquo;</span>
-                    </span>
-                </li>
-                {% endif %}
-
-                {% for i in paginator.page_range %}
-                {% if page_obj.number == i %}
-                <li class="page-item active" aria-current="page">
-                    <span class="page-link">{{ i }} <span class="visually-hidden">(actuel)</span></span>
-                </li>
-                {% else %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ i }}">{{ i }}</a>
-                </li>
-                {% endif %}
-                {% endfor %}
-
-                {% if page_obj.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Suivant">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-                {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link" aria-label="Suivant">
-                        <span aria-hidden="true">&raquo;</span>
-                    </span>
-                </li>
-                {% endif %}
-            </ul>
-        </nav>
-        {% endif %}
-    </div>
 </div>
 {% endblock %}

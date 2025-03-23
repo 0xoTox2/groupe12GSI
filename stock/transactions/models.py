@@ -109,52 +109,72 @@ class SaleDetail(models.Model):
         )
 
 
-class Purchase(models.Model):
-    """
-    Represents a purchase of an item,
-    including vendor details and delivery status.
-    """
 
-    slug = AutoSlugField(unique=True, populate_from="vendor")
+
+class Purchase(models.Model):
+    # Champs existants
+    slug = models.SlugField(unique=True)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     description = models.TextField(max_length=300, blank=True, null=True)
-    vendor = models.ForeignKey(
-        Vendor, related_name="purchases", on_delete=models.CASCADE
-    )
+    vendor = models.ForeignKey(Vendor, related_name="purchases", on_delete=models.CASCADE)
     order_date = models.DateTimeField(auto_now_add=True)
-    delivery_date = models.DateTimeField(
-        blank=True, null=True, verbose_name="Delivery Date"
-    )
+    delivery_date = models.DateTimeField(blank=True, null=True, verbose_name="Date de livraison")
     quantity = models.PositiveIntegerField(default=0)
-    delivery_status = models.CharField(
-        choices=DELIVERY_CHOICES,
-        max_length=1,
-        default="P",
-        verbose_name="Delivery Status",
-    )
-    price = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=0.0,
-        verbose_name="Price per item (Ksh)",
-    )
+    delivery_status = models.CharField(max_length=1, choices=DELIVERY_CHOICES, default="P", verbose_name="Delivery Status")
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0, verbose_name="Price per item (Ksh)")
     total_value = models.DecimalField(max_digits=10, decimal_places=2)
 
-    def save(self, *args, **kwargs):
-        """
-        Calculates the total value before saving the Purchase instance.
-        """
-        self.total_value = self.price * self.quantity
-        super().save(*args, **kwargs)
-        # Update the item quantity
-        self.item.quantity += self.quantity
-        self.item.save()
+    # Nouveaux champs pour stocker les informations sur la politique
+    policy_used = models.CharField(max_length=50, blank=True, null=True, verbose_name="Politique utilisée")
+    policy_parameters = models.JSONField(blank=True, null=True, verbose_name="Paramètres de la politique")
 
     def __str__(self):
-        """
-        Returns a string representation of the Purchase instance.
-        """
         return str(self.item.name)
 
     class Meta:
         ordering = ["order_date"]
+
+from django.db import models
+from decimal import Decimal  # Ajoutez cette importation en haut du fichier
+from math import sqrt
+
+class ReapprovisionnementFixe(models.Model):
+    delai_livraison = models.IntegerField(verbose_name="Délai de livraison (en jours)")
+    consommation_annuelle = models.IntegerField(verbose_name="Consommation annuelle (en unités)")
+    prix_achat_unitaire = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Prix d’achat unitaire (en DH)")
+    taux_possession = models.FloatField(verbose_name="Taux de possession des stocks (en décimal, par exemple 0.08 pour 8%)")
+    cout_lancement = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Coût de lancement des commandes (en DH)")
+
+    def calculer_qec(self):
+        # Convertir les valeurs en Decimal avant de faire les calculs
+        consommation_annuelle = Decimal(self.consommation_annuelle)
+        cout_lancement = Decimal(self.cout_lancement)
+        prix_achat_unitaire = Decimal(self.prix_achat_unitaire)
+        taux_possession = Decimal(str(self.taux_possession))  # Convertir float en Decimal via str
+
+        # Calcul de la Quantité Économique de Commande (QEC)
+        qec = sqrt((2 * consommation_annuelle * cout_lancement) / (prix_achat_unitaire * taux_possession))
+        return qec
+
+    def calculer_periode_reapprovisionnement(self):
+        qec = self.calculer_qec()
+        consommation_annuelle = Decimal(self.consommation_annuelle)
+        periode = (qec / consommation_annuelle) * Decimal('365')  # Convertir 365 en Decimal
+        return periode
+
+    def calculer_cout_lancement(self):
+        qec = self.calculer_qec()
+        consommation_annuelle = Decimal(self.consommation_annuelle)
+        cout_lancement = Decimal(self.cout_lancement)
+        return (consommation_annuelle / qec) * cout_lancement
+
+    def calculer_cout_possession(self):
+        qec = self.calculer_qec()
+        prix_achat_unitaire = Decimal(self.prix_achat_unitaire)
+        taux_possession = Decimal(str(self.taux_possession))  # Convertir float en Decimal via str
+        return (qec / Decimal('2')) * prix_achat_unitaire * taux_possession
+
+    def calculer_cout_total_stock(self):
+        cout_lancement = self.calculer_cout_lancement()
+        cout_possession = self.calculer_cout_possession()
+        return cout_lancement + cout_possession

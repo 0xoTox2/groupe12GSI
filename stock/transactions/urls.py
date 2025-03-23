@@ -10,6 +10,11 @@ from .views import (
     PurchaseCreateView,
     PurchaseUpdateView,
     PurchaseDeleteView,
+    select_policy, 
+    fixed_replenishment, 
+    point_replenishment,
+    replenishment,
+
     SaleListView,
     SaleDetailView,
     SaleCreateView,
@@ -39,7 +44,13 @@ urlpatterns = [
          'purchase/<int:pk>/delete/', PurchaseDeleteView.as_view(),
          name='purchase-delete'
      ),
+    path('select-policy/', select_policy, name='select-policy'),
+    path('fixed-replenishment/', fixed_replenishment, name='fixed-replenishment'),
+    path('point-replenishment/', point_replenishment, name='point-replenishment'),
+     path('replenishment/', replenishment, name='replenishment'),
 
+
+    
     # Sale URLs
     path('sales/', SaleListView.as_view(), name='saleslist'),
     path('sale/<int:pk>/', SaleDetailView.as_view(), name='sale-detail'),
