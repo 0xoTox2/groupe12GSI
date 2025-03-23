@@ -94,13 +94,22 @@ def personnels(request):
 def facturation(request):
     return render(request, "store/facturation.html", get_common_context(module_name="facturation"))
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.db.models import F, Sum
+from .models import Nomenclature, Fabrication, Item, Category
+
 def fabrication(request):
+    # Récupérer toutes les nomenclatures existantes
     nomenclatures = Nomenclature.objects.all()
     selected_product = request.GET.get("product_filter")
 
     # Filtrer les nomenclatures si un produit est sélectionné
     if selected_product:
         nomenclatures = nomenclatures.filter(product__name=selected_product)
+
+    # Récupérer les matières premières disponibles
+    raw_materials = Item.objects.filter(is_finished_product=False)
 
     # Récupérer les statistiques de fabrication
     total_fabrications = Fabrication.objects.count()
@@ -113,16 +122,28 @@ def fabrication(request):
             components = request.POST.getlist("component[]")
             quantities = request.POST.getlist("quantity[]")
 
+            # Récupérer ou créer la catégorie par défaut pour les produits finis
+            default_category, created = Category.objects.get_or_create(
+                name="Produits finis",
+                defaults={'slug': 'produits-finis'}  # Assurez-vous que le slug est unique
+            )
+
             # Récupérer ou créer le produit fini
-            product, created = Item.objects.get_or_create(name=product_name)
+            product, created = Item.objects.get_or_create(
+                name=product_name,
+                defaults={
+                    'is_finished_product': True,
+                    'category': default_category  # Associer la catégorie par défaut
+                }
+            )
 
             # Enregistrer chaque élément dans la base de données
-            for component_name, quantity in zip(components, quantities):
-                component, created = Item.objects.get_or_create(name=component_name)
+            for component_id, quantity in zip(components, quantities):
+                component = Item.objects.get(id=component_id)
                 Nomenclature.objects.create(
                     product=product,
                     component=component,
-                    quantity=quantity
+                    quantity=int(quantity)  # Convertir la quantité en entier
                 )
 
             messages.success(request, f"Nomenclature enregistrée pour {product_name}.")
@@ -135,7 +156,7 @@ def fabrication(request):
 
             # Récupérer le produit fini
             try:
-                product = Item.objects.get(name=product_to_manufacture)
+                product = Item.objects.get(name=product_to_manufacture, is_finished_product=True)
             except Item.DoesNotExist:
                 messages.error(request, f"{product_to_manufacture} n'existe pas en stock.")
                 return redirect("fabrication")
@@ -187,7 +208,8 @@ def fabrication(request):
         "products": products,
         "selected_product": selected_product,
         "total_fabrications": total_fabrications,
-        "total_quantity_produced": total_quantity_produced
+        "total_quantity_produced": total_quantity_produced,
+        "raw_materials": raw_materials  # Ajouter les matières premières disponibles au contexte
     }
     return render(request, "store/fabrication.html", context)
 class ProductListView(LoginRequiredMixin, ExportMixin, tables.SingleTableView):

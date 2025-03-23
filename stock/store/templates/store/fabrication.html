@@ -19,25 +19,30 @@
                         <form method="post" action="{% url 'fabrication' %}">
                             {% csrf_token %}
                             <div class="mb-3">
-                                <label for="product_name" class="form-label">Nom du produit</label>
-                                <input type="text" class="form-control" id="product_name" name="product_name" required>
+                                <label for="product_name" class="form-label">Produit fini</label>
+                                <input type="text" class="form-control" id="product_name" name="product_name" required placeholder="Nom du produit fini">
                             </div>
 
-                            <!-- Liste des éléments avec leurs quantités -->
+                            <!-- Liste des éléments nécessaires -->
                             <div id="components-list">
                                 <div class="component-item mb-3">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <label for="component_1" class="form-label">Élément</label>
-                                            <input type="text" class="form-control" name="component[]" required>
+                                            <label for="component_1" class="form-label">Matière première</label>
+                                            <select class="form-control" name="component[]" required>
+                                                <option value="">Sélectionnez une matière première</option>
+                                                {% for item in raw_materials %}
+                                                    <option value="{{ item.id }}">{{ item.name }} (Stock: {{ item.quantity }})</option>
+                                                {% endfor %}
+                                            </select>
                                         </div>
                                         <div class="col-md-4">
-                                            <label for="quantity_1" class="form-label">Quantité</label>
-                                            <input type="number" class="form-control" name="quantity[]" min="1" required>
+                                            <label for="quantity_1" class="form-label">Quantité nécessaire</label>
+                                            <input type="number" class="form-control" name="quantity[]" min="1" required placeholder="Quantité">
                                         </div>
                                         <div class="col-md-2 d-flex align-items-end">
                                             <button type="button" class="btn btn-danger btn-remove-component" disabled>
-                                                <i class="fas fa-trash"></i>
+                                                <i class="fas fa-trash"></i> Supprimer
                                             </button>
                                         </div>
                                     </div>
@@ -46,11 +51,13 @@
 
                             <!-- Bouton pour ajouter un nouvel élément -->
                             <button type="button" id="add-component" class="btn btn-secondary mb-3">
-                                <i class="fas fa-plus"></i> Ajouter un élément
+                                <i class="fas fa-plus"></i> Ajouter une matière première
                             </button>
 
                             <!-- Bouton pour soumettre le formulaire -->
-                            <button type="submit" class="btn btn-primary">Enregistrer la nomenclature</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Enregistrer la nomenclature
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -64,9 +71,9 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Nom du produit</th>
-                                    <th>Élément</th>
-                                    <th>Quantité</th>
+                                    <th>Produit fini</th>
+                                    <th>Matière première</th>
+                                    <th>Quantité nécessaire</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -100,10 +107,12 @@
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label for="quantity" class="form-label">Quantité</label>
-                                <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
+                                <label for="quantity" class="form-label">Quantité à fabriquer</label>
+                                <input type="number" class="form-control" id="quantity" name="quantity" min="1" required placeholder="Quantité">
                             </div>
-                            <button type="submit" class="btn btn-success">Lancer la fabrication</button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-play"></i> Lancer la fabrication
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -131,16 +140,21 @@
             newComponent.innerHTML = `
                 <div class="row">
                     <div class="col-md-6">
-                        <label for="component_${componentCounter}" class="form-label">Élément</label>
-                        <input type="text" class="form-control" name="component[]" required>
+                        <label for="component_${componentCounter}" class="form-label">Matière première</label>
+                        <select class="form-control" name="component[]" required>
+                            <option value="">Sélectionnez une matière première</option>
+                            {% for item in raw_materials %}
+                                <option value="{{ item.id }}">{{ item.name }} (Stock: {{ item.quantity }})</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="col-md-4">
-                        <label for="quantity_${componentCounter}" class="form-label">Quantité</label>
-                        <input type="number" class="form-control" name="quantity[]" min="1" required>
+                        <label for="quantity_${componentCounter}" class="form-label">Quantité nécessaire</label>
+                        <input type="number" class="form-control" name="quantity[]" min="1" required placeholder="Quantité">
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
                         <button type="button" class="btn btn-danger btn-remove-component">
-                            <i class="fas fa-trash"></i>
+                            <i class="fas fa-trash"></i> Supprimer
                         </button>
                     </div>
                 </div>
