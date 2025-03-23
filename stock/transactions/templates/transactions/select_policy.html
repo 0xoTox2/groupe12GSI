@@ -1,9 +1,41 @@
 {% extends "store/base.html" %}
 {% block content %}
-<h2>Choisissez une politique d'approvisionnement</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Suivant</button>
-</form>
+<div class="container d-flex justify-content-center align-items-center vh-100" style="margin-top: -30px;"> <!-- Déplace vers le haut de 30px -->
+    <div class="text-center">
+        <h2>Choisissez une politique d'approvisionnement</h2>
+        <form method="post" class="my-form">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.as_p }}
+            </div>
+            <button type="submit" class="btn btn-primary">Suivant</button>
+        </form>
+    </div>
+</div>
+<style>
+    .my-form .form-group {
+        max-width: 500px; /* Ajustez la largeur selon vos besoins */
+        margin: 0 auto; /* Centre le formulaire */
+    }
+
+    /* Espacement des champs */
+    .my-form .form-group p {
+        margin-bottom: 20px; /* Espacement entre les champs */
+    }
+
+    .my-form .form-group input, 
+    .my-form .form-group select, 
+    .my-form .form-group textarea {
+        width: 100%; /* Les champs prennent toute la largeur disponible */
+        padding: 8px;
+        box-sizing: border-box; /* Inclut le padding dans la largeur */
+    }
+
+    .my-form .btn {
+        display: block;
+        width: 100%;
+        max-width: 200px;
+        margin: 20px auto; /* Centre le bouton */
+    }
+</style>
 {% endblock %}

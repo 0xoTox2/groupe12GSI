@@ -1,14 +1,45 @@
 {% extends "store/base.html" %}
 {% block content %}
-<h2>Résultats de la Méthode de Point de Commande</h2>
-<p>Quantité Économique de Commande (QEC) : {{ qec|floatformat:2 }} unités</p>
-<p>Quantité ajustée à la taille de lot : {{ quantite_ajustee }} unités</p>
-<p>Point de commande (PC) ajusté à la taille de lot : {{ point_commande|floatformat:2 }} unités</p>
-<p>Coût de lancement des commandes : {{ cout_lancement|floatformat:2 }} DH</p>
-<p>Coût de possession des stocks : {{ cout_possession|floatformat:2 }} DH</p>
-<p>Coût total de stock : {{ cout_total|floatformat:2 }} DH</p>
-<a href="{% url 'purchase-create' %}?quantity={{ quantite_ajustee }}" class="btn btn-success">
-    <i class="fa-solid fa-cart-plus"></i> Saisir l'achat avec la quantité ajustée
-</a>
+<div class="container d-flex justify-content-center align-items-center vh-100" style="margin-top: 0px;"> <!-- Descendre de 60px -->
+    <div class="text-center w-100" style="max-width: 600px;"> <!-- Limite la largeur du contenu -->
+        <h2>Résultats de la Méthode de Point de Commande</h2>
+        <div class="results-container">
+            <p>Quantité Économique de Commande (QEC) : <strong>{{ qec|floatformat:2 }} unités</strong></p>
+            <p>Quantité ajustée à la taille de lot : <strong>{{ quantite_ajustee }} unités</strong></p>
+            <p>Point de commande (PC) ajusté à la taille de lot : <strong>{{ point_commande|floatformat:2 }} unités</strong></p>
+            <p>Coût de lancement des commandes : <strong>{{ cout_lancement|floatformat:2 }} DH</strong></p>
+            <p>Coût de possession des stocks : <strong>{{ cout_possession|floatformat:2 }} DH</strong></p>
+            <p>Coût total de stock : <strong>{{ cout_total|floatformat:2 }} DH</strong></p>
+        </div>
+        <a href="{% url 'purchase-create' %}?quantity={{ quantite_ajustee }}" class="btn btn-success">
+            <i class="fa-solid fa-cart-plus"></i> Saisir l'achat avec la quantité ajustée
+        </a>
+    </div>
+</div>
+<style>
+    /* Centrer et réduire la taille des éléments */
+    .results-container {
+        text-align: left; /* Aligner le texte à gauche */
+        margin: 0 auto; /* Centrer le conteneur */
+        max-width: 500px; /* Limiter la largeur du conteneur */
+    }
 
+    /* Style pour les paragraphes */
+    .results-container p {
+        font-size: 16px; /* Taille de police des paragraphes */
+        margin-bottom: 10px; /* Espacement entre les paragraphes */
+    }
+
+    /* Style pour les valeurs en gras */
+    .results-container strong {
+        font-size: 16px; /* Taille de police des valeurs */
+    }
+
+    /* Style pour le bouton */
+    .btn-success {
+        margin-top: 20px; /* Espacement au-dessus du bouton */
+        padding: 8px 16px; /* Padding du bouton */
+        font-size: 16px; /* Taille de police du bouton */
+    }
+</style>
 {% endblock %}

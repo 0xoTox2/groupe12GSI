@@ -1,12 +1,43 @@
 {% extends "store/base.html" %}
 {% block content %}
-<h2>Résultats de la Méthode de Recomplètement</h2>
-<p>Niveau cible (NC) : {{ niveau_cible|floatformat:2 }}</p>
-<p>Quantité à commander (Qc) : {{ quantite_commander|floatformat:2 }}</p>
-<p>Nombre de commandes dans une année (N) : {{ nombre_commandes_annuelles|floatformat:2 }}</p>
+<div class="container d-flex justify-content-center align-items-center vh-100" style="margin-top: 0px;"> <!-- Descendre de 60px -->
+    <div class="text-center w-100" style="max-width: 600px;"> <!-- Limite la largeur du contenu -->
+        <h2>Résultats de la Méthode de Recomplètement</h2>
+        <div class="results-container">
+            <p>Niveau cible (NC) : <strong>{{ niveau_cible|floatformat:2 }}</strong></p>
+            <p>Quantité à commander (Qc) : <strong>{{ quantite_commander|floatformat:2 }}</strong></p>
+            <p>Nombre de commandes dans une année (N) : <strong>{{ nombre_commandes_annuelles|floatformat:2 }}</strong></p>
+        </div>
+        <!-- Bouton pour saisir l'achat avec la quantité à commander -->
+        <a href="{% url 'purchase-create' %}?quantity={{ quantite_commander|floatformat:0 }}" class="btn btn-success">
+            <i class="fa-solid fa-cart-plus"></i> Saisir l'achat avec la quantité à commander
+        </a>
+    </div>
+</div>
+<style>
+    /* Centrer et réduire la taille des éléments */
+    .results-container {
+        text-align: left; /* Aligner le texte à gauche */
+        margin: 0 auto; /* Centrer le conteneur */
+        max-width: 500px; /* Limiter la largeur du conteneur */
+    }
 
-<!-- Bouton pour saisir l'achat avec la quantité à commander -->
-<a href="{% url 'purchase-create' %}?quantity={{ quantite_commander|floatformat:0 }}" class="btn btn-success">
-    <i class="fa-solid fa-cart-plus"></i> Saisir l'achat avec la quantité à commander
-</a>
+    /* Style pour les paragraphes */
+    .results-container p {
+        font-size: 16px; /* Taille de police des paragraphes */
+        margin-bottom: 10px; /* Espacement entre les paragraphes */
+    }
+
+    /* Style pour les valeurs en gras */
+    .results-container strong {
+        font-size: 16px; /* Taille de police des valeurs */
+    }
+
+    /* Style pour le bouton */
+    .btn-success {
+        margin-top: 20px; /* Espacement au-dessus du bouton */
+        padding: 8px 16px; /* Padding du bouton */
+        font-size: 16px; /* Taille de police du bouton */
+    }
+</style>
 {% endblock %}

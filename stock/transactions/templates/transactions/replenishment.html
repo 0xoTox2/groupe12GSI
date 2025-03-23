@@ -1,9 +1,48 @@
 {% extends "store/base.html" %}
 {% block content %}
-<h2>Méthode de Recomplètement</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Calculer</button>
-</form>
+<div class="container d-flex justify-content-center align-items-center vh-100" style="margin-top: 0px;"> <!-- Descendre de 60px -->
+    <div class="text-center w-100" style="max-width: 400px;"> <!-- Limite la largeur du formulaire -->
+        <h2>Méthode de Recomplètement</h2>
+        <form method="post" class="my-form">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.as_p }}
+            </div>
+            <button type="submit" class="btn btn-primary">Calculer</button>
+        </form>
+    </div>
+</div>
+<style>
+    /* Centrer et réduire la taille des champs */
+    .my-form .form-group {
+        width: 100%; /* Prend toute la largeur disponible */
+    }
+
+    /* Réduire la taille des champs */
+    .my-form .form-group input,
+    .my-form .form-group select,
+    .my-form .form-group textarea {
+        width: 100%; /* Les champs prennent toute la largeur disponible */
+        padding: 8px; /* Réduit le padding pour diminuer la taille */
+        font-size: 14px; /* Réduit la taille de la police */
+        box-sizing: border-box; /* Inclut le padding dans la largeur */
+        margin-bottom: 10px; /* Espacement entre les champs */
+    }
+
+    /* Style pour les labels */
+    .my-form .form-group label {
+        font-size: 16px; /* Taille de police des labels */
+        margin-bottom: 6px; /* Espacement entre le label et le champ */
+        display: block; /* Place le label au-dessus du champ */
+    }
+
+    /* Style pour le bouton */
+    .my-form .btn {
+        width: 100%; /* Le bouton prend toute la largeur */
+        max-width: 200px; /* Limite la largeur du bouton */
+        padding: 8px; /* Réduit le padding du bouton */
+        font-size: 16px; /* Taille de police du bouton */
+        margin-top: 15px; /* Espacement au-dessus du bouton */
+    }
+</style>
 {% endblock %}
