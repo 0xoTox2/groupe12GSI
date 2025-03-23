@@ -1,0 +1,23 @@
+{% extends "store/base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Résultats de la planification avec Wagner-Whitin</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Période de Commande</th>
+                <th>Quantité de Commande</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+            <tr>
+                <td>{{ result.periode }}</td>
+                <td>{{ result.quantite }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p><strong>Coût total minimal :</strong> {{ cout_total|floatformat:2 }} UM</p>
+</div>
+{% endblock %}

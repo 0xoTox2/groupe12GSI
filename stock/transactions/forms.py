@@ -71,3 +71,9 @@ class ReplenishmentForm(forms.Form):
     stock_securite = forms.FloatField(label="Stock de sécurité (Ss)")
     stock_actuel = forms.FloatField(label="Niveau de stock actuel (M)")
     taille_lot = forms.FloatField(label="Taille de lot")
+
+class WagnerWhitinForm(forms.Form):
+    n_periodes = forms.IntegerField(label="Nombre de périodes", min_value=1)
+    demande = forms.CharField(label="Demande (séparée par des virgules, ex: 10,20,30)", max_length=255)
+    cout_commande = forms.FloatField(label="Coût de commande (Cc)")
+    cout_possession = forms.FloatField(label="Coût de possession par unité par période (t)")

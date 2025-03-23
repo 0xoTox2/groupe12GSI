@@ -1,0 +1,11 @@
+{% extends "store/base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Planification des commandes avec Wagner-Whitin</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Calculer</button>
+    </form>
+</div>
+{% endblock %}

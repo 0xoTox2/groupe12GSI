@@ -551,3 +551,65 @@ def replenishment(request):
         form = ReplenishmentForm()
     
     return render(request, 'transactions/replenishment.html', {'form': form})
+
+
+
+from django.shortcuts import render
+from django.http import HttpResponseRedirect
+from .forms import WagnerWhitinForm
+
+def wagner_whitin(demande, cout_commande, cout_possession):
+    n = len(demande)
+    cout_min = [float('inf')] * (n + 1)
+    cout_min[0] = 0
+    periode_commande = [0] * (n + 1)
+
+    for j in range(1, n + 1):
+        for i in range(1, j + 1):
+            cout_stock = sum((k - i) * demande[k - 1] * cout_possession for k in range(i + 1, j + 1))
+            cout_total = cout_min[i - 1] + cout_commande + cout_stock
+            if cout_total < cout_min[j]:
+                cout_min[j] = cout_total
+                periode_commande[j] = i
+
+    plan_commande = []
+    j = n
+    while j > 0:
+        i = periode_commande[j]
+        plan_commande.append((i, j))
+        j = i - 1
+
+    plan_commande.reverse()
+    return plan_commande, cout_min[n]
+
+def wagner_whitin_view(request):
+    if request.method == 'POST':
+        form = WagnerWhitinForm(request.POST)
+        if form.is_valid():
+            demande = form.cleaned_data['demande']
+            cout_commande = form.cleaned_data['cout_commande']
+            cout_possession = form.cleaned_data['cout_possession']
+
+            # Convertir la demande en liste de nombres
+            demande_list = [float(d) for d in demande.split(',')]
+
+            # Appeler l'algorithme de Wagner-Whitin
+            plan_commande, cout_total = wagner_whitin(demande_list, cout_commande, cout_possession)
+
+            # Préparer les résultats pour l'affichage
+            results = []
+            for debut, fin in plan_commande:
+                quantite = sum(demande_list[debut-1:fin])
+                results.append({
+                    'periode': f"{debut} à {fin}",
+                    'quantite': quantite
+                })
+
+            return render(request, 'transactions/wagner_whitin_results.html', {
+                'results': results,
+                'cout_total': cout_total
+            })
+    else:
+        form = WagnerWhitinForm()
+
+    return render(request, 'transactions/wagner_whitin.html', {'form': form})

@@ -134,9 +134,11 @@ class Purchase(models.Model):
     class Meta:
         ordering = ["order_date"]
 
+    
 from django.db import models
-from decimal import Decimal  # Ajoutez cette importation en haut du fichier
+from decimal import Decimal
 from math import sqrt
+from scipy.stats import norm  # Pour récupérer k selon le taux de service
 
 class ReapprovisionnementFixe(models.Model):
     delai_livraison = models.IntegerField(verbose_name="Délai de livraison (en jours)")
@@ -144,6 +146,13 @@ class ReapprovisionnementFixe(models.Model):
     prix_achat_unitaire = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Prix d’achat unitaire (en DH)")
     taux_possession = models.FloatField(verbose_name="Taux de possession des stocks (en décimal, par exemple 0.08 pour 8%)")
     cout_lancement = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Coût de lancement des commandes (en DH)")
+    stock_securite = models.FloatField(verbose_name="Stock de sécurité (en unités)", default=0.0)
+    case_a_cocher_de_stock_securite = models.BooleanField(verbose_name="Calculer le stock de sécurité", default=False)
+    type_variation = models.CharField(max_length=1, choices=[("1", "Variation de la demande"), ("2", "Variation du délai de livraison"), ("3", "Variation des deux")], default="1")
+    coefficient_securite_K = models.FloatField(verbose_name="Coefficient de sécurité K", default=0.0)
+    ecart_type_demande = models.FloatField(verbose_name="Écart type de la demande", default=0.0)
+    ecart_type_delai = models.FloatField(verbose_name="Écart type du délai de livraison", default=0.0)
+    Taux_de_service = models.FloatField(verbose_name="Taux de service (en %)", default=95.0)
 
     def calculer_qec(self):
         # Convertir les valeurs en Decimal avant de faire les calculs
@@ -156,23 +165,44 @@ class ReapprovisionnementFixe(models.Model):
         qec = sqrt((2 * consommation_annuelle * cout_lancement) / (prix_achat_unitaire * taux_possession))
         return qec
 
-    def calculer_periode_reapprovisionnement(self):
+    def calculer_stock_de_securite(self):
+        # Calculer le stock de sécurité en cas de variation de la demande et du délai de livraison
+        consommation_journaliere = Decimal(self.consommation_annuelle) / Decimal('365')
+
+        if self.type_variation == "1":  # Cas de la variation de la demande seulement
+            return self.coefficient_securite_K * Decimal(self.ecart_type_demande) * sqrt(Decimal(self.delai_livraison))
+        elif self.type_variation == "2":  # Cas de la variation du délai de livraison seulement
+            return self.coefficient_securite_K * consommation_journaliere * Decimal(self.ecart_type_delai)
+        elif self.type_variation == "3":  # Cas de la variation de la demande et du délai de livraison
+            return self.coefficient_securite_K * sqrt((Decimal(self.ecart_type_demande) ** 2 * Decimal(self.delai_livraison)) + (consommation_journaliere ** 2 * Decimal(self.ecart_type_delai) ** 2))
+        else:
+            return Decimal('0.0')
+
+    def ajouter_stock_de_securite(self):
         qec = self.calculer_qec()
-        consommation_annuelle = Decimal(self.consommation_annuelle)
-        periode = (qec / consommation_annuelle) * Decimal('365')  # Convertir 365 en Decimal
-        return periode
+        if self.case_a_cocher_de_stock_securite:
+            self.stock_securite = self.calculer_stock_de_securite()
+        return qec + Decimal(str(self.stock_securite))
+
+    def calculer_Cadence_d_approvisionnement(self):
+        qec = self.calculer_qec()
+        N = Decimal(self.consommation_annuelle) / qec
+        return N
+
+    def calculer_Periode_d_approvisionnement(self):
+        N = self.calculer_Cadence_d_approvisionnement()
+        T = Decimal('365') / N
+        return round(T) + 1
 
     def calculer_cout_lancement(self):
         qec = self.calculer_qec()
-        consommation_annuelle = Decimal(self.consommation_annuelle)
-        cout_lancement = Decimal(self.cout_lancement)
-        return (consommation_annuelle / qec) * cout_lancement
+        cout_lancement = (Decimal(self.consommation_annuelle) / qec) * Decimal(self.cout_lancement)
+        return cout_lancement
 
     def calculer_cout_possession(self):
         qec = self.calculer_qec()
-        prix_achat_unitaire = Decimal(self.prix_achat_unitaire)
-        taux_possession = Decimal(str(self.taux_possession))  # Convertir float en Decimal via str
-        return (qec / Decimal('2')) * prix_achat_unitaire * taux_possession
+        cout_possession = (qec / Decimal('2')) * Decimal(self.prix_achat_unitaire) * Decimal(str(self.taux_possession))
+        return cout_possession
 
     def calculer_cout_total_stock(self):
         cout_lancement = self.calculer_cout_lancement()
