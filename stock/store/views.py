@@ -78,9 +78,91 @@ def get_common_context(module_name=None):
 
     return context
 
-def dashboard(request):
+from .models import Item, Fabrication
+
+
+def fabrication_history(request):
+    # Récupérer toutes les fabrications
+    fabrications = Fabrication.objects.all().order_by('-date_created')
     
-    return render(request, "store/dashboard.html", get_common_context(module_name="achat"))
+    # Contexte pour le template
+    context = {
+        'fabrications': fabrications,
+    }
+    return render(request, 'store/fabrication_history.html', context)
+
+def raw_materials_list(request):
+    # Récupérer toutes les matières premières (is_finished_product=False)
+    raw_materials = Item.objects.filter(is_finished_product=False)
+    
+    # Contexte pour le template
+    context = {
+        'raw_materials': raw_materials,
+    }
+    return render(request, 'store/raw_materials_list.html', context)
+
+def finished_products_list(request):
+    # Récupérer tous les produits finis
+    finished_products = Item.objects.filter(is_finished_product=True)
+    
+    # Contexte pour le template
+    context = {
+        'finished_products': finished_products,
+    }
+ 
+    return render(request, 'store/finished_products_list.html', context)
+
+def dashboard(request):
+    # Récupérer les produits finis et les matières premières
+    finished_products = Item.objects.filter(is_finished_product=True)
+    raw_materials = Item.objects.filter(is_finished_product=False)
+
+    # Statistiques de stock
+    total_finished_products = finished_products.aggregate(total=Sum('quantity'))['total'] or 0
+    total_raw_materials = raw_materials.aggregate(total=Sum('quantity'))['total'] or 0
+
+    # Fabrications récentes
+    recent_fabrications = Fabrication.objects.all().order_by('-date_created')[:5]
+
+    # Alertes de stock faible (par exemple, moins de 10 unités)
+    low_stock_alerts = Item.objects.filter(quantity__lt=10)
+
+    # Récupérer les données communes
+    profiles = Profile.objects.all()
+    items = Item.objects.all()
+    total_items = items.aggregate(Sum("quantity")).get("quantity__sum", 0.00)
+    
+    # Préparation des données pour les graphiques
+    category_counts = Category.objects.annotate(item_count=Count("item"))
+    categories = [cat.name for cat in category_counts]
+    category_counts_values = [cat.item_count for cat in category_counts]
+
+    sale_dates = Sale.objects.values("date_added__date").annotate(total_sales=Sum("grand_total")).order_by("date_added__date")
+    sale_dates_labels = [date["date_added__date"].strftime("%Y-%m-%d") for date in sale_dates]
+    sale_dates_values = [float(date["total_sales"]) for date in sale_dates]
+    
+    # Contexte pour le template
+    context = {
+        "items": items,
+        "profiles": profiles,
+        "profiles_count": profiles.count(),
+        "items_count": items.count(),
+        "total_items": total_items,
+        "vendors": Vendor.objects.all(),
+        "delivery": Delivery.objects.all(),
+        "sales": Sale.objects.all(),
+        "categories": categories,  # Données pour le graphique circulaire
+        "category_counts": category_counts_values,  # Données pour le graphique circulaire
+        "sale_dates_labels": sale_dates_labels,  # Données pour le graphique linéaire
+        "sale_dates_values": sale_dates_values,  # Données pour le graphique linéaire
+        "total_finished_products": total_finished_products,
+        "total_raw_materials": total_raw_materials,
+        "recent_fabrications": recent_fabrications,
+        "low_stock_alerts": low_stock_alerts,
+        "module_name": "achat",  # Ajout du module_name
+    }
+
+    return render(request, "store/dashboard.html", context)
 
 def stock(request):
     return render(request, "store/stock.html", get_common_context(module_name="stock"))

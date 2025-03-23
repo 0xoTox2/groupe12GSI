@@ -5,8 +5,6 @@
 {% block content %}
 <!-- Dashboard -->
 <div class="d-flex flex-column flex-lg-row h-lg-full bg-surface-secondary">
-    {% load static %}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
     <!-- Main content -->
     <div class="h-screen flex-grow-1 overflow-y-lg-auto">
         <!-- Main -->
@@ -19,6 +17,8 @@
                             text-decoration: none;
                         }
                     </style>
+
+                    <!-- Carte pour les Produits -->
                     <div class="col-xl-3 col-sm-6 col-12" id="products">
                         <a href="{% url 'productslist' %}">
                             <div class="card shadow border-0">
@@ -26,7 +26,7 @@
                                     <div class="row">
                                         <div class="col">
                                             <span class="h6 font-semibold text-muted text-sm d-block mb-2">Produits</span>
-                                            <span class="h3 font-bold mb-0">{{total_items}}</span>
+                                            <span class="h3 font-bold mb-0">{{ total_items }}</span>
                                         </div>
                                         <div class="col-auto">
                                             <div class="icon icon-shape bg-tertiary text-white text-lg rounded-circle">
@@ -35,15 +35,14 @@
                                         </div>
                                     </div>
                                     <div class="mt-2 mb-0 text-sm">
-                                        <span class="badge badge-pill bg-soft-success text-success me-2">
-                                            <i class="fa fa-arrow-up me-1"></i>0%
-                                        </span>
                                         <span class="text-nowrap text-xs text-muted">depuis dernier mois</span>
                                     </div>
                                 </div>
                             </div>
                         </a>
                     </div>
+
+                    <!-- Carte pour le Personnel -->
                     <div class="col-xl-3 col-sm-6 col-12" id="profiles">
                         <a href="{% url 'profile_list' %}">
                             <div class="card shadow border-0">
@@ -51,7 +50,7 @@
                                     <div class="row">
                                         <div class="col">
                                             <span class="h6 font-semibold text-muted text-sm d-block mb-2">Personnel</span>
-                                            <span class="h3 font-bold mb-0">{{profiles_count}}</span>
+                                            <span class="h3 font-bold mb-0">{{ profiles_count }}</span>
                                         </div>
                                         <div class="col-auto">
                                             <div class="icon icon-shape bg-primary text-white text-lg rounded-circle">
@@ -60,23 +59,22 @@
                                         </div>
                                     </div>
                                     <div class="mt-2 mb-0 text-sm">
-                                        <span class="badge badge-pill bg-soft-success text-success me-2">
-                                            <i class="fa fa-arrow-up me-1"></i>0%
-                                        </span>
                                         <span class="text-nowrap text-xs text-muted">depuis dernier mois</span>
                                     </div>
                                 </div>
                             </div>
                         </a>
                     </div>
+
+                    <!-- Carte pour les Livraisons -->
                     <div class="col-xl-3 col-sm-6 col-12" id="deliveries">
                         <a href="{% url 'deliveries' %}">
                             <div class="card shadow border-0">
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col">
-                                            <span class="h6 font-semibold text-muted text-sm d-block mb-2">livraison en cours</span>
-                                            <span class="h3 font-bold mb-0">{{delivery.count}}</span>
+                                            <span class="h6 font-semibold text-muted text-sm d-block mb-2">Livraison en cours</span>
+                                            <span class="h3 font-bold mb-0">{{ delivery.count }}</span>
                                         </div>
                                         <div class="col-auto">
                                             <div class="icon icon-shape bg-info text-white text-lg rounded-circle">
@@ -85,15 +83,14 @@
                                         </div>
                                     </div>
                                     <div class="mt-2 mb-0 text-sm">
-                                        <span class="badge badge-pill bg-soft-danger text-danger me-2">
-                                            <i class="fa fa-arrow-down me-1"></i>0%
-                                        </span>
                                         <span class="text-nowrap text-xs text-muted">depuis dernier mois</span>
                                     </div>
                                 </div>
                             </div>
                         </a>
                     </div>
+
+                    <!-- Carte pour les Ventes -->
                     <div class="col-xl-3 col-sm-6 col-12" id="sales">
                         <a href="{% url 'saleslist' %}">
                             <div class="card shadow border-0">
@@ -101,7 +98,7 @@
                                     <div class="row">
                                         <div class="col">
                                             <span class="h6 font-semibold text-muted text-sm d-block mb-2">Ventes</span>
-                                            <span class="h3 font-bold mb-0">{{sales.count}}</span>
+                                            <span class="h3 font-bold mb-0">{{ sales.count }}</span>
                                         </div>
                                         <div class="col-auto">
                                             <div class="icon icon-shape bg-warning text-white text-lg rounded-circle">
@@ -110,9 +107,78 @@
                                         </div>
                                     </div>
                                     <div class="mt-2 mb-0 text-sm">
-                                        <span class="badge badge-pill bg-soft-success text-success me-2">
-                                            <i class="fa fa-arrow-up me-1"></i>0%
-                                        </span>
+                                        <span class="text-nowrap text-xs text-muted">depuis dernier mois</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Carte pour les Produits Finis -->
+                    <div class="col-xl-3 col-sm-6 col-12" id="finished-products">
+                        <a href="{% url 'finished_products_list' %}">
+                            <div class="card shadow border-0">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col">
+                                            <span class="h6 font-semibold text-muted text-sm d-block mb-2">Produits Finis</span>
+                                            <span class="h3 font-bold mb-0">{{ total_finished_products }}</span>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="icon icon-shape bg-success text-white text-lg rounded-circle">
+                                                <i class="fa fa-box"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2 mb-0 text-sm">
+                                        <span class="text-nowrap text-xs text-muted">depuis dernier mois</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Carte pour les Matières Premières -->
+                    <div class="col-xl-3 col-sm-6 col-12" id="raw-materials">
+                        <a href="{% url 'raw_materials_list' %}">
+                            <div class="card shadow border-0">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col">
+                                            <span class="h6 font-semibold text-muted text-sm d-block mb-2">Matières Premières</span>
+                                            <span class="h3 font-bold mb-0">{{ total_raw_materials }}</span>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="icon icon-shape bg-danger text-white text-lg rounded-circle">
+                                                <i class="fa fa-cubes"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2 mb-0 text-sm">
+                                        <span class="text-nowrap text-xs text-muted">depuis dernier mois</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Carte pour les Fabrications Récentes -->
+                    <div class="col-xl-3 col-sm-6 col-12" id="recent-fabrications">
+                        <a href="{% url 'fabrication_history' %}">
+                            <div class="card shadow border-0">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col">
+                                            <span class="h6 font-semibold text-muted text-sm d-block mb-2">Fabrications Récentes</span>
+                                            <span class="h3 font-bold mb-0">{{ recent_fabrications.count }}</span>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="icon icon-shape bg-info text-white text-lg rounded-circle">
+                                                <i class="fa fa-industry"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2 mb-0 text-sm">
                                         <span class="text-nowrap text-xs text-muted">depuis dernier mois</span>
                                     </div>
                                 </div>
@@ -120,9 +186,79 @@
                         </a>
                     </div>
                 </div>
-                {% include 'store/charts.html' %}
+
+                <!-- Graphique des Stocks -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="card-title">Répartition des catégories</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="pieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Graphique des Ventes -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="card-title">Ventes au fil du temps</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="lineChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alertes de Stock Faible -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="card-title">Alertes de Stock Faible</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if low_stock_alerts %}
+                        <ul>
+                            {% for item in low_stock_alerts %}
+                            <li>{{ item.name }} : {{ item.quantity }} unités restantes</li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p>Aucune alerte de stock faible.</p>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </main>
     </div>
 </div>
+
+<!-- Élément pour stocker les données des graphiques -->
+<div id="chart-data"
+     data-categories="{{ categories|safe }}"
+     data-category-counts="{{ category_counts|safe }}"
+     data-sale-dates-labels="{{ sale_dates_labels|safe }}"
+     data-sale-dates-values="{{ sale_dates_values|safe }}"
+     style="display: none;">
+</div>
+
+<!-- Inclure Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Inclure le fichier JavaScript externe -->
+<script src="{% static 'js/dashboard.js' %}"></script>
+<!-- Styles pour les graphiques -->
+<style>
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 400px;
+}
+
+#pieChart, #lineChart {
+    max-width: 100%;
+    height: 100%;
+}
+</style>
+
 {% endblock content %}
