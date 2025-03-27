@@ -557,6 +557,7 @@ def replenishment(request):
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from .forms import WagnerWhitinForm
+from .forms import WagnerWhitinForm2
 
 def wagner_whitin(demande, cout_commande, cout_possession):
     n = len(demande)
@@ -613,3 +614,121 @@ def wagner_whitin_view(request):
         form = WagnerWhitinForm()
 
     return render(request, 'transactions/wagner_whitin.html', {'form': form})
+
+
+def wagner_whitin_2(demande, cout_commande, prix_unitaire, taux_possession):
+    n = len(demande)
+    cout_min = [float('inf')] * (n + 1)
+    cout_min[0] = 0
+    periode_commande = [0] * (n + 1)
+    
+    # Convertir le taux de possession en décimal
+    taux_possession_decimal = taux_possession / 100.0
+
+    for j in range(1, n + 1):
+        for i in range(1, j + 1):
+            # Le prix unitaire est celui de la période d'achat (i)
+            pu_achat = prix_unitaire[i-1]
+            
+            # Calcul du coût d'achat avec le pu fixe de la période i
+            cout_achat = sum(demande[i-1:j]) * pu_achat
+            
+            # Calcul du coût de stockage avec le pu fixe de la période i
+            cout_stock = 0
+            for k in range(i, j):
+                # Quantité stockée en période k
+                quantite_stockee = sum(demande[l] for l in range(k, j))
+                # Coût de possession avec le pu de la période i
+                cout_stock += quantite_stockee * pu_achat * taux_possession_decimal
+            
+            cout_total = cout_min[i - 1] + cout_commande + cout_achat + cout_stock
+            
+            if cout_total < cout_min[j]:
+                cout_min[j] = cout_total
+                periode_commande[j] = i
+
+    # Reconstruction du plan optimal
+    plan_commande = []
+    j = n
+    while j > 0:
+        i = periode_commande[j]
+        plan_commande.append((i, j))
+        j = i - 1
+
+    plan_commande.reverse()
+    return plan_commande, cout_min[n]
+
+def wagner_whitin_view_2(request):
+    if request.method == 'POST':
+        form = WagnerWhitinForm2(request.POST)
+        if form.is_valid():
+            demande = form.cleaned_data['demande']
+            cout_commande = form.cleaned_data['cout_commande']
+            prix_unitaire = form.cleaned_data['prix_unitaire']
+            taux_possession = form.cleaned_data['taux_possession']
+
+            # Conversion en listes
+            demande_list = [float(d) for d in demande.split(',')]
+            pu_list = [float(pu) for pu in prix_unitaire.split(',')]
+
+            if len(demande_list) != len(pu_list):
+                form.add_error(None, "La demande et les prix doivent avoir le même nombre de valeurs")
+                return render(request, 'transactions/wagner_whitin_2.html', {'form': form})
+
+            # Appel de l'algorithme corrigé
+            plan_commande, cout_total = wagner_whitin_2(demande_list, cout_commande, pu_list, taux_possession)
+
+            # Préparation des résultats détaillés
+            results = []
+            for debut, fin in plan_commande:
+                quantite = sum(demande_list[debut-1:fin])
+                pu_achat = pu_list[debut-1]  # Prix unitaire fixe pour cette commande
+                cout_achat = quantite * pu_achat
+                
+                # Calcul détaillé du coût de stockage
+                cout_stock = 0
+                stock_details = []
+                for k in range(debut, fin):
+                    quantite_stockee = sum(demande_list[l] for l in range(k, fin))
+                    cout_periode = quantite_stockee * pu_achat * (taux_possession/100)
+                    cout_stock += cout_periode
+                    stock_details.append({
+                        'periode': k+1,
+                        'quantite_stockee': quantite_stockee,
+                        'cout_periode': cout_periode,
+                        'pu_utilise': pu_achat  # Ajout du pu utilisé pour le calcul
+                    })
+                
+                results.append({
+                    'periode': f"{debut}-{fin}",
+                    'quantite': quantite,
+                    'pu_achat': pu_achat,
+                    'cout_achat': cout_achat,
+                    'cout_stock': cout_stock,
+                    'cout_total': cout_commande + cout_achat + cout_stock,
+                    'stock_details': stock_details
+                })
+
+            # Détail complet pour toutes les périodes
+            periodes_detail = []
+            for i in range(len(demande_list)):
+                periodes_detail.append({
+                    'numero': i+1,
+                    'demande': demande_list[i],
+                    'prix_unitaire': pu_list[i],
+                    'valeur': demande_list[i] * pu_list[i]
+                })
+
+            return render(request, 'transactions/wagner_whitin_results_2.html', {
+                'results': results,
+                'cout_total': cout_total,
+                'taux_possession': taux_possession,
+                'cout_commande': cout_commande,
+                'periodes_detail': periodes_detail,
+                'demande_list': demande_list,
+                'pu_list': pu_list
+            })
+    else:
+        form = WagnerWhitinForm2()
+
+    return render(request, 'transactions/wagner_whitin_2.html', {'form': form})

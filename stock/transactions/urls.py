@@ -10,6 +10,7 @@ from .views import (
     PurchaseCreateView,
     PurchaseUpdateView,
     PurchaseDeleteView,
+    wagner_whitin_view_2,
     select_policy, 
     fixed_replenishment, 
     point_replenishment,
@@ -50,6 +51,8 @@ urlpatterns = [
     path('point-replenishment/', point_replenishment, name='point-replenishment'),
     path('replenishment/', replenishment, name='replenishment'),
     path('wagner-whitin/', wagner_whitin_view, name='wagner-whitin'),
+    path('wagner-whitin-2/', wagner_whitin_view_2, name='wagner-whitin-2'),
+
 
 
     

@@ -77,3 +77,17 @@ class WagnerWhitinForm(forms.Form):
     demande = forms.CharField(label="Demande (séparée par des virgules, ex: 10,20,30)", max_length=255)
     cout_commande = forms.FloatField(label="Coût de commande (Cc)")
     cout_possession = forms.FloatField(label="Coût de possession par unité par période (t)")
+
+
+class WagnerWhitinForm2(forms.Form):
+    n_periodes = forms.IntegerField(label="Nombre de périodes", min_value=1)
+    demande = forms.CharField(
+        label="Demande par période (séparée par des virgules, ex: 10,20,30)", 
+        max_length=255
+    )
+    cout_commande = forms.FloatField(label="Coût de commande (Cc)")
+    prix_unitaire = forms.CharField(
+        label="Prix unitaire par période (séparés par des virgules, ex: 5,5,6)", 
+        max_length=255
+    )
+    taux_possession = forms.FloatField(label="Taux de possession (en %, ex: 8 pour 8%)")
