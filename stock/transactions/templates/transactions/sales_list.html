@@ -1,53 +1,126 @@
 {% extends "store/base.html" %}
 {% load static %}
-{% load render_table from django_tables2 %}
-{% load querystring from django_tables2 %}
 {% block title %}Ventes{% endblock title %}
 
 {% block content %}
 <!-- Section d'en-tête -->
 <div class="container my-4">
-    <div class="card shadow-sm rounded p-3">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <h4 class="display-6 mb-0 text-success">Ventes</h4>
-            </div>
-            <div class="col-md-6 d-flex justify-content-end gap-2">
-                <a class="btn btn-success btn-sm rounded-pill shadow-sm" href="{% url 'sale-create' %}">
-                    <i class="fa-solid fa-plus"></i> Ajouter une vente
-                </a>
-                
-                <a class="btn btn-primary btn-sm rounded-pill shadow-sm" href="{% url 'sales-export' %}">
-                    <i class="fa-solid fa-download"></i> Exporter en Excel
-                </a>
-            </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="page-title">
+            <span class="page-title-text">Ventes</span>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn-action" href="{% url 'sale-create' %}">
+                <i class="fa-solid fa-plus me-1"></i> Ajouter une vente
+            </a>
+            <a class="btn-action" href="{% url 'sales-export' %}">
+                <i class="fa-solid fa-download me-1"></i> Exporter
+            </a>
         </div>
     </div>
 </div>
 
 <!-- Table des ventes -->
-<div class="container px-3">
+<div class="container">
     <style>
-        .table th, .table td {
-            text-align: center;
+        /* Style modernisé pour le titre */
+        .page-title {
+            position: relative;
+            display: inline-block;
         }
-        .btn-custom {
-            padding: 8px 20px;
-            margin: 4px;
+        .page-title-text {
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: #6a5440;
+            letter-spacing: 0.5px;
+            position: relative;
+            padding-right: 15px;
+            z-index: 1;
+        }
+
+        .table {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+            border: none;
+        }
+        .table th {
+            background-color: white;
+            color: #353535;
+            font-weight: 600;
+            text-align: center;
+            border-bottom: 2px solid #AB7442;
+            padding: 12px 8px;
+        }
+        .table td {
+            text-align: center;
+            vertical-align: middle;
+            border-color: #f0f0f0;
+            padding: 12px 8px;
+        }
+        .table tr:not(:last-child) {
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .table tr:hover {
+            background-color: rgba(171, 116, 66, 0.03);
+        }
+        
+        .btn-action {
+            background: none;
+            border: none;
+            color: #AB7442;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        .btn-action:hover {
+            background-color: rgba(171, 116, 66, 0.1);
+            color: #8B5A2B;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(171, 116, 66, 0.1);
+        }
+        .btn-action:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+        
+        .btn-outline-custom {
+            color: #AB7442;
+            border-color: #AB7442;
+            transition: all 0.2s ease;
+            background: none;
+        }
+        .btn-outline-custom:hover {
+            background: #AB7442;
+            color: white;
+        }
+        
+        .page-item.active .page-link {
+            background-color: #AB7442;
+            border-color: #AB7442;
+        }
+        .page-link {
+            color: #AB7442;
         }
     </style>
-    <table class="table table-bordered table-striped table-hover table-sm">
-        <thead class="thead-light">
+    
+    <table class="table">
+        <thead>
             <tr>
                 <th>ID</th>
                 <th>Date</th>
                 <th>Client</th>
                 <th>Sous-total</th>
-                <th>Total général</th>
-                <th>Montant de la taxe</th>
-                <th>Pourcentage de taxe</th>
-                <th>Montant payé</th>
-                <th>Montant rendu</th>
+                <th>Total</th>
+                <th>Taxe</th>
+                <th>% Taxe</th>
+                <th>Payé</th>
+                <th>Rendu</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -55,17 +128,17 @@
             {% for sale in sales %}
             <tr>
                 <td>{{ sale.id }}</td>
-                <td>{{ sale.date_added|date:"Y-m-d H:i:s" }}</td>
+                <td>{{ sale.date_added|date:"d/m/Y H:i" }}</td>
                 <td>{{ sale.customer }}</td>
                 <td>{{ sale.sub_total }}</td>
-                <td>{{ sale.grand_total }}</td>
+                <td><strong>{{ sale.grand_total }}</strong></td>
                 <td>{{ sale.tax_amount }}</td>
-                <td>{{ sale.tax_percentage }}</td>
+                <td>{{ sale.tax_percentage }}%</td>
                 <td>{{ sale.amount_paid }}</td>
                 <td>{{ sale.amount_change }}</td>
                 <td>
-                    <a class="btn btn-outline-info btn-sm" href="{% url 'sale-detail' sale.id %}">
-                        <i class="fa-solid fa-eye"></i> Voir les détails
+                    <a class="btn btn-sm btn-outline-custom" href="{% url 'sale-detail' sale.id %}">
+                        <i class="fa-solid fa-eye me-1"></i> Détails
                     </a>
                 </td>
             </tr>
@@ -81,13 +154,13 @@
                 {% if page_obj.has_previous %}
                 <li class="page-item">
                     <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Précédent">
-                        <span aria-hidden="true">&laquo;</span>
+                        <i class="fas fa-chevron-left"></i>
                     </a>
                 </li>
                 {% else %}
                 <li class="page-item disabled">
                     <span class="page-link" aria-label="Précédent">
-                        <span aria-hidden="true">&laquo;</span>
+                        <i class="fas fa-chevron-left"></i>
                     </span>
                 </li>
                 {% endif %}
@@ -95,9 +168,9 @@
                 {% for i in paginator.page_range %}
                 {% if page_obj.number == i %}
                 <li class="page-item active">
-                    <span class="page-link">{{ i }} <span class="sr-only">(actuel)</span></span>
+                    <span class="page-link">{{ i }}</span>
                 </li>
-                {% else %}
+                {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
                 <li class="page-item">
                     <a class="page-link" href="?page={{ i }}">{{ i }}</a>
                 </li>
@@ -107,13 +180,13 @@
                 {% if page_obj.has_next %}
                 <li class="page-item">
                     <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Suivant">
-                        <span aria-hidden="true">&raquo;</span>
+                        <i class="fas fa-chevron-right"></i>
                     </a>
                 </li>
                 {% else %}
                 <li class="page-item disabled">
                     <span class="page-link" aria-label="Suivant">
-                        <span aria-hidden="true">&raquo;</span>
+                        <i class="fas fa-chevron-right"></i>
                     </span>
                 </li>
                 {% endif %}
