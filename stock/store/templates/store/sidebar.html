@@ -96,6 +96,20 @@
             </li>
             {% endif %}
 
+            {% if  module_name == "facturation" %}
+            <li class="nav-item mb-1">
+                <a class="nav-link text-dark {% if request.resolver_match.url_name == 'invoicelist' %}active{% endif %}" href="{% url 'invoicelist' %}" style="padding: 10px 15px; border-radius: 6px; transition: all 0.3s ease;">
+                    <i class="fas fa-file-invoice me-2" style="color: #AB7442;"></i> Factures
+                </a>
+            </li>
+            <li class="nav-item mb-1">
+                <a class="nav-link text-dark {% if request.resolver_match.url_name == 'bill_list' %}active{% endif %}" href="{% url 'bill_list' %}" style="padding: 10px 15px; border-radius: 6px; transition: all 0.3s ease;">
+                    <i class="fas fa-file-invoice-dollar me-2" style="color: #AB7442;"></i> Factures fournisseurs
+                </a>
+            </li>
+            
+            {% endif %}
+
             <!-- Tableau de bord -->
             <li class="nav-item mb-1">
                 <a class="nav-link text-dark {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}" style="padding: 10px 15px; border-radius: 6px; transition: all 0.3s ease;">
