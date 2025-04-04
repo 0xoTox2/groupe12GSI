@@ -1,0 +1,166 @@
+{% extends "store/base.html" %}
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <!-- En-tête -->
+            <div class="card shadow-sm mb-4 border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-chart-bar mr-2"></i>Résultats - Méthode Dégressive avec Remise
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3 mb-3">
+                            <div class="card h-100 border-info">
+                                <div class="card-body">
+                                    <h5 class="card-title">Consommation annuelle</h5>
+                                    <p class="display-4 text-info">{{ consommation_annuelle }} unités</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card h-100 border-info">
+                                <div class="card-body">
+                                    <h5 class="card-title">Taux de possession</h5>
+                                    <p class="display-4 text-info">{{ taux_possession }}%</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card h-100 border-info">
+                                <div class="card-body">
+                                    <h5 class="card-title">Coût de commande</h5>
+                                    <p class="display-4 text-info">{{ cout_commande }} DH</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card h-100 border-info">
+                                <div class="card-body">
+                                    <h5 class="card-title">Prix de base</h5>
+                                    <p class="display-4 text-info">{{ prix_achat_base }} DH</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meilleur palier -->
+            <div class="card shadow-sm mb-4 border-success">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-trophy mr-2"></i>Meilleur palier recommandé
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <p><i class="fas fa-percentage mr-2"></i><strong>Remise:</strong> {{ meilleur_palier.remise }}%</p>
+                            <p><i class="fas fa-tag mr-2"></i><strong>Prix unitaire:</strong> {{ meilleur_palier.pu }} DH</p>
+                        </div>
+                        <div class="col-md-3">
+                            <p><i class="fas fa-calculator mr-2"></i><strong>Quantité économique:</strong> {{ meilleur_palier.q_eco }}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <p><i class="fas fa-boxes mr-2"></i><strong>Quantité à commander:</strong> {{ meilleur_palier.q_commande }}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <p><i class="fas fa-money-bill-wave mr-2"></i><strong>Coût total annuel:</strong> {{ meilleur_palier.cout_total }} DH</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tableau des résultats -->
+            <div class="card shadow-sm border-secondary">
+                <div class="card-header bg-secondary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-table mr-2"></i>Détail par palier
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th><i class="fas fa-layer-group"></i> Palier</th>
+                                    <th><i class="fas fa-percentage"></i> Remise</th>
+                                    <th><i class="fas fa-tag"></i> Prix (DH)</th>
+                                    <th><i class="fas fa-calculator"></i> Q* Théorique</th>
+                                    <th><i class="fas fa-box-open"></i> Q Commandée</th>
+                                    <th><i class="fas fa-shopping-cart"></i> N Commandes</th>
+                                    <th><i class="fas fa-calendar-alt"></i> Périodicité (jours)</th>
+                                    <th><i class="fas fa-cash-register"></i> Coût Achat</th>
+                                    <th><i class="fas fa-warehouse"></i> Coût Stock</th>
+                                    <th><i class="fas fa-truck"></i> Coût Commande</th>
+                                    <th><i class="fas fa-coins"></i> Coût Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for result in results %}
+                                <tr {% if result == meilleur_palier %}class="table-success"{% endif %}>
+                                    <td>{{ result.palier }}</td>
+                                    <td>{{ result.remise }}%</td>
+                                    <td>{{ result.pu }}</td>
+                                    <td>{{ result.q_eco }}</td>
+                                    <td>{{ result.q_commande }}</td>
+                                    <td>{{ result.n_commandes|floatformat:2 }}</td>
+                                    <td>{{ result.periodicite|floatformat:2 }}</td>
+                                    <td>{{ result.cout_achat }}</td>
+                                    <td>{{ result.cout_possession }}</td>
+                                    <td>{{ result.cout_commande }}</td>
+                                    <td><strong>{{ result.cout_total }}</strong></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boutons de navigation -->
+            <div class="text-center mt-4">
+                <a href="{% url 'degressive-remise-replenishment' %}" class="btn btn-primary btn-lg mr-3">
+                    <i class="fas fa-redo mr-2"></i>Nouveau calcul
+                </a>
+                <a href="{% url 'select-policy' %}" class="btn btn-secondary btn-lg mr-3">
+                    <i class="fas fa-arrow-left mr-2"></i>Retour au menu
+                </a>
+                <button onclick="window.print()" class="btn btn-success btn-lg">
+                    <i class="fas fa-print mr-2"></i>Imprimer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #343a40;
+    color: white;
+}
+.table-success {
+    background-color: rgba(40, 167, 69, 0.1);
+    font-weight: bold;
+}
+.card {
+    border-radius: 0.5rem;
+}
+.display-4 {
+    font-size: 2.5rem;
+}
+@media print {
+    .btn, .card-header {
+        display: none !important;
+    }
+    .table-success {
+        background-color: #d4edda !important;
+    }
+}
+</style>
+{% endblock %}

@@ -1,5 +1,7 @@
 from django import forms
 from .models import Purchase
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 
 
 class BootstrapMixin(forms.ModelForm):
@@ -41,8 +43,9 @@ POLICY_CHOICES = [
     ('fixed', 'Méthode de Réapprovisionnement Fixe'),
     ('point', 'Méthode de Point de Commande'),
     ('replenishment', 'Méthode de Recomplètement'),
+    ('degressive', 'Méthode Dégressive'),
+    ('degressive_remise', 'Méthode Dégressive avec Remise'), 
 ]
-
 class PolicySelectionForm(forms.Form):
     policy = forms.ChoiceField(choices=POLICY_CHOICES, label="Choisissez une politique d'approvisionnement")
 
@@ -91,3 +94,98 @@ class WagnerWhitinForm2(forms.Form):
         max_length=255
     )
     taux_possession = forms.FloatField(label="Taux de possession (en %, ex: 8 pour 8%)")
+
+
+from django import forms
+from django.core.validators import MinValueValidator, MaxValueValidator
+import json
+
+
+class DegressiveReplenishmentForm(forms.Form):
+    consommation_annuelle = forms.IntegerField(
+        label="Consommation annuelle (D)",
+        min_value=1,
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+    taux_possession = forms.FloatField(
+        label="Taux de possession (t%)",
+        min_value=0.1,
+        max_value=100,
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+    cout_commande = forms.FloatField(
+        label="Coût de commande (C)",
+        min_value=0,
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+    nombre_paliers = forms.IntegerField(
+        label="Nombre de paliers",
+        min_value=1,
+        max_value=5,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'id': 'nombre_paliers',
+            'onchange': 'updatePaliers()'
+        })
+    )
+
+from django import forms
+# Dans forms.py, ajoutez cette classe (elle existe déjà mais vérifiez qu'elle est bien comme ceci)
+class DegressiveRemiseReplenishmentForm(forms.Form):
+    consommation_annuelle = forms.IntegerField(
+        label="Consommation annuelle (D)",
+        min_value=1,
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+    taux_possession = forms.FloatField(
+        label="Taux de possession (t%)",
+        min_value=0.1,
+        max_value=100,
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+    cout_commande = forms.FloatField(
+        label="Coût de commande (C)",
+        min_value=0,
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+    prix_achat_base = forms.FloatField(
+        label="Prix d'achat de base (DH)",
+        min_value=0,
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+    nombre_paliers = forms.IntegerField(
+        label="Nombre de paliers",
+        min_value=1,
+        max_value=5,
+        initial=3,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'id': 'nombre_paliers',
+            'onchange': 'updatePaliers()'
+        })
+    )
+
+    def __init__(self, *args, **kwargs):
+        nombre_paliers = kwargs.pop('nombre_paliers', 3)
+        super().__init__(*args, **kwargs)
+        
+        for i in range(1, nombre_paliers + 1):
+            self.fields[f'remise_{i}'] = forms.FloatField(
+                label=f"Remise palier {i} (%)",
+                min_value=0,
+                max_value=100,
+                widget=forms.NumberInput(attrs={
+                    'class': 'form-control',
+                    'step': '0.1'
+                })
+            )
+            self.fields[f'qmin_{i}'] = forms.IntegerField(
+                label=f"Quantité minimale palier {i}",
+                min_value=0,
+                widget=forms.NumberInput(attrs={'class': 'form-control'})
+            )
+            self.fields[f'qmax_{i}'] = forms.IntegerField(
+                label=f"Quantité maximale palier {i}",
+                min_value=1,
+                widget=forms.NumberInput(attrs={'class': 'form-control'})
+            )

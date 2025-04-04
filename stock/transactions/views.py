@@ -22,8 +22,7 @@ from openpyxl import Workbook
 from store.models import Item
 from accounts.models import Customer
 from .models import Sale, Purchase, SaleDetail
-from .forms import PurchaseForm
-
+from .forms import PurchaseForm,DegressiveReplenishmentForm,DegressiveRemiseReplenishmentForm
 
 logger = logging.getLogger(__name__)
 
@@ -416,6 +415,10 @@ def select_policy(request):
                 return redirect(reverse('point-replenishment'))
             elif policy == 'replenishment':  # Ajoutez cette condition
                 return redirect(reverse('replenishment'))
+            elif policy == 'degressive':
+                return redirect('degressive-replenishment')
+            elif policy == 'degressive_remise':  # Ajoutez cette condition
+                return redirect('degressive-remise-replenishment')
     else:
         form = PolicySelectionForm()
     
@@ -732,3 +735,253 @@ def wagner_whitin_view_2(request):
         form = WagnerWhitinForm2()
 
     return render(request, 'transactions/wagner_whitin_2.html', {'form': form})
+from decimal import Decimal, InvalidOperation
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.views.decorators.http import require_http_methods
+
+@require_http_methods(["GET", "POST"])
+def degressive_replenishment(request):
+    if request.method == 'POST':
+        form_data = {
+            'consommation_annuelle': request.POST.get('consommation_annuelle'),
+            'taux_possession': request.POST.get('taux_possession'),
+            'cout_commande': request.POST.get('cout_commande'),
+            'nombre_paliers': request.POST.get('nombre_paliers'),
+        }
+        
+        # Récupération des paliers dynamiques
+        paliers_data = {}
+        nombre_paliers = int(form_data['nombre_paliers'])
+        for i in range(1, nombre_paliers + 1):
+            paliers_data[f'pu_{i}'] = request.POST.get(f'pu_{i}')
+            paliers_data[f'qmin_{i}'] = request.POST.get(f'qmin_{i}')
+            paliers_data[f'qmax_{i}'] = request.POST.get(f'qmax_{i}')
+        
+        # Validation des données
+        try:
+            # Validation des champs de base
+            if not all(form_data.values()):
+                raise ValueError("Tous les champs obligatoires doivent être remplis")
+            
+            # Conversion et validation des valeurs
+            D = Decimal(form_data['consommation_annuelle'])
+            t = Decimal(form_data['taux_possession'])
+            C = Decimal(form_data['cout_commande'])
+            
+            if D <= 0 or t <= 0 or C < 0:
+                raise ValueError("Les valeurs doivent être positives")
+            
+            # Validation des paliers
+            for i in range(1, nombre_paliers + 1):
+                pu = Decimal(paliers_data[f'pu_{i}'])
+                qmin = Decimal(paliers_data[f'qmin_{i}'])
+                qmax = Decimal(paliers_data[f'qmax_{i}'])
+                
+                if pu <= 0 or qmin < 0 or qmax <= 0 or qmin >= qmax:
+                    raise ValueError(f"Palier {i}: Les valeurs doivent être cohérentes (0 ≤ Qmin < Qmax)")
+            
+            # Stockage en session
+            request.session['degressive_data'] = {**form_data, **paliers_data}
+            return redirect('degressive-replenishment-results')
+            
+        except (ValueError, InvalidOperation, TypeError) as e:
+            messages.error(request, f"Erreur de validation: {str(e)}")
+            return render(request, 'transactions/degressive_replenishment.html', {
+                'form_data': form_data,
+                'paliers_data': paliers_data,
+                'nombre_paliers': nombre_paliers
+            })
+    
+    # GET request - initialiser avec 3 paliers par défaut
+    return render(request, 'transactions/degressive_replenishment.html', {
+        'form_data': {},
+        'paliers_data': {},
+        'nombre_paliers': 3
+    })
+
+
+@require_http_methods(["GET"])
+def degressive_replenishment_results(request):
+    if 'degressive_data' not in request.session:
+        messages.error(request, "Session expirée ou données non trouvées")
+        return redirect('degressive-replenishment')
+    
+    data = request.session['degressive_data']
+    
+    try:
+        # Extraction des données de base
+        D = Decimal(data['consommation_annuelle'])
+        t = Decimal(data['taux_possession']) / Decimal(100)  # Conversion % → décimal
+        C = Decimal(data['cout_commande'])
+        nombre_paliers = int(data['nombre_paliers'])
+        
+        # Calcul pour chaque palier
+        results = []
+        for i in range(1, nombre_paliers + 1):
+            pu = Decimal(data[f'pu_{i}'])
+            qmin = Decimal(data[f'qmin_{i}'])
+            qmax = Decimal(data[f'qmax_{i}'])
+            
+            # Calcul de la quantité économique (Q*)
+            try:
+                q_eco = (2 * C * D / (pu * t)).sqrt()
+            except:
+                q_eco = Decimal(0)
+            
+            # Ajustement aux bornes du palier
+            q_commande = max(qmin, min(q_eco, qmax))
+            
+            # Calcul des indicateurs
+            n_commandes = D / q_commande if q_commande != 0 else Decimal(0)
+            periodicite = Decimal(365) / n_commandes if n_commandes != 0 else Decimal(0)
+            cout_achat = D * pu
+            cout_possession = (q_commande / 2) * pu * t
+            cout_commande = n_commandes * C
+            cout_total = cout_achat + cout_possession + cout_commande
+            
+            # Application des règles d'arrondi spécifiques
+            results.append({
+                'palier': i,
+                'pu': round(pu, 2),  # 2 décimales
+                'q_eco': round(q_eco, 2),  # 2 décimales
+                'q_commande': round(q_commande, 2),  # 2 décimales
+                'n_commandes': math.ceil(n_commandes),  # Arrondi avec excès (entier supérieur)
+                'periodicite': math.floor(periodicite),  # Arrondi par défaut (entier inférieur)
+                'cout_achat': round(cout_achat, 2),  # 2 décimales
+                'cout_possession': round(cout_possession, 2),  # 2 décimales
+                'cout_commande': round(cout_commande, 2),  # 2 décimales
+                'cout_total': round(cout_total, 2),  # 2 décimales
+            })
+
+        # Trouver le meilleur palier (coût total minimum)
+        meilleur_palier = min(results, key=lambda x: x['cout_total'])
+
+        context = {
+            'results': results,
+            'meilleur_palier': meilleur_palier,
+            'consommation_annuelle': round(D, 2),
+            'taux_possession': round(t * 100, 2),
+            'cout_commande': round(C, 2),
+            'nombre_paliers': nombre_paliers,
+        }
+        
+        return render(request, 'transactions/degressive_replenishment_results.html', context)
+    
+    except Exception as e:
+        messages.error(request, f"Erreur de calcul: {str(e)}")
+        return redirect('degressive-replenishment')
+
+
+from .forms import DegressiveRemiseReplenishmentForm
+@require_http_methods(["GET", "POST"])
+def degressive_remise_replenishment(request):
+    if request.method == 'POST':
+        form_data = {
+            'consommation_annuelle': request.POST.get('consommation_annuelle'),
+            'taux_possession': request.POST.get('taux_possession'),
+            'cout_commande': request.POST.get('cout_commande'),
+            'prix_achat_base': request.POST.get('prix_achat_base'),
+            'nombre_paliers': request.POST.get('nombre_paliers', '3'),
+        }
+        
+        # Préparer les données des paliers pour le template
+        paliers = []
+        nombre_paliers = int(form_data['nombre_paliers'])
+        for i in range(1, nombre_paliers + 1):
+            paliers.append({
+                'remise': request.POST.get(f'remise_{i}', '0'),
+                'qmin': request.POST.get(f'qmin_{i}', '0'),
+                'qmax': request.POST.get(f'qmax_{i}', '0'),
+            })
+
+        try:
+            # Validation des données...
+            # ... (votre code de validation existant)
+
+            request.session['degressive_remise_data'] = {
+                'form_data': form_data,
+                'paliers': paliers
+            }
+            return redirect('degressive-remise-replenishment-results')
+            
+        except (ValueError, InvalidOperation, TypeError) as e:
+            messages.error(request, f"Erreur: {str(e)}")
+    
+    else:
+        # GET request - initialiser avec 3 paliers par défaut
+        form_data = {
+            'nombre_paliers': '3',
+        }
+        paliers = [{'remise': '', 'qmin': '', 'qmax': ''} for _ in range(3)]
+
+    return render(request, 'transactions/degressive_remise_replenishment.html', {
+        'form_data': form_data,
+        'paliers': paliers,
+        'nombre_paliers': int(form_data.get('nombre_paliers', 3))
+    })
+@require_http_methods(["GET"])
+def degressive_remise_replenishment_results(request):
+    if 'degressive_remise_data' not in request.session:
+        messages.error(request, "Session expirée ou données non trouvées")
+        return redirect('degressive-remise-replenishment')
+    
+    data = request.session['degressive_remise_data']
+    form_data = data['form_data']
+    paliers_data = data['paliers']
+    
+    try:
+        D = Decimal(form_data['consommation_annuelle'])
+        t = Decimal(form_data['taux_possession']) / Decimal(100)
+        C = Decimal(form_data['cout_commande'])
+        prix_base = Decimal(form_data['prix_achat_base'])
+        
+        results = []
+        for i, palier in enumerate(paliers_data, start=1):
+            remise = Decimal(palier['remise'])
+            qmin = Decimal(palier['qmin'])
+            qmax = Decimal(palier['qmax'])
+            
+            pu = prix_base * (1 - remise / 100)
+            q_eco = (2 * C * D / (pu * t)).sqrt() if (pu * t) != 0 else Decimal(0)
+            q_commande = max(qmin, min(q_eco, qmax))
+            
+            n_commandes = D / q_commande if q_commande != 0 else Decimal(0)
+            periodicite = Decimal(365) / n_commandes if n_commandes != 0 else Decimal(0)
+            cout_achat = D * pu
+            cout_possession = (q_commande / 2) * pu * t
+            cout_commande = n_commandes * C
+            cout_total = cout_achat + cout_possession + cout_commande
+            
+            # Application des règles d'arrondi
+            results.append({
+                'palier': i,
+                'remise': round(remise, 2),  # 2 décimales
+                'pu': round(pu, 2),  # 2 décimales
+                'q_eco': round(q_eco, 2),  # 2 décimales
+                'q_commande': round(q_commande, 2),  # 2 décimales
+                'n_commandes': math.ceil(n_commandes),  # Arrondi avec excès (vers le haut)
+                'periodicite': math.floor(periodicite),  # Arrondi par défaut (vers le bas)
+                'cout_achat': round(cout_achat, 2),  # 2 décimales
+                'cout_possession': round(cout_possession, 2),  # 2 décimales
+                'cout_commande': round(cout_commande, 2),  # 2 décimales
+                'cout_total': round(cout_total, 2),  # 2 décimales
+            })
+
+        meilleur_palier = min(results, key=lambda x: x['cout_total'])
+
+        context = {
+            'results': results,
+            'meilleur_palier': meilleur_palier,
+            'consommation_annuelle': round(D, 2),
+            'taux_possession': round(t * 100, 2),
+            'cout_commande': round(C, 2),
+            'prix_achat_base': round(prix_base, 2),
+            'nombre_paliers': len(paliers_data),
+        }
+        
+        return render(request, 'transactions/degressive_remise_replenishment_results.html', context)
+    
+    except Exception as e:
+        messages.error(request, f"Erreur de calcul: {str(e)}")
+        return redirect('degressive-remise-replenishment')

@@ -208,3 +208,4 @@ class ReapprovisionnementFixe(models.Model):
         cout_lancement = self.calculer_cout_lancement()
         cout_possession = self.calculer_cout_possession()
         return cout_lancement + cout_possession
+    

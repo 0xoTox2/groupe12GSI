@@ -1,0 +1,129 @@
+{% extends "store/base.html" %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Méthode Dégressive - Saisie des Données</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="degressiveForm">
+                        {% csrf_token %}
+                        
+                        <h4 class="mb-4">Paramètres de base</h4>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_consommation_annuelle">Consommation annuelle (D)</label>
+                                    <input type="number" class="form-control" id="id_consommation_annuelle" 
+                                           name="consommation_annuelle" min="1" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_taux_possession">Taux de possession (t%)</label>
+                                    <input type="number" class="form-control" id="id_taux_possession" 
+                                           name="taux_possession" step="0.1" min="0.1" max="100" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_cout_commande">Coût de commande (C)</label>
+                                    <input type="number" class="form-control" id="id_cout_commande" 
+                                           name="cout_commande" step="0.01" min="0" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_nombre_paliers">Nombre de paliers</label>
+                            <select class="form-control" id="id_nombre_paliers" name="nombre_paliers">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3" selected>3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <h4 class="mb-4">Définition des paliers</h4>
+                        <div id="paliersContainer">
+                            <!-- Les paliers seront générés ici par JavaScript -->
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-calculator"></i> Calculer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function updatePaliers() {
+        const nombrePaliers = parseInt(document.getElementById('id_nombre_paliers').value);
+        const container = document.getElementById('paliersContainer');
+        container.innerHTML = '';
+        
+        for (let i = 1; i <= nombrePaliers; i++) {
+            container.innerHTML += `
+                <div class="card mb-3">
+                    <div class="card-header bg-secondary text-white">
+                        Palier ${i}
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="pu_${i}">Prix unitaire (DH)</label>
+                                    <input type="number" class="form-control" 
+                                           id="pu_${i}" name="pu_${i}" step="0.01" min="0" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="qmin_${i}">Quantité minimale</label>
+                                    <input type="number" class="form-control" 
+                                           id="qmin_${i}" name="qmin_${i}" min="0" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="qmax_${i}">Quantité maximale</label>
+                                    <input type="number" class="form-control" 
+                                           id="qmax_${i}" name="qmax_${i}" min="0" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
+    document.getElementById('id_nombre_paliers').addEventListener('change', updatePaliers);
+    updatePaliers(); // Initialisation
+});
+</script>
+
+<style>
+.card {
+    border-radius: 10px;
+}
+.card-header {
+    font-weight: bold;
+    border-radius: 10px 10px 0 0 !important;
+}
+.form-group label {
+    font-weight: 500;
+}
+</style>
+{% endblock %}
