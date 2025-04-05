@@ -23,8 +23,9 @@ class Category(models.Model):
     """
     Represents a category for items.
     """
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=100, unique=True)
     slug = AutoSlugField(unique=True, populate_from='name')
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         """
@@ -43,14 +44,17 @@ class Item(models.Model):
     Represents an item in the inventory.
     """
     slug = AutoSlugField(unique=True, populate_from='name')
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
     description = models.TextField(max_length=256)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     quantity = models.IntegerField(default=0)
     price = models.FloatField(default=0)
     expiring_date = models.DateTimeField(null=True, blank=True)
     vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True)
     is_finished_product = models.BooleanField(default=False)  # Nouveau champ
+    stock_min = models.IntegerField("Stock Minimum", default=5)
+    alert_sent = models.BooleanField(default=False)
+    location = models.ForeignKey('Warehouse', null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return f"{self.name} - Category: {self.category}, Quantity: {self.quantity}"
@@ -117,3 +121,7 @@ class Fabrication(models.Model):
 
     def __str__(self):
         return f"{self.product.name} - {self.quantity} unités (le {self.date_created.strftime('%d/%m/%Y')})"
+    
+class Warehouse(models.Model):
+    name = models.CharField(max_length=100)
+    address = models.TextField()

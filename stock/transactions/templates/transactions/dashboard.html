@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<canvas id="salesChart" width="400" height="200"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ monthly_trend|map(attribute="month")|list|safe }},
+            datasets: [{
+                label: 'Chiffre d\'affaires (DH)',
+                data: {{ monthly_trend|map(attribute="total")|list|safe }},
+                borderColor: '#3e95cd',
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Mois'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Montant (DH)'
+                    },
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+});
+</script>
+
+{% endblock %}

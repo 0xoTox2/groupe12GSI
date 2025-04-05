@@ -85,6 +85,7 @@ class Profile(models.Model):
         ordering = ['slug']
         verbose_name = 'Profil'
         verbose_name_plural = 'Profiles'
+
 class Vendor(models.Model):
     """
     Represents a vendor with contact and address information.
@@ -121,7 +122,8 @@ class Customer(models.Model):
     email = models.EmailField(max_length=256, blank=True, null=True)
     phone = models.CharField(max_length=30, blank=True, null=True)
     loyalty_points = models.IntegerField(default=0)
-
+    last_purchase = models.DateTimeField(null=True)
+    preferred_categories = models.ManyToManyField('store.Category')
     class Meta:
         db_table = 'Customers'
 

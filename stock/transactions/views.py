@@ -24,6 +24,39 @@ from accounts.models import Customer
 from .models import Sale, Purchase, SaleDetail
 from .forms import PurchaseForm,DegressiveReplenishmentForm,DegressiveRemiseReplenishmentForm
 
+class CustomerOrderHistoryView(LoginRequiredMixin, DetailView):
+    model = Customer
+    template_name = 'transactions/customer_history.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['orders'] = Sale.objects.filter(customer=self.object)
+        return context
+
+from django.db.models import Sum, F, Count
+from django.db.models.functions import TruncMonth 
+from django.utils import timezone
+from datetime import timedelta
+
+def sales_dashboard(request):
+    # Metrics clés
+    total_sales = Sale.objects.aggregate(total=Sum('grand_total'))['total']
+    
+    # Correction ici avec TruncMonth importé
+    monthly_trend = Sale.objects.filter(
+        date_added__gte=timezone.now() - timedelta(days=30)
+    ).annotate(month=TruncMonth('date_added')).values('month').annotate(total=Sum('grand_total'))
+    
+    # Top produits
+    top_products = SaleDetail.objects.values('item__name').annotate(
+        total=Sum('quantity')
+    ).order_by('-total')[:5]
+    
+    return render(request, 'transactions/dashboard.html', {
+        'total_sales': total_sales,
+        'monthly_trend': monthly_trend,
+        'top_products': top_products
+    })
 logger = logging.getLogger(__name__)
 
 
@@ -143,6 +176,17 @@ class SaleListView(LoginRequiredMixin, ListView):
     paginate_by = 10
     ordering = ['date_added']
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        category = self.request.GET.get('category')
+        location = self.request.GET.get('location')
+        
+        if category:
+            queryset = queryset.filter(saledetail__item__category__id=category)
+        if location:
+            queryset = queryset.filter(saledetail__item__location__id=location)
+            
+        return queryset
 
 class SaleDetailView(LoginRequiredMixin, DetailView):
     """
