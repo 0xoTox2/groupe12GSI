@@ -25,7 +25,8 @@ from .views import (
     SaleDetailView,
     SaleCreateView,
     SaleDeleteView,
-
+    SalesTeamCreateView,
+    SalesTeamListView,
     export_sales_to_excel,
     export_purchases_to_excel
 )
@@ -61,6 +62,10 @@ path('degressive-remise-replenishment/results/', degressive_remise_replenishment
     path('sales/export/', export_sales_to_excel, name='sales-export'),
     path('purchases/export/', export_purchases_to_excel,
          name='purchases-export'),
+
+    # SalesTeam URLs
+    path('sales-team/create/', SalesTeamCreateView.as_view(), name='sales-team-create'),
+    path('sales-team/', SalesTeamListView.as_view(), name='sales-team-list'),
 ]
 
 # Static media files configuration for development

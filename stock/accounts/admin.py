@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Profile, Vendor
+from .models import Profile, Vendor, SalesTeam
 
 
 @admin.register(Profile)
@@ -14,3 +14,8 @@ class VendorAdmin(admin.ModelAdmin):
     fields = ('name', 'phone_number', 'address')
     list_display = ('name', 'phone_number', 'address')
     search_fields = ('name', 'phone_number', 'address')
+
+
+@admin.register(SalesTeam)
+class SalesTeamAdmin(admin.ModelAdmin):
+    list_display = ('name', 'role', 'zone', 'sales_goal', 'achievement_rate')

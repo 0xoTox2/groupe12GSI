@@ -195,4 +195,77 @@
         {% endif %}
     </div>
 </div>
+
+<!-- Nouvelle Section Équipes de Vente -->
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="page-title">
+            <span class="page-title-text">Équipes de Vente</span>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn-action" href="#">
+                <i class="fa-solid fa-plus me-1"></i> Ajouter une nouvelle équipe
+            </a>
+            <a class="btn-action" href="#">
+                <i class="fa-solid fa-download me-1"></i> Exporter
+            </a>
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Rôle</th>
+                <th>Zone</th>
+                <th>Objectif mensuel (DH)</th>
+                <th>Objectif Réalisé (DH)</th>
+                <th>Taux</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in sales_team %}
+            <tr>
+                <td>{{ member.id }}</td>
+                <td>{{ member.name }}</td>
+                <td>{{ member.get_role_display }}</td>
+                <td>{{ member.zone }}</td>
+                <td>{{ member.sales_goal|floatformat:2 }} DH</td>
+                <td>{{ member.achieved|floatformat:2 }} DH</td>
+                <td>
+                    <div class="progress" style="height: 25px;">
+                        <div class="progress-bar 
+                              {% if member.achievement_rate <= 50 %}bg-danger
+                              {% elif member.achievement_rate <= 80 %}bg-warning
+                              {% else %}bg-success{% endif %}
+                             role="progressbar" 
+                             style="width: {{ member.achievement_rate }}%">
+                            
+                            {{ member.achievement_rate }}%
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <a class="btn btn-sm btn-outline-custom" href="#">
+                        <i class="fa-solid fa-eye me-1"></i> Détails
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination (identique à la section ventes) -->
+    <div class="d-flex justify-content-center mt-4">
+        {% if is_paginated_teams %}
+        <nav aria-label="Navigation des pages">
+            <ul class="pagination">
+                <!-- ... [Code de pagination identique à la section ventes] ... -->
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
 {% endblock content %}

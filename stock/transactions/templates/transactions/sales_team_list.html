@@ -1,0 +1,138 @@
+{% extends "store/base.html" %}
+{% load static %}
+{% block title %}Create Sales Team{% endblock title %}
+
+{% block stylesheets %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@1.5.2/dist/select2-bootstrap4.min.css">
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Go back -->
+    <div class="mb-4">
+        <a href="{% url 'sales-team-list' %}" class="btn btn-outline-success">
+            <i class="fas fa-arrow-left me-2"></i>
+            Retour
+        </a>
+    </div>
+
+    <!-- Team form -->
+    <form id="form_team" action="{% url 'sales-team-create' %}" method="post">
+        <div class="row">
+            <!-- Left column -->
+            <div class="col-lg-8 mb-4">
+                <div class="card border-light shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Informations de l'équipe</h5>
+                    </div>
+                    <div class="card-body">
+                        {% csrf_token %}
+                        
+                        <!-- Name -->
+                        <div class="mb-4">
+                            <label for="name" class="form-label">Nom complet</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+
+                        <!-- Role -->
+                        <div class="mb-4">
+                            <label for="role" class="form-label">Rôle</label>
+                            <select class="form-select select2-role" name="role" id="role" required>
+                                <option value="">Sélectionner un rôle</option>
+                                <option value="CM">Commercial</option>
+                                <option value="SM">Sales Manager</option>
+                                <option value="AM">Account Manager</option>
+                            </select>
+                        </div>
+
+                        <!-- Zone -->
+                        <div class="mb-4">
+                            <label for="zone" class="form-label">Zone géographique</label>
+                            <input type="text" class="form-control" id="zone" name="zone" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-lg-4 mb-4">
+                <div class="card border-light shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Objectifs</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Sales Goal -->
+                        <div class="mb-4">
+                            <label for="sales_goal" class="form-label">Objectif mensuel (DH)</label>
+                            <input type="number" class="form-control" id="sales_goal" name="sales_goal" step="0.01" required>
+                        </div>
+
+                        <!-- Achieved -->
+                        <div class="mb-4">
+                            <label for="achieved" class="form-label">Réalisé (DH)</label>
+                            <input type="number" class="form-control" id="achieved" name="achieved" step="0.01" value="0">
+                        </div>
+
+                        <button type="submit" class="btn btn-info w-100">
+                            <i class="fas fa-save me-2"></i>Enregistrer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+$(document).ready(function() {
+    // Initialize Select2 for role field
+    $('.select2-role').select2({
+        theme: 'bootstrap4',
+        placeholder: "Sélectionner un rôle",
+        allowClear: true
+    });
+
+    // Form validation and submission
+    $('#form_team').on('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            name: $('#name').val(),
+            role: $('#role').val(),
+            zone: $('#zone').val(),
+            sales_goal: $('#sales_goal').val(),
+            achieved: $('#achieved').val()
+        };
+
+        // Basic frontend validation
+        if(!formData.name || !formData.role || !formData.zone || !formData.sales_goal) {
+            Swal.fire('Erreur', 'Veuillez remplir tous les champs obligatoires', 'error');
+            return;
+        }
+
+        // AJAX submission
+        $.ajax({
+            url: $(this).attr('action'),
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val()
+            },
+            data: formData,
+            success: function(response) {
+                Swal.fire('Succès', 'Membre ajouté avec succès!', 'success')
+                   .then(() => window.location.href = "{% url 'sales-team-list' %}");
+            },
+            error: function(xhr) {
+                Swal.fire('Erreur', xhr.responseJSON.error || 'Une erreur est survenue', 'error');
+            }
+        });
+    });
+});
+</script>
+{% endblock javascripts %}

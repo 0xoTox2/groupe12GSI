@@ -139,3 +139,24 @@ class Customer(models.Model):
             "value": self.id
         }
         return item
+
+
+class SalesTeam(models.Model):
+    ROLES = [
+        ('CM', 'Commercial'),
+        ('SM', 'Sales Manager'),
+        ('AM', 'Account Manager')
+    ]
+
+    name = models.CharField("Nom complet", max_length=100)
+    role = models.CharField("Rôle", max_length=2, choices=ROLES, default='CM')
+    zone = models.CharField("Zone géographique", max_length=50)
+    sales_goal = models.DecimalField("Objectif mensuel (DH)", max_digits=10, decimal_places=2)
+    achieved = models.DecimalField("Objectif Réalisé (DH)", max_digits=10, decimal_places=2, default=0)
+
+    @property
+    def achievement_rate(self):
+        return round((self.achieved / self.sales_goal * 100) if self.sales_goal else 0, 2)
+
+    def __str__(self):
+        return f"{self.name} - {self.get_role_display()}"

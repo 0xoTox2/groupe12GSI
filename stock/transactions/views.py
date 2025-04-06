@@ -9,7 +9,7 @@ from django.shortcuts import render
 from django.db import transaction
 
 # Class-based views
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, CreateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 # Authentication and permissions
@@ -20,7 +20,7 @@ from openpyxl import Workbook
 
 # Local app imports
 from store.models import Item
-from accounts.models import Customer
+from accounts.models import Customer, SalesTeam
 from .models import Sale, Purchase, SaleDetail
 from .forms import PurchaseForm,DegressiveReplenishmentForm,DegressiveRemiseReplenishmentForm
 
@@ -39,6 +39,9 @@ from django.utils import timezone
 from datetime import timedelta
 
 def sales_dashboard(request):
+    # Récupérez les données des équipes
+    sales_team = SalesTeam.objects.all()
+    
     # Metrics clés
     total_sales = Sale.objects.aggregate(total=Sum('grand_total'))['total']
     
@@ -53,6 +56,7 @@ def sales_dashboard(request):
     ).order_by('-total')[:5]
     
     return render(request, 'transactions/dashboard.html', {
+        'sales_team': sales_team,
         'total_sales': total_sales,
         'monthly_trend': monthly_trend,
         'top_products': top_products
@@ -1029,3 +1033,14 @@ def degressive_remise_replenishment_results(request):
     except Exception as e:
         messages.error(request, f"Erreur de calcul: {str(e)}")
         return redirect('degressive-remise-replenishment')
+    
+class SalesTeamCreateView(CreateView):
+    model = SalesTeam
+    fields = ['name', 'role', 'zone', 'sales_goal', 'achieved']
+    template_name = 'team_create.html'  # Nom de votre template
+    success_url = '/sales-team/'
+
+class SalesTeamListView(ListView):
+    model = SalesTeam
+    template_name = 'sales_team_list.html'
+    context_object_name = 'sales_team'
