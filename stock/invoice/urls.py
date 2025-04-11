@@ -15,29 +15,11 @@ from .views import (
 # URL patterns
 urlpatterns = [
     # Invoice URLs
-    path(
-        'invoices/',
-        InvoiceListView.as_view(),
-        name='invoicelist'
-    ),
-    path(
-        'invoice/<int:pk>/', 
-        InvoiceDetailView.as_view(),
-        name='invoice-detail'),
-    path(
-        'invoice/<int:pk>/update/', 
-        InvoiceUpdateView.as_view(), 
-        name='invoice-update'),
-    path(
-        'new-invoice/',
-        InvoiceCreateView.as_view(),
-        name='invoice-create'
-    ),
-    path(
-        'invoice/<int:pk>/delete/',
-        InvoiceDeleteView.as_view(),
-        name='invoice-delete'
-    ),
+    path('invoices/', InvoiceListView.as_view(), name='invoicelist'),
+    path('invoice/<slug:slug>/', InvoiceDetailView.as_view(), name='invoice-detail'),
+    path('invoice/<slug:slug>/update/', InvoiceUpdateView.as_view(), name='invoice-update'),
+    path('new-invoice/', InvoiceCreateView.as_view(), name='invoice-create'),
+    path('invoice/<slug:slug>/delete/', InvoiceDeleteView.as_view(), name='invoice-delete'),
 ]
 
 # Static media files configuration for development

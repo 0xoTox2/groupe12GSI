@@ -55,4 +55,3 @@ class Invoice(models.Model):
     
 class Meta:
     ordering = ['-date']
-

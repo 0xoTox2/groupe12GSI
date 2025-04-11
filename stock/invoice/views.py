@@ -41,7 +41,7 @@ class InvoiceDetailView(DetailView):
         """
         Return the URL to redirect to after a successful action.
         """
-        return reverse('invoice-detail', kwargs={'pk': self.object.pk})
+        return reverse('invoice-detail', kwargs={'slug': self.object.slug})
 
 
 class InvoiceCreateView(LoginRequiredMixin, CreateView):
