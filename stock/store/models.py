@@ -55,6 +55,7 @@ class Item(models.Model):
     stock_min = models.IntegerField("Stock Minimum", default=5)
     alert_sent = models.BooleanField(default=False)
     location = models.ForeignKey('Warehouse', null=True, on_delete=models.SET_NULL)
+    alert_sent = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.name} - Category: {self.category}, Quantity: {self.quantity}"
