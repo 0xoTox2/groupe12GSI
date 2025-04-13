@@ -1,0 +1,23 @@
+{% extends "store/base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Détails de la Commande #{{ order.id }}</h2>
+    
+    <div class="card">
+        <div class="card-body">
+            <p><strong>Client:</strong> {{ order.customer.name }}</p>
+            <p><strong>Produit:</strong> {{ order.product.name }}</p>
+            <p><strong>Quantité:</strong> {{ order.quantity }}</p>
+            <p><strong>Date de commande:</strong> {{ order.order_date|date:"d/m/Y H:i" }}</p>
+            <p><strong>Date de livraison prévue:</strong> {{ order.delivery_date|date:"d/m/Y H:i" }}</p>
+            <p><strong>Statut:</strong> {{ order.get_status_display }}</p>
+            <p><strong>Notes:</strong> {{ order.notes|default:"-" }}</p>
+        </div>
+    </div>
+    
+    <a href="{% url 'client-orders-list' %}" class="btn btn-secondary mt-3">
+        <i class="fas fa-arrow-left"></i> Retour à la liste
+    </a>
+</div>
+{% endblock %}

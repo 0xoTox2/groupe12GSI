@@ -181,6 +181,28 @@ from django.contrib import messages
 from django.db.models import F, Sum
 from .models import Nomenclature, Fabrication, Item, Category
 
+from .forms import FinishedProductUpdateForm
+from django import forms
+class FinishedProductUpdateView(LoginRequiredMixin, UpdateView):
+    model = Item
+    form_class = FinishedProductUpdateForm
+    template_name = "store/finished_product_update.html"
+    success_url = reverse_lazy("productslist")
+
+    def get_queryset(self):
+        # Ne permet la mise à jour que des produits finis
+        return super().get_queryset().filter(is_finished_product=True)
+    
+def finished_products_list(request):
+    # Récupérer tous les produits finis avec leurs fabrications préchargées
+    finished_products = Item.objects.filter(is_finished_product=True).prefetch_related('fabrications')
+    
+    # Contexte pour le template
+    context = {
+        'finished_products': finished_products,
+    }
+    return render(request, 'store/finished_products_list.html', context)
+
 def fabrication(request):
     # Récupérer toutes les nomenclatures existantes
     nomenclatures = Nomenclature.objects.all()
@@ -283,8 +305,14 @@ def fabrication(request):
     # Récupérer la liste des produits pour le filtre
     products = Nomenclature.objects.values_list("product__name", flat=True).distinct()
 
+    pending_order_fabrications = Fabrication.objects.filter(
+        origin_order__isnull=False, 
+        is_confirmed=False).select_related('origin_order', 'product', 'origin_order__customer')
     # Contexte pour masquer la sidebar et passer les données
+    total_fabrications = Fabrication.objects.count()
     context = {
+        'total_fabrications': total_fabrications,
+        "pending_order_fabrications": pending_order_fabrications,
         "hide_sidebar": True,
         "nomenclatures": nomenclatures,
         "products": products,
@@ -369,26 +397,14 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class ProductUpdateView(LoginRequiredMixin,  UpdateView):
-    """
-    View class to update product information.
-
-    Attributes:
-    - model: The model associated with the view.
-    - template_name: The HTML template used for rendering the view.
-    - fields: The fields to be updated.
-    - success_url: The URL to redirect to upon successful form submission.
-    """
-
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Item
     template_name = "store/productupdate.html"
     form_class = ItemForm
-    ssuccess_url = reverse_lazy("productslist")
+    success_url = reverse_lazy("productslist")  # Correction ici (enlevé le double 's')
 
     def test_func(self):
-        # Autoriser tous les utilisateurs authentifiés à mettre à jour
         return self.request.user.is_authenticated
-
 
 
 class ProductDeleteView(LoginRequiredMixin,  DeleteView):
@@ -607,3 +623,184 @@ class FinishedProductCreateView(LoginRequiredMixin, CreateView):
         form.instance.category = default_category  # Associer la catégorie par défaut
         form.instance.is_finished_product = True  # Marquer comme produit fini
         return super().form_valid(form)
+
+from .models import ClientOrder
+from .forms import ClientOrderForm
+from django.shortcuts import get_object_or_404
+class ClientOrderListView(LoginRequiredMixin, ListView):
+    model = ClientOrder
+    template_name = 'store/client_orders_list.html'
+    context_object_name = 'orders'
+    ordering = ['-order_date']
+    paginate_by = 10
+
+
+class ClientOrderCreateView(LoginRequiredMixin, CreateView):
+    model = ClientOrder  # Ajout du modèle
+    form_class = ClientOrderForm  # Utilisation du formulaire
+    template_name = 'store/client_order_form.html'  # Spécification du template
+    success_url = reverse_lazy('client-orders-list')  # URL de redirection après succès
+
+    def form_valid(self, form):
+        order = form.save(commit=False)
+        order.created_by = self.request.user
+        order.status = 'pending'
+        order.save()
+        
+        # Création de la fabrication associée
+        Fabrication.objects.create(
+            product=order.product,
+            quantity=order.quantity,
+            origin_order=order,
+            is_confirmed=False
+        )
+        
+        return super().form_valid(form)
+class ClientOrderDetailView(LoginRequiredMixin, DetailView):
+    model = ClientOrder
+    template_name = 'store/client_order_detail.html'
+    context_object_name = 'order'
+
+from django.contrib import messages
+from django.views import View
+class LaunchFabricationView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        fabrication = get_object_or_404(Fabrication, origin_order_id=pk)
+        order = fabrication.origin_order
+        
+        # Vérifier les matières premières
+        nomenclatures = Nomenclature.objects.filter(product=fabrication.product)
+        can_produce = True
+        
+        for nomenclature in nomenclatures:
+            if nomenclature.component.quantity < nomenclature.quantity * fabrication.quantity:
+                can_produce = False
+                break
+        
+        if can_produce:
+            # Diminuer les matières premières
+            for nomenclature in nomenclatures:
+                component = nomenclature.component
+                required = nomenclature.quantity * fabrication.quantity
+                component.quantity = F('quantity') - required
+                component.save()
+            
+            # Augmenter le produit fini
+            fabrication.product.quantity = F('quantity') + fabrication.quantity
+            fabrication.product.save()
+            
+            # Mettre à jour le statut
+            order.status = 'processing'
+            order.save()
+            
+            messages.success(request, "Fabrication lancée avec succès!")
+        else:
+            messages.error(request, "Stock insuffisant pour lancer la fabrication")
+        
+        return redirect('client-order-detail', pk=order.pk)
+    
+class DeliverOrderView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        order = get_object_or_404(ClientOrder, pk=pk)
+        
+        if order.status == 'ready':
+            # Diminuer le stock du produit fini
+            order.product.quantity = F('quantity') - order.quantity
+            order.product.save()
+            
+            order.status = 'delivered'
+            order.save()
+            messages.success(request, "Livraison confirmée!")
+        else:
+            messages.error(request, "La commande doit être prête avant livraison")
+        
+        return redirect('client-order-detail', pk=order.pk)
+class MarkAsReadyView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        order = get_object_or_404(ClientOrder, pk=pk)
+        if order.status == 'processing':
+            order.status = 'ready'
+            order.save()
+            messages.success(request, "Commande marquée comme prête!")
+        else:
+            messages.error(request, "La commande doit être en production")
+        return redirect('client-order-detail', pk=order.pk)
+    
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+import logging
+from django.utils import timezone
+from django.db import transaction
+logger = logging.getLogger(__name__)
+@csrf_exempt
+@require_POST
+@login_required
+def confirm_fabrication(request, fabrication_id):
+    logger.info(f"Confirmation de fabrication - ID: {fabrication_id}")
+    
+    # Vérification plus permissive des en-têtes
+    if not request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        logger.warning("Requête non-AJAX reçue")
+        return JsonResponse({'error': 'Requête non autorisée'}, status=403)
+
+    try:
+        fabrication = Fabrication.objects.select_related('product', 'origin_order').get(id=fabrication_id)
+        
+        if fabrication.is_confirmed:
+            return JsonResponse({
+                'success': False,
+                'message': 'Cette fabrication a déjà été confirmée'
+            }, status=400)
+
+        # Vérification des stocks avec verrouillage des lignes
+        with transaction.atomic():
+            nomenclatures = Nomenclature.objects.filter(
+                product=fabrication.product
+            ).select_related('component').select_for_update()
+            
+            stock_updates = []
+            for nom in nomenclatures:
+                required = nom.quantity * fabrication.quantity
+                if nom.component.quantity < required:
+                    return JsonResponse({
+                        'success': False,
+                        'message': f"Stock insuffisant de {nom.component.name}"
+                    }, status=400)
+                
+                # Mise à jour du stock
+                nom.component.quantity -= required
+                nom.component.save()
+                stock_updates.append({
+                    'component_id': nom.component.id,
+                    'new_quantity': nom.component.quantity
+                })
+
+            # Mise à jour du produit fini
+            fabrication.product.quantity += fabrication.quantity
+            fabrication.product.save()
+
+            # Confirmation de la fabrication
+            fabrication.is_confirmed = True
+            fabrication.confirmed_by = request.user
+            fabrication.confirmation_date = timezone.now()
+            fabrication.save()
+
+            if fabrication.origin_order:
+                fabrication.origin_order.status = 'processing'
+                fabrication.origin_order.save()
+
+        return JsonResponse({
+            'success': True,
+            'message': "Fabrication confirmée avec succès!",
+            'product_id': fabrication.product.id,
+            'new_quantity': fabrication.product.quantity,
+            'stock_updates': stock_updates,
+            'fabrication_count': Fabrication.objects.filter(is_confirmed=True).count()
+        })
+
+    except Fabrication.DoesNotExist:
+        return JsonResponse({'error': 'Fabrication non trouvée'}, status=404)
+    except Exception as e:
+        logger.exception("Erreur lors de la confirmation de fabrication")
+        return JsonResponse({'error': str(e)}, status=500)

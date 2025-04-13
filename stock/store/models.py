@@ -1,4 +1,4 @@
-"""
+""""
 Module: models.py
 
 Contains Django models for handling categories, items, and deliveries.
@@ -115,14 +115,58 @@ class Nomenclature(models.Model):
     def __str__(self):
         return f"{self.product.name} - {self.component.name} ({self.quantity})"
 
+from django.conf import settings
+# models.py
 class Fabrication(models.Model):
-    product = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="fabrications", verbose_name="Produit fini")
-    quantity = models.PositiveIntegerField(verbose_name="Quantité fabriquée")
-    date_created = models.DateTimeField(auto_now_add=True, verbose_name="Date de création")
+    product = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="fabrications")
+    quantity = models.PositiveIntegerField()
+    date_created = models.DateTimeField(auto_now_add=True)
+    origin_order = models.ForeignKey(
+        'ClientOrder', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='fabrications'
+    )
+    is_confirmed = models.BooleanField(default=False)
+    confirmed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    confirmation_date = models.DateTimeField(null=True, blank=True)
 
-    def __str__(self):
-        return f"{self.product.name} - {self.quantity} unités (le {self.date_created.strftime('%d/%m/%Y')})"
-    
+    class Meta:
+        ordering = ['-date_created']
+        
 class Warehouse(models.Model):
     name = models.CharField(max_length=100)
     address = models.TextField()
+
+# Supprimez l'import de forms.py en haut du fichier
+# Déplacez-le dans la méthode si nécessaire
+
+class ClientOrder(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'En attente'),
+        ('processing', 'En production'),
+        ('ready', 'Prêt'),
+        ('delivered', 'Livré'),
+        ('canceled', 'Annulée'),
+    ]
+    
+    customer = models.ForeignKey('accounts.Customer', on_delete=models.CASCADE)
+    product = models.ForeignKey('Item', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    order_date = models.DateTimeField(auto_now_add=True)
+    delivery_date = models.DateTimeField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    notes = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"Commande #{self.id} - {self.customer.name}"
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('client-order-detail', args=[str(self.id)])

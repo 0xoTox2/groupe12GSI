@@ -9,6 +9,7 @@ from . import views
 from .views import finished_products_list , fabrication_history
 from .views import FinishedProductCreateView, raw_materials_list
 from .views import (
+    FinishedProductUpdateView,
     ProductListView,
     ProductDetailView,
     ProductCreateView,
@@ -25,25 +26,37 @@ from .views import (
     CategoryDetailView,
     CategoryCreateView,
     CategoryUpdateView,
-    CategoryDeleteView
+    CategoryDeleteView,
+    ClientOrderListView,
+    ClientOrderCreateView, 
+    ClientOrderDetailView ,
+    LaunchFabricationView,
+    MarkAsReadyView,
+    DeliverOrderView,
+    confirm_fabrication
+    
 )
 
 # URL patterns
 urlpatterns = [
+    path('finished-product/update/<slug:slug>/', FinishedProductUpdateView.as_view(), name='finished-product-update'),
     path('module/',module, name='module'),
      path(
         'new-finished-product/',
         FinishedProductCreateView.as_view(),
         name='finished-product-create'
     ),
-
+   
     # Dashboard
     path('dashboard/',dashboard, name='dashboard'),
     path('stock/',stock, name='stock'),
     path('facturation/',facturation, name='facturation'),
     path('personnels/',personnels, name='personnels'),
     path('fournisseurs_clients/',fournisseurs_clients, name='fournisseurs_clients'),
-
+    path('client-orders/<int:pk>/launch/', LaunchFabricationView.as_view(), name='launch-fabrication'),
+    path('client-orders/<int:pk>/ready/', MarkAsReadyView.as_view(), name='mark-as-ready'),
+    path('client-orders/<int:pk>/deliver/', DeliverOrderView.as_view(), name='deliver-order'),
+    path('fabrication/confirm/<int:fabrication_id>/', confirm_fabrication, name='confirm-fabrication'),
     # Product URLs
     path(
         'products/',
@@ -143,6 +156,11 @@ urlpatterns = [
     path('raw-materials/', raw_materials_list, name='raw_materials_list'),
     path('fabrication-history/', fabrication_history, name='fabrication_history'),
     path('fabrication/', fabrication, name='fabrication'),
+
+    path('client-orders/', ClientOrderListView.as_view(), name='client-orders-list'),
+    path('client-orders/new/', ClientOrderCreateView.as_view(), name='client-order-create'),
+    path('client-orders/<int:pk>/', ClientOrderDetailView.as_view(), name='client-order-detail'),
+    
 ]
 
 

@@ -1,0 +1,31 @@
+{% extends "store/base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Nouvelle Commande Client</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.customer.label_tag }}
+            {{ form.customer }}
+        </div>
+        <div class="mb-3">
+            {{ form.product.label_tag }}
+            {{ form.product }}
+        </div>
+        <div class="mb-3">
+            {{ form.quantity.label_tag }}
+            {{ form.quantity }}
+        </div>
+        <div class="mb-3">
+            {{ form.delivery_date.label_tag }}
+            {{ form.delivery_date }}
+        </div>
+        <div class="mb-3">
+            {{ form.notes.label_tag }}
+            {{ form.notes }}
+        </div>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+    </form>
+</div>
+{% endblock %}

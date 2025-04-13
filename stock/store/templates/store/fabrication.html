@@ -8,111 +8,191 @@
         <main class="py-6 bg-surface-secondary">
             <div class="container-fluid">
                 <!-- Titre de la page -->
-                <h1>Fabrication</h1>
-
-                <!-- Partie 1 : Nomenclature -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h3 class="card-title">Nomenclature</h3>
+                <h1 class="mb-4">Fabrication</h1>
+                <div class="card-header">
+                    <h3 class="card-title">Statistiques de Fabrication</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>Total des fabrications: <span id="total-fabrications">{{ total_fabrications }}</span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p>Quantité totale produite: {{ total_quantity_produced }}</p>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <form method="post" action="{% url 'fabrication' %}">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="product_name" class="form-label">Produit fini</label>
-                                <input type="text" class="form-control" id="product_name" name="product_name" required placeholder="Nom du produit fini">
-                            </div>
+                </div>
+                <!-- Section 1 : Commandes en attente -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0"><i class="fas fa-clipboard-list me-2"></i>Commandes en attente de fabrication</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="border-0"># Commande</th>
+                                        <th class="border-0">Client</th>
+                                        <th class="border-0">Produit</th>
+                                        <th class="border-0">Quantité</th>
+                                        <th class="border-0">Date</th>
+                                        <th class="border-0 text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fabrication-orders">
+                                    {% if pending_order_fabrications %}
+                                        {% for fab in pending_order_fabrications %}
+                                        <tr id="fab-row-{{ fab.id }}">
+                                            <td>#{{ fab.origin_order.id }}</td>
+                                            <td>{{ fab.origin_order.customer.name }}</td>
+                                            <td>{{ fab.product.name }}</td>
+                                            <td>{{ fab.quantity }}</td>
+                                            <td>{{ fab.date_created|date:"d/m/Y" }}</td>
+                                            <td class="text-end">
+                                                <div class="btn-group btn-group-sm">
+                                                    <button class="btn btn-success confirm-btn" data-fab-id="{{ fab.id }}">
+                                                        <i class="fas fa-check"></i> Confirmer
+                                                    </button>
+                                                    <a href="{% url 'client-order-detail' fab.origin_order.id %}" 
+                                                       class="btn btn-info">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted py-4">
+                                                <i class="fas fa-check-circle me-2"></i>
+                                                Aucune commande en attente de fabrication
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
-                            <!-- Liste des éléments nécessaires -->
-                            <div id="components-list">
-                                <div class="component-item mb-3">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label for="component_1" class="form-label">Matière première</label>
-                                            <select class="form-control" name="component[]" required>
-                                                <option value="">Sélectionnez une matière première</option>
-                                                {% for item in raw_materials %}
-                                                    <option value="{{ item.id }}">{{ item.name }} (Stock: {{ item.quantity }})</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="quantity_1" class="form-label">Quantité nécessaire</label>
-                                            <input type="number" class="form-control" name="quantity[]" min="1" required placeholder="Quantité">
-                                        </div>
-                                        <div class="col-md-2 d-flex align-items-end">
-                                            <button type="button" class="btn btn-danger btn-remove-component" disabled>
-                                                <i class="fas fa-trash"></i> Supprimer
-                                            </button>
+                <!-- Section 2 : Gestion des nomenclatures -->
+                <div class="row">
+                    <!-- Partie création de nomenclature -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h3 class="card-title">Nomenclature</h3>
+                            </div>
+                            <div class="card-body">
+                                <form method="post" action="{% url 'fabrication' %}">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label for="product_name" class="form-label">Produit fini</label>
+                                        <input type="text" class="form-control" id="product_name" name="product_name" required placeholder="Nom du produit fini">
+                                    </div>
+
+                                    <div id="components-list">
+                                        <div class="component-item mb-3">
+                                            <div class="row g-2">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Matière première</label>
+                                                    <select class="form-control" name="component[]" required>
+                                                        <option value="">Sélectionnez une matière première</option>
+                                                        {% for item in raw_materials %}
+                                                            <option value="{{ item.id }}">{{ item.name }} (Stock: {{ item.quantity }})</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Quantité nécessaire</label>
+                                                    <input type="number" class="form-control" name="quantity[]" min="1" required placeholder="Quantité">
+                                                </div>
+                                                <div class="col-md-2 d-flex align-items-end">
+                                                    <button type="button" class="btn btn-danger btn-remove-component" disabled>
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
+
+                                    <button type="button" id="add-component" class="btn btn-outline-secondary mb-3">
+                                        <i class="fas fa-plus"></i> Ajouter une matière première
+                                    </button>
+
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-save"></i> Enregistrer la nomenclature
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Partie nomenclatures existantes -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h3 class="card-title">Nomenclatures enregistrées</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Produit fini</th>
+                                                <th>Matière première</th>
+                                                <th>Quantité nécessaire</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for nomenclature in nomenclatures %}
+                                            <tr>
+                                                <td>{{ nomenclature.product.name }}</td>
+                                                <td>{{ nomenclature.component.name }}</td>
+                                                <td>{{ nomenclature.quantity }}</td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="3" class="text-center text-muted">Aucune nomenclature enregistrée</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-
-                            <!-- Bouton pour ajouter un nouvel élément -->
-                            <button type="button" id="add-component" class="btn btn-secondary mb-3">
-                                <i class="fas fa-plus"></i> Ajouter une matière première
-                            </button>
-
-                            <!-- Bouton pour soumettre le formulaire -->
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Enregistrer la nomenclature
-                            </button>
-                        </form>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Affichage des nomenclatures existantes -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h3 class="card-title">Nomenclatures enregistrées</h3>
-                    </div>
-                    <div class="card-body">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Produit fini</th>
-                                    <th>Matière première</th>
-                                    <th>Quantité nécessaire</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for nomenclature in nomenclatures %}
-                                <tr>
-                                    <td>{{ nomenclature.product.name }}</td>
-                                    <td>{{ nomenclature.component.name }}</td>
-                                    <td>{{ nomenclature.quantity }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Partie 2 : Lancement de la fabrication -->
+                <!-- Section 3 : Lancement de fabrication manuelle -->
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Lancement de la fabrication</h3>
+                        <h3 class="card-title">Lancement de fabrication</h3>
                     </div>
                     <div class="card-body">
                         <form method="post" action="{% url 'fabrication' %}">
                             {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="product_to_manufacture" class="form-label">Produit à fabriquer</label>
-                                <select class="form-control" id="product_to_manufacture" name="product_to_manufacture" required>
-                                    <option value="">Sélectionnez un produit</option>
-                                    {% for product in products %}
-                                        <option value="{{ product }}">{{ product }}</option>
-                                    {% endfor %}
-                                </select>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="product_to_manufacture" class="form-label">Produit à fabriquer</label>
+                                    <select class="form-control" id="product_to_manufacture" name="product_to_manufacture" required>
+                                        <option value="">Sélectionnez un produit</option>
+                                        {% for product in products %}
+                                            <option value="{{ product }}">{{ product }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="quantity" class="form-label">Quantité</label>
+                                    <input type="number" class="form-control" id="quantity" name="quantity" min="1" required placeholder="Quantité">
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-success w-100">
+                                        <i class="fas fa-play"></i> Lancer
+                                    </button>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="quantity" class="form-label">Quantité à fabriquer</label>
-                                <input type="number" class="form-control" id="quantity" name="quantity" min="1" required placeholder="Quantité">
-                            </div>
-                            <button type="submit" class="btn btn-success">
-                                <i class="fas fa-play"></i> Lancer la fabrication
-                            </button>
                         </form>
                     </div>
                 </div>
@@ -121,59 +201,187 @@
     </div>
 </div>
 
-<!-- Script pour gérer les éléments dynamiques -->
+<!-- Toast container -->
+<div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 11"></div>
+
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const componentsList = document.getElementById("components-list");
-        const addComponentButton = document.getElementById("add-component");
+document.addEventListener("DOMContentLoaded", function () {
+    // Gestion des composants dynamiques
+    const componentsList = document.getElementById("components-list");
+    const addComponentButton = document.getElementById("add-component");
+    let componentCounter = 1;
 
-        // Compteur pour générer des IDs uniques
-        let componentCounter = 1;
-
-        // Ajouter un nouvel élément
-        addComponentButton.addEventListener("click", function () {
-            componentCounter++;
-
-            const newComponent = document.createElement("div");
-            newComponent.classList.add("component-item", "mb-3");
-
-            newComponent.innerHTML = `
-                <div class="row">
-                    <div class="col-md-6">
-                        <label for="component_${componentCounter}" class="form-label">Matière première</label>
-                        <select class="form-control" name="component[]" required>
-                            <option value="">Sélectionnez une matière première</option>
-                            {% for item in raw_materials %}
-                                <option value="{{ item.id }}">{{ item.name }} (Stock: {{ item.quantity }})</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="quantity_${componentCounter}" class="form-label">Quantité nécessaire</label>
-                        <input type="number" class="form-control" name="quantity[]" min="1" required placeholder="Quantité">
-                    </div>
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button type="button" class="btn btn-danger btn-remove-component">
-                            <i class="fas fa-trash"></i> Supprimer
-                        </button>
-                    </div>
+    // Ajouter un nouvel élément
+    addComponentButton.addEventListener("click", function () {
+        componentCounter++;
+        const newComponent = document.createElement("div");
+        newComponent.classList.add("component-item", "mb-3");
+        
+        newComponent.innerHTML = `
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <label class="form-label">Matière première</label>
+                    <select class="form-control" name="component[]" required>
+                        <option value="">Sélectionnez une matière première</option>
+                        {% for item in raw_materials %}
+                            <option value="{{ item.id }}">{{ item.name }} (Stock: {{ item.quantity }})</option>
+                        {% endfor %}
+                    </select>
                 </div>
-            `;
+                <div class="col-md-4">
+                    <label class="form-label">Quantité nécessaire</label>
+                    <input type="number" class="form-control" name="quantity[]" min="1" required placeholder="Quantité">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-danger btn-remove-component">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
 
-            componentsList.appendChild(newComponent);
+        componentsList.appendChild(newComponent);
+        document.querySelectorAll(".btn-remove-component").forEach(button => button.disabled = false);
+    });
 
-            // Activer le bouton de suppression pour tous les éléments sauf le premier
-            const removeButtons = document.querySelectorAll(".btn-remove-component");
-            removeButtons.forEach(button => button.disabled = false);
-        });
-
-        // Supprimer un élément
-        componentsList.addEventListener("click", function (event) {
-            if (event.target.classList.contains("btn-remove-component")) {
-                const componentItem = event.target.closest(".component-item");
-                componentItem.remove();
+    // Supprimer un élément
+    componentsList.addEventListener("click", function (event) {
+        if (event.target.classList.contains("btn-remove-component")) {
+            const componentItem = event.target.closest(".component-item");
+            componentItem.remove();
+            
+            // Désactiver le bouton de suppression s'il ne reste qu'un élément
+            if (document.querySelectorAll(".component-item").length === 1) {
+                document.querySelector(".btn-remove-component").disabled = true;
             }
+        }
+    });
+
+    // Confirmer une fabrication
+    document.querySelectorAll('.confirm-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const fabId = this.dataset.fabId;
+            confirmFabrication(fabId);
         });
     });
+
+    // fabrication.html
+function confirmFabrication(fabId) {
+    const csrfToken = getCookie('csrftoken'); // Utilisation d'une fonction plus fiable
+    const btn = document.querySelector(`button[data-fab-id="${fabId}"]`);
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement...';
+
+    // Configuration de la requête
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': csrfToken,
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include' // Important pour les cookies
+    };
+
+    fetch(`/store/fabrication/confirm/${fabId}/`, requestOptions)
+    .then(handleResponse)
+    .then(handleSuccess)
+    .catch(handleError);
+
+    function handleResponse(response) {
+        if (!response.ok) {
+            return response.json().then(err => { 
+                throw new Error(err.error || err.message || 'Erreur serveur'); 
+            });
+        }
+        return response.json();
+    }
+
+    function handleSuccess(data) {
+        if(data.success) {
+            // Suppression de la ligne
+            const row = document.getElementById(`fab-row-${fabId}`);
+            if (row) row.remove();
+            
+            // Mise à jour des compteurs
+            updateCounters(data);
+            
+            // Mise à jour des stocks
+            updateStocks(data.stock_updates);
+            
+            showToast('success', data.message);
+            checkEmptyTable();
+        } else {
+            throw new Error(data.message);
+        }
+    }
+
+    function handleError(error) {
+        showToast('error', error.message);
+        console.error('Erreur:', error);
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check"></i> Confirmer';
+    }
+
+    // Fonction pour récupérer le cookie CSRF
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function updateCounters(data) {
+        const totalFabElement = document.getElementById('total-fabrications');
+        if (totalFabElement && data.fabrication_count) {
+            totalFabElement.textContent = data.fabrication_count;
+        }
+    }
+
+    function updateStocks(stockUpdates) {
+        if (stockUpdates) {
+            stockUpdates.forEach(update => {
+                const stockElements = document.querySelectorAll(`[data-component-id="${update.component_id}"]`);
+                stockElements.forEach(el => {
+                    el.textContent = update.new_quantity;
+                });
+            });
+        }
+    }
+
+    function checkEmptyTable() {
+        if (document.querySelectorAll('#fabrication-orders tr:not(.no-orders)').length === 0) {
+            document.querySelector('#fabrication-orders').innerHTML = `
+                <tr class="no-orders">
+                    <td colspan="6" class="text-center text-muted py-4">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Aucune commande en attente de fabrication
+                    </td>
+                </tr>`;
+        }
+    }
+}
+
+    function showToast(type, message) {
+        const toast = `<div class="toast align-items-center text-white bg-${type} border-0 show" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>`;
+        
+        document.getElementById('toast-container').innerHTML = toast;
+        setTimeout(() => document.querySelector('.toast')?.remove(), 3000);
+    }
+});
 </script>
-{% endblock content %}
+{% endblock %}

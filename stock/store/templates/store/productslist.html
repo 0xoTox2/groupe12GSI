@@ -155,6 +155,7 @@
 </div>
 
 <!-- Section Produits finis -->
+<!-- Section Produits finis -->
 <div class="container my-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="page-title">
@@ -186,8 +187,8 @@
                 <th>Catégorie</th>
                 <th>Quantité</th>
                 <th>Prix</th>
-                <th>Expiration</th>
-                <th>Fournisseur</th>
+                <th>Date de fabrication</th>
+                <th>Producteur</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -199,11 +200,17 @@
                 <td>{{ item.category }}</td>
                 <td>{{ item.quantity }}</td>
                 <td>{{ item.price }}</td>
-                <td>{{ item.expiring_date|date:"d/m/Y" }}</td>
-                <td>{{ item.vendor }}</td>
+                <td>
+                    {% if item.fabrications.first %}
+                        {{ item.fabrications.first.date_created|date:"d/m/Y" }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+                <td>Optistock</td>
                 <td>
                     <div class="action-icons">
-                        <a class="text-info" href="{% url 'product-update' item.slug %}" title="Modifier">
+                        <a class="text-info" href="{% url 'finished-product-update' item.slug %}" title="Modifier">
                             <i class="fa-solid fa-pen"></i>
                         </a>
                         <a class="text-danger" href="{% url 'product-delete' item.slug %}" title="Supprimer">

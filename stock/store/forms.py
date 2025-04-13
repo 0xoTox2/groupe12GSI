@@ -137,9 +137,47 @@ class FinishedProductForm(forms.ModelForm):
             'category': forms.Select(attrs={'class': 'form-control'}),
         }
 
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['is_finished_product'] = forms.BooleanField(
             initial=True,  # Définir la valeur par défaut à True
             widget=forms.HiddenInput()  # Masquer le champ dans le formulaire
         )
+
+from django import forms
+from .models import Item
+
+class FinishedProductUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Item
+        fields = ['name', 'description', 'quantity', 'price', 'category']  # Uniquement les champs modifiables
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Ajouter des informations non modifiables
+        self.fields['production_date'] = forms.CharField(
+            label="Date de production",
+            disabled=True,
+            initial=self.instance.fabrications.first().date_created.strftime('%d/%m/%Y') if self.instance.fabrications.exists() else "N/A"
+        )
+        self.fields['producer'] = forms.CharField(
+            label="Producteur",
+            disabled=True,
+            initial="Optistock"
+        )
+
+from django import forms
+from .models import ClientOrder  # Cet import doit rester
+
+class ClientOrderForm(forms.ModelForm):
+    class Meta:
+        model = ClientOrder
+        fields = ['customer', 'product', 'quantity', 'delivery_date', 'notes']
+        widgets = {
+            'delivery_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['product'].queryset = self.fields['product'].queryset.filter(is_finished_product=True)

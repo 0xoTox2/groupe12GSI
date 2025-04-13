@@ -1,0 +1,41 @@
+
+{% extends "store/base.html" %}
+{% block title %}Liste des Produits Finis{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <h1>Liste des Produits Finis</h1>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Quantité</th>
+                    <th>Dernière Fabrication</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in finished_products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td class="product-quantity" data-product-id="{{ product.id }}">
+                        {{ product.quantity }}
+                    </td>
+                    <td>
+                        {% if product.fabrications.exists %}
+                            {{ product.fabrications.first.date_created|date:"d/m/Y H:i" }}
+                        {% else %}
+                            Jamais fabriqué
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center text-muted">Aucun produit fini enregistré</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}

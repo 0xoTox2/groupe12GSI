@@ -1,0 +1,74 @@
+{% extends "store/base.html" %}
+{% load static %}
+
+{% block title %}Mise à jour produit fini{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-lg border-0 rounded-3" style="background-color: #f5f5f5;">
+                <div class="card-body">
+                    <h1 class="text-center mb-4" style="color: #4b3c2f;">
+                        Mise à jour du produit fini
+                    </h1>
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <!-- Champs non modifiables -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Date de production</label>
+                                <input type="text" class="form-control" value="{{ form.production_date.value }}" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Producteur</label>
+                                <input type="text" class="form-control" value="{{ form.producer.value }}" disabled>
+                            </div>
+                        </div>
+                        
+                        <!-- Champs modifiables -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.name.label_tag }}
+                                {{ form.name }}
+                                {{ form.name.errors }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.category.label_tag }}
+                                {{ form.category }}
+                                {{ form.category.errors }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.description.label_tag }}
+                            {{ form.description }}
+                            {{ form.description.errors }}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.quantity.label_tag }}
+                                {{ form.quantity }}
+                                {{ form.quantity.errors }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.price.label_tag }}
+                                {{ form.price }}
+                                {{ form.price.errors }}
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-save me-2"></i>Enregistrer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
