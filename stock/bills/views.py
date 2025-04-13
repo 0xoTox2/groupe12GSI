@@ -87,3 +87,14 @@ class BillDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def get_success_url(self):
         """Redirect to the list of bills after successful deletion."""
         return reverse('bill_list')
+    
+# Dans views.py
+from django.views.generic import DetailView  # Ajoutez cette importation
+
+class BillDetailView(LoginRequiredMixin, DetailView):
+    """View for displaying bill details."""
+    model = Bill
+    template_name = 'bills/bill_detail.html'
+    context_object_name = 'bill'
+    slug_field = 'slug'
+    slug_url_kwarg = 'slug'

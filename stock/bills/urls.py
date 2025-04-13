@@ -6,7 +6,8 @@ from .views import (
     BillListView,
     BillCreateView,
     BillUpdateView,
-    BillDeleteView
+    BillDeleteView,
+    BillDetailView
 )
 
 # URL patterns
@@ -28,4 +29,5 @@ urlpatterns = [
         BillDeleteView.as_view(),
         name='bill_delete'
     ),
+    path('bill/<slug:slug>/', BillDetailView.as_view(), name='bill-detail')
 ]

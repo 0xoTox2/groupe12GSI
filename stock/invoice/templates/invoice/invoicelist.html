@@ -56,6 +56,9 @@
                         <a class="text-danger float-end" href="{% url 'invoice-delete' invoice.pk %}">
                             <i class="fa-solid fa-trash"></i>
                         </a>
+                        <a class="btn btn-sm btn-outline-success" href="{% url 'invoice-detail' invoice.slug %}">
+                            <i class="fa-solid fa-file-invoice me-1"></i> 
+                        </a>
                     </td>
                 </tr>
                 {% endfor %}
