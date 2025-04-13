@@ -10,222 +10,660 @@
         <!-- Main -->
         <main class="py-6 bg-surface-secondary">
             <div class="container-fluid">
-                <!-- Card stats -->
-                <div class="row g-6 mb-6">
-                    <style>
-                        a {
-                            text-decoration: none;
-                        }
-                    </style>
-
-                    <!-- Carte pour les Produits -->
-                    <div class="col-xl-3 col-sm-6 col-12" id="products">
-                        <a href="{% url 'productslist' %}">
-                            <div class="card shadow border-0">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col">
-                                            <span class="h6 font-semibold text-muted text-sm d-block mb-2">Produits</span>
-                                            <span class="h3 font-bold mb-0">{{ total_items }}</span>
-                                        </div>
-                                        <div class="col-auto">
-                                            <div class="icon icon-shape bg-tertiary text-white text-lg rounded-circle">
-                                                <i class="fa fa-clipboard-list"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="mt-2 mb-0 text-sm">
-                                        <span class="text-nowrap text-xs text-muted">depuis dernier mois</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <!-- Carte pour le Personnel -->
-                    <div class="col-xl-3 col-sm-6 col-12" id="profiles">
-                        <a href="{% url 'profile_list' %}">
-                            <div class="card shadow border-0">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col">
-                                            <span class="h6 font-semibold text-muted text-sm d-block mb-2">Personnel</span>
-                                            <span class="h3 font-bold mb-0">{{ profiles_count }}</span>
-                                        </div>
-                                        <div class="col-auto">
-                                            <div class="icon icon-shape bg-primary text-white text-lg rounded-circle">
-                                                <i class="fa-solid fa fa-users"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="mt-2 mb-0 text-sm">
-                                        <span class="text-nowrap text-xs text-muted">depuis dernier mois</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <!-- Carte pour les Livraisons -->
-                    <div class="col-xl-3 col-sm-6 col-12" id="deliveries">
-                        <a href="{% url 'deliveries' %}">
-                            <div class="card shadow border-0">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col">
-                                            <span class="h6 font-semibold text-muted text-sm d-block mb-2">Livraison en cours</span>
-                                            <span class="h3 font-bold mb-0">{{ delivery.count }}</span>
-                                        </div>
-                                        <div class="col-auto">
-                                            <div class="icon icon-shape bg-info text-white text-lg rounded-circle">
-                                                <i class="fa fa-truck"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="mt-2 mb-0 text-sm">
-                                        <span class="text-nowrap text-xs text-muted">depuis dernier mois</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <!-- Carte pour les Ventes -->
-                    <div class="col-xl-3 col-sm-6 col-12" id="sales">
-                        <a href="{% url 'saleslist' %}">
-                            <div class="card shadow border-0">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col">
-                                            <span class="h6 font-semibold text-muted text-sm d-block mb-2">Ventes</span>
-                                            <span class="h3 font-bold mb-0">{{ sales.count }}</span>
-                                        </div>
-                                        <div class="col-auto">
-                                            <div class="icon icon-shape bg-warning text-white text-lg rounded-circle">
-                                                <i class="fa fa-shopping-cart"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="mt-2 mb-0 text-sm">
-                                        <span class="text-nowrap text-xs text-muted">depuis dernier mois</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <!-- Carte pour les Produits Finis -->
-                    <div class="col-xl-3 col-sm-6 col-12" id="finished-products">
-                        <a href="{% url 'finished_products_list' %}">
-                            <div class="card shadow border-0">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col">
-                                            <span class="h6 font-semibold text-muted text-sm d-block mb-2">Produits Finis</span>
-                                            <span class="h3 font-bold mb-0">{{ total_finished_products }}</span>
-                                        </div>
-                                        <div class="col-auto">
-                                            <div class="icon icon-shape bg-success text-white text-lg rounded-circle">
-                                                <i class="fa fa-box"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="mt-2 mb-0 text-sm">
-                                        <span class="text-nowrap text-xs text-muted">depuis dernier mois</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <!-- Carte pour les Matières Premières -->
-                    <div class="col-xl-3 col-sm-6 col-12" id="raw-materials">
-                        <a href="{% url 'raw_materials_list' %}">
-                            <div class="card shadow border-0">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col">
-                                            <span class="h6 font-semibold text-muted text-sm d-block mb-2">Matières Premières</span>
-                                            <span class="h3 font-bold mb-0">{{ total_raw_materials }}</span>
-                                        </div>
-                                        <div class="col-auto">
-                                            <div class="icon icon-shape bg-danger text-white text-lg rounded-circle">
-                                                <i class="fa fa-cubes"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="mt-2 mb-0 text-sm">
-                                        <span class="text-nowrap text-xs text-muted">depuis dernier mois</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <!-- Carte pour les Fabrications Récentes -->
-                    <div class="col-xl-3 col-sm-6 col-12" id="recent-fabrications">
-                        <a href="{% url 'fabrication_history' %}">
-                            <div class="card shadow border-0">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col">
-                                            <span class="h6 font-semibold text-muted text-sm d-block mb-2">Fabrications Récentes</span>
-                                            <span class="h3 font-bold mb-0">{{ recent_fabrications.count }}</span>
-                                        </div>
-                                        <div class="col-auto">
-                                            <div class="icon icon-shape bg-info text-white text-lg rounded-circle">
-                                                <i class="fa fa-industry"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="mt-2 mb-0 text-sm">
-                                        <span class="text-nowrap text-xs text-muted">depuis dernier mois</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Graphique des Stocks -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h3 class="card-title">Répartition des catégories</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="pieChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Graphique des Ventes -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h3 class="card-title">Ventes au fil du temps</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="lineChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Alertes de Stock Faible -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h3 class="card-title">Alertes de Stock Faible</h3>
-                    </div>
-                    <div class="card-body">
-                        {% if low_stock_alerts %}
-                        <ul>
-                            {% for item in low_stock_alerts %}
-                            <li>{{ item.name }} : {{ item.quantity }} unités restantes</li>
-                            {% endfor %}
+                <!-- Navigation tabs -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">
+                                    <i class="fas fa-chart-pie me-2"></i>Aperçu Global
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="inventory-tab" data-bs-toggle="tab" data-bs-target="#inventory" type="button" role="tab" aria-controls="inventory" aria-selected="false">
+                                    <i class="fas fa-boxes me-2"></i>Inventaire
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="sales-tab" data-bs-toggle="tab" data-bs-target="#sales" type="button" role="tab" aria-controls="sales" aria-selected="false">
+                                    <i class="fas fa-shopping-cart me-2"></i>Ventes
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="production-tab" data-bs-toggle="tab" data-bs-target="#production" type="button" role="tab" aria-controls="production" aria-selected="false">
+                                    <i class="fas fa-industry me-2"></i>Production
+                                </button>
+                            </li>
                         </ul>
-                        {% else %}
-                        <p>Aucune alerte de stock faible.</p>
-                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Tab content -->
+                <div class="tab-content" id="dashboardTabsContent">
+                    <!-- Overview Tab -->
+                    <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                        <div class="row g-4 mb-4">
+                            <!-- Carte pour les Ventes -->
+                            <div class="col-xl-3 col-sm-6 col-12">
+                                <div class="card shadow border-0 h-100">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col">
+                                                <span class="h6 font-semibold text-muted text-sm d-block mb-2">Ventes Total</span>
+                                                <span class="h3 font-bold mb-0">{{ sales.count }}</span>
+                                            </div>
+                                            <div class="col-auto">
+                                                <div class="icon icon-shape bg-warning text-white rounded-circle">
+                                                    <i class="fas fa-shopping-cart"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <span class="badge bg-soft-success text-success">
+                                                <i class="fas fa-arrow-up"></i>
+                                                <span class="text-nowrap">12% depuis dernier mois</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Carte pour le Stock Total -->
+                            <div class="col-xl-3 col-sm-6 col-12">
+                                <div class="card shadow border-0 h-100">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col">
+                                                <span class="h6 font-semibold text-muted text-sm d-block mb-2">Stock Total</span>
+                                                <span class="h3 font-bold mb-0">{{ total_items }}</span>
+                                            </div>
+                                            <div class="col-auto">
+                                                <div class="icon icon-shape bg-info text-white rounded-circle">
+                                                    <i class="fas fa-warehouse"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <span class="badge bg-soft-danger text-danger">
+                                                <i class="fas fa-arrow-down"></i>
+                                                <span class="text-nowrap">5% depuis dernier mois</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Carte pour la Production -->
+                            <div class="col-xl-3 col-sm-6 col-12">
+                                <div class="card shadow border-0 h-100">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col">
+                                                <span class="h6 font-semibold text-muted text-sm d-block mb-2">Production</span>
+                                                <span class="h3 font-bold mb-0">{{ recent_fabrications.count }}</span>
+                                            </div>
+                                            <div class="col-auto">
+                                                <div class="icon icon-shape bg-primary text-white rounded-circle">
+                                                    <i class="fas fa-industry"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <span class="badge bg-soft-success text-success">
+                                                <i class="fas fa-arrow-up"></i>
+                                                <span class="text-nowrap">8% depuis dernier mois</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Carte pour les Livraisons -->
+                            <div class="col-xl-3 col-sm-6 col-12">
+                                <div class="card shadow border-0 h-100">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col">
+                                                <span class="h6 font-semibold text-muted text-sm d-block mb-2">Livraisons</span>
+                                                <span class="h3 font-bold mb-0">{{ delivery.count }}</span>
+                                            </div>
+                                            <div class="col-auto">
+                                                <div class="icon icon-shape bg-success text-white rounded-circle">
+                                                    <i class="fas fa-truck"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <span class="badge bg-soft-success text-success">
+                                                <i class="fas fa-arrow-up"></i>
+                                                <span class="text-nowrap">15% depuis dernier mois</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Charts Row -->
+                        <div class="row g-4 mb-4">
+                            <!-- Graphique des Ventes -->
+                            <div class="col-lg-8">
+                                <div class="card shadow h-100">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h3 class="card-title mb-0">Ventes au fil du temps</h3>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="salesChartDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Ce mois
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="salesChartDropdown">
+                                                <li><a class="dropdown-item" href="#">Cette semaine</a></li>
+                                                <li><a class="dropdown-item" href="#">Ce mois</a></li>
+                                                <li><a class="dropdown-item" href="#">Cette année</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="chart-container">
+                                            <canvas id="lineChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Graphique des Stocks -->
+                            <div class="col-lg-4">
+                                <div class="card shadow h-100">
+                                    <div class="card-header">
+                                        <h3 class="card-title mb-0">Répartition des stocks</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="chart-container">
+                                            <canvas id="pieChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Alerts and Recent Activity -->
+                        <div class="row g-4">
+                            <!-- Alertes de Stock Faible -->
+                            <div class="col-lg-6">
+                                <div class="card shadow h-100">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h3 class="card-title mb-0">Alertes de Stock</h3>
+                                        <span class="badge bg-danger">{{ low_stock_alerts|length }}</span>
+                                    </div>
+                                    <div class="card-body">
+                                        {% if low_stock_alerts %}
+                                        <div class="list-group list-group-flush">
+                                            {% for item in low_stock_alerts %}
+                                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                                <div>
+                                                    <h6 class="mb-1">{{ item.name }}</h6>
+                                                    <small class="text-muted">{{ item.category.name }}</small>
+                                                </div>
+                                                <span class="badge bg-soft-danger text-danger">{{ item.quantity }} unités</span>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        <div class="text-center py-4">
+                                            <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                                            <p class="text-muted">Aucune alerte de stock faible</p>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fabrications Récentes -->
+                            <div class="col-lg-6">
+                                <div class="card shadow h-100">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h3 class="card-title mb-0">Fabrications Récentes</h3>
+                                        <a href="{% url 'fabrication_history' %}" class="btn btn-sm btn-outline-primary">Voir tout</a>
+                                    </div>
+                                    <div class="card-body">
+                                        {% if recent_fabrications %}
+                                        <div class="list-group list-group-flush">
+                                            {% for fab in recent_fabrications|slice:":5" %}
+                                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                                <div>
+                                                    <h6 class="mb-1">{{ fab.product.name }}</h6>
+                                                    <small class="text-muted">{{ fab.date_created|date:"d/m/Y H:i" }}</small>
+                                                </div>
+                                                <span class="badge bg-soft-primary text-primary">{{ fab.quantity }} unités</span>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        <div class="text-center py-4">
+                                            <i class="fas fa-info-circle fa-3x text-info mb-3"></i>
+                                            <p class="text-muted">Aucune fabrication récente</p>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inventory Tab -->
+                    <div class="tab-pane fade" id="inventory" role="tabpanel" aria-labelledby="inventory-tab">
+                        <div class="row g-4 mb-4">
+                            <!-- Carte pour les Produits Finis -->
+                            <div class="col-xl-4 col-md-6 col-12">
+                                <a href="{% url 'finished_products_list' %}" class="text-decoration-none">
+                                    <div class="card shadow border-0 h-100">
+                                        <div class="card-body">
+                                            <div class="row align-items-center">
+                                                <div class="col">
+                                                    <span class="h6 font-semibold text-muted text-sm d-block mb-2">Produits Finis</span>
+                                                    <span class="h3 font-bold mb-0">{{ total_finished_products }}</span>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <div class="icon icon-shape bg-success text-white rounded-circle">
+                                                        <i class="fas fa-box"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3">
+                                                <span class="text-nowrap text-xs text-muted">Voir la liste complète</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <!-- Carte pour les Matières Premières -->
+                            <div class="col-xl-4 col-md-6 col-12">
+                                <a href="{% url 'raw_materials_list' %}" class="text-decoration-none">
+                                    <div class="card shadow border-0 h-100">
+                                        <div class="card-body">
+                                            <div class="row align-items-center">
+                                                <div class="col">
+                                                    <span class="h6 font-semibold text-muted text-sm d-block mb-2">Matières Premières</span>
+                                                    <span class="h3 font-bold mb-0">{{ total_raw_materials }}</span>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <div class="icon icon-shape bg-danger text-white rounded-circle">
+                                                        <i class="fas fa-cubes"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3">
+                                                <span class="text-nowrap text-xs text-muted">Voir la liste complète</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <!-- Carte pour les Alertes de Stock -->
+                            <div class="col-xl-4 col-md-6 col-12">
+                                <div class="card shadow border-0 h-100">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col">
+                                                <span class="h6 font-semibold text-muted text-sm d-block mb-2">Alertes Stock</span>
+                                                <span class="h3 font-bold mb-0">{{ low_stock_alerts|length }}</span>
+                                            </div>
+                                            <div class="col-auto">
+                                                <div class="icon icon-shape bg-warning text-white rounded-circle">
+                                                    <i class="fas fa-exclamation-triangle"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <span class="text-nowrap text-xs text-muted">Produits en rupture imminente</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Inventory Charts -->
+                        <div class="row g-4">
+                            <!-- Graphique des Catégories -->
+                            <div class="col-lg-8">
+                                <div class="card shadow h-100">
+                                    <div class="card-header">
+                                        <h3 class="card-title mb-0">Répartition par Catégories</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="chart-container">
+                                            <canvas id="inventoryBarChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Top Products -->
+                            <div class="col-lg-4">
+                                <div class="card shadow h-100">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h3 class="card-title mb-0">Top Produits</h3>
+                                        <a href="{% url 'productslist' %}" class="btn btn-sm btn-outline-primary">Voir tout</a>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="list-group list-group-flush">
+                                            {% for item in top_products|slice:":5" %}
+                                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                                <div>
+                                                    <h6 class="mb-1">{{ item.name }}</h6>
+                                                    <small class="text-muted">{{ item.category.name }}</small>
+                                                </div>
+                                                <span class="badge bg-soft-primary text-primary">{{ item.quantity }} unités</span>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sales Tab -->
+                    <div class="tab-pane fade" id="sales" role="tabpanel" aria-labelledby="sales-tab">
+                        <div class="row g-4 mb-4">
+                            <!-- Carte pour les Ventes Total -->
+                            <div class="col-xl-3 col-md-6 col-12">
+                                <div class="card shadow border-0 h-100">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col">
+                                                <span class="h6 font-semibold text-muted text-sm d-block mb-2">Ventes Total</span>
+                                                <span class="h3 font-bold mb-0">{{ sales.count }}</span>
+                                            </div>
+                                            <div class="col-auto">
+                                                <div class="icon icon-shape bg-primary text-white rounded-circle">
+                                                    <i class="fas fa-shopping-cart"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <span class="badge bg-soft-success text-success">
+                                                <i class="fas fa-arrow-up"></i>
+                                                <span class="text-nowrap">12% depuis dernier mois</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Carte pour le Chiffre d'Affaires -->
+                            <div class="col-xl-3 col-md-6 col-12">
+                                <div class="card shadow border-0 h-100">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col">
+                                                <span class="h6 font-semibold text-muted text-sm d-block mb-2">Chiffre d'Affaires</span>
+                                                <span class="h3 font-bold mb-0">{{ total_revenue|default:"0" }} €</span>
+                                            </div>
+                                            <div class="col-auto">
+                                                <div class="icon icon-shape bg-success text-white rounded-circle">
+                                                    <i class="fas fa-euro-sign"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <span class="badge bg-soft-success text-success">
+                                                <i class="fas fa-arrow-up"></i>
+                                                <span class="text-nowrap">8% depuis dernier mois</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Carte pour les Commandes -->
+                            <div class="col-xl-3 col-md-6 col-12">
+                                <div class="card shadow border-0 h-100">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col">
+                                                <span class="h6 font-semibold text-muted text-sm d-block mb-2">Commandes</span>
+                                                <span class="h3 font-bold mb-0">{{ client_orders.count }}</span>
+                                            </div>
+                                            <div class="col-auto">
+                                                <div class="icon icon-shape bg-info text-white rounded-circle">
+                                                    <i class="fas fa-clipboard-list"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <span class="text-nowrap text-xs text-muted">{{ pending_orders }} en attente</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Carte pour les Livraisons -->
+                            <div class="col-xl-3 col-md-6 col-12">
+                                <div class="card shadow border-0 h-100">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col">
+                                                <span class="h6 font-semibold text-muted text-sm d-block mb-2">Livraisons</span>
+                                                <span class="h3 font-bold mb-0">{{ delivery.count }}</span>
+                                            </div>
+                                            <div class="col-auto">
+                                                <div class="icon icon-shape bg-warning text-white rounded-circle">
+                                                    <i class="fas fa-truck"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <span class="badge bg-soft-success text-success">
+                                                <i class="fas fa-arrow-up"></i>
+                                                <span class="text-nowrap">15% depuis dernier mois</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sales Charts -->
+                        <div class="row g-4">
+                            <!-- Graphique des Ventes -->
+                            <div class="col-lg-8">
+                                <div class="card shadow h-100">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h3 class="card-title mb-0">Performance des Ventes</h3>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="salesPerformanceDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Ce mois
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="salesPerformanceDropdown">
+                                                <li><a class="dropdown-item" href="#">Cette semaine</a></li>
+                                                <li><a class="dropdown-item" href="#">Ce mois</a></li>
+                                                <li><a class="dropdown-item" href="#">Cette année</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="chart-container">
+                                            <canvas id="salesPerformanceChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Top Selling Products -->
+                            <div class="col-lg-4">
+                                <div class="card shadow h-100">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h3 class="card-title mb-0">Produits Populaires</h3>
+                                        <a href="{% url 'productslist' %}" class="btn btn-sm btn-outline-primary">Voir tout</a>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="list-group list-group-flush">
+                                            {% for product in top_selling_products|slice:":5" %}
+                                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                                <div>
+                                                    <h6 class="mb-1">{{ product.name }}</h6>
+                                                    <small class="text-muted">{{ product.category.name }}</small>
+                                                </div>
+                                                <span class="badge bg-soft-success text-success">{{ product.total_sold }} vendus</span>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Production Tab -->
+                    <div class="tab-pane fade" id="production" role="tabpanel" aria-labelledby="production-tab">
+                        <div class="row g-4 mb-4">
+                            <!-- Carte pour les Fabrications -->
+                            <div class="col-xl-3 col-md-6 col-12">
+                                <div class="card shadow border-0 h-100">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col">
+                                                <span class="h6 font-semibold text-muted text-sm d-block mb-2">Fabrications</span>
+                                                <span class="h3 font-bold mb-0">{{ recent_fabrications.count }}</span>
+                                            </div>
+                                            <div class="col-auto">
+                                                <div class="icon icon-shape bg-primary text-white rounded-circle">
+                                                    <i class="fas fa-industry"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <span class="text-nowrap text-xs text-muted">Voir l'historique</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Carte pour les Produits Finis -->
+                            <div class="col-xl-3 col-md-6 col-12">
+                                <div class="card shadow border-0 h-100">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col">
+                                                <span class="h6 font-semibold text-muted text-sm d-block mb-2">Produits Finis</span>
+                                                <span class="h3 font-bold mb-0">{{ total_finished_products }}</span>
+                                            </div>
+                                            <div class="col-auto">
+                                                <div class="icon icon-shape bg-success text-white rounded-circle">
+                                                    <i class="fas fa-box"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <span class="text-nowrap text-xs text-muted">En stock actuellement</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Carte pour les Matières Premières -->
+                            <div class="col-xl-3 col-md-6 col-12">
+                                <div class="card shadow border-0 h-100">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col">
+                                                <span class="h6 font-semibold text-muted text-sm d-block mb-2">Matières Premières</span>
+                                                <span class="h3 font-bold mb-0">{{ total_raw_materials }}</span>
+                                            </div>
+                                            <div class="col-auto">
+                                                <div class="icon icon-shape bg-info text-white rounded-circle">
+                                                    <i class="fas fa-cubes"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <span class="text-nowrap text-xs text-muted">Disponibles</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Carte pour les Commandes en Production -->
+                            <div class="col-xl-3 col-md-6 col-12">
+                                <div class="card shadow border-0 h-100">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col">
+                                                <span class="h6 font-semibold text-muted text-sm d-block mb-2">En Production</span>
+                                                <span class="h3 font-bold mb-0">{{ orders_in_production }}</span>
+                                            </div>
+                                            <div class="col-auto">
+                                                <div class="icon icon-shape bg-warning text-white rounded-circle">
+                                                    <i class="fas fa-cogs"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <span class="text-nowrap text-xs text-muted">Commandes en cours</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Production Content -->
+                        <div class="row g-4">
+                            <!-- Production Chart -->
+                            <div class="col-lg-8">
+                                <div class="card shadow h-100">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h3 class="card-title mb-0">Activité de Production</h3>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="productionChartDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Ce mois
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="productionChartDropdown">
+                                                <li><a class="dropdown-item" href="#">Cette semaine</a></li>
+                                                <li><a class="dropdown-item" href="#">Ce mois</a></li>
+                                                <li><a class="dropdown-item" href="#">Cette année</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="chart-container">
+                                            <canvas id="productionChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recent Productions -->
+                            <div class="col-lg-4">
+                                <div class="card shadow h-100">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h3 class="card-title mb-0">Productions Récentes</h3>
+                                        <a href="{% url 'fabrication_history' %}" class="btn btn-sm btn-outline-primary">Voir tout</a>
+                                    </div>
+                                    <div class="card-body">
+                                        {% if recent_fabrications %}
+                                        <div class="list-group list-group-flush">
+                                            {% for fab in recent_fabrications|slice:":5" %}
+                                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                                <div>
+                                                    <h6 class="mb-1">{{ fab.product.name }}</h6>
+                                                    <small class="text-muted">{{ fab.date_created|date:"d/m/Y H:i" }}</small>
+                                                </div>
+                                                <span class="badge bg-soft-primary text-primary">{{ fab.quantity }} unités</span>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        <div class="text-center py-4">
+                                            <i class="fas fa-info-circle fa-3x text-info mb-3"></i>
+                                            <p class="text-muted">Aucune production récente</p>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -244,9 +682,11 @@
 
 <!-- Inclure Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
 <!-- Inclure le fichier JavaScript externe -->
 <script src="{% static 'js/dashboard.js' %}"></script>
+
 <!-- Styles pour les graphiques -->
 <style>
 .chart-container {
@@ -255,9 +695,77 @@
     height: 400px;
 }
 
-#pieChart, #lineChart {
+#pieChart, #lineChart, #inventoryBarChart, #salesPerformanceChart, #productionChart {
     max-width: 100%;
     height: 100%;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0;
+}
+
+.nav-tabs .nav-link.active {
+    color: #0d6efd;
+    background-color: transparent;
+    border-bottom: 3px solid #0d6efd;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #0d6efd;
+    border-color: transparent;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.icon-shape {
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+}
+
+.bg-soft-primary {
+    background-color: rgba(13, 110, 253, 0.1) !important;
+    color: #0d6efd !important;
+}
+
+.bg-soft-success {
+    background-color: rgba(25, 135, 84, 0.1) !important;
+    color: #198754 !important;
+}
+
+.bg-soft-danger {
+    background-color: rgba(220, 53, 69, 0.1) !important;
+    color: #dc3545 !important;
+}
+
+.bg-soft-warning {
+    background-color: rgba(255, 193, 7, 0.1) !important;
+    color: #ffc107 !important;
+}
+
+.bg-soft-info {
+    background-color: rgba(13, 202, 240, 0.1) !important;
+    color: #0dcaf0 !important;
 }
 </style>
 

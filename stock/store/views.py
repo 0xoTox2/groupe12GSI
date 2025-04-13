@@ -112,56 +112,145 @@ def finished_products_list(request):
  
     return render(request, 'store/finished_products_list.html', context)
 
+from django.db.models import Sum, Count, F, Q
+from django.utils import timezone
+from datetime import timedelta
+
 def dashboard(request):
-    # Récupérer les produits finis et les matières premières
+    # 1. Données de base
+    profiles = Profile.objects.all()
+    items = Item.objects.all()
+    total_items = items.aggregate(total=Sum('quantity'))['total'] or 0
+    vendors = Vendor.objects.all()
+    deliveries = Delivery.objects.all()
+    sales = Sale.objects.all()
+    
+    # 2. Données pour les produits finis et matières premières
     finished_products = Item.objects.filter(is_finished_product=True)
     raw_materials = Item.objects.filter(is_finished_product=False)
-
-    # Statistiques de stock
+    
     total_finished_products = finished_products.aggregate(total=Sum('quantity'))['total'] or 0
     total_raw_materials = raw_materials.aggregate(total=Sum('quantity'))['total'] or 0
 
-    # Fabrications récentes
+    # 3. Fabrication et production
     recent_fabrications = Fabrication.objects.all().order_by('-date_created')[:5]
-
-    # Alertes de stock faible (par exemple, moins de 10 unités)
-    low_stock_alerts = Item.objects.filter(quantity__lt=10)
-
-    # Récupérer les données communes
-    profiles = Profile.objects.all()
-    items = Item.objects.all()
-    total_items = items.aggregate(Sum("quantity")).get("quantity__sum", 0.00)
+    total_fabrications = Fabrication.objects.count()
     
-    # Préparation des données pour les graphiques
-    category_counts = Category.objects.annotate(item_count=Count("item"))
+    # 4. Commandes clients
+    client_orders = ClientOrder.objects.all()
+    pending_orders = client_orders.filter(status='pending').count()
+    orders_in_production = client_orders.filter(status='processing').count()
+    completed_orders = client_orders.filter(status='delivered').count()
+
+    # 5. Alertes et stocks
+    low_stock_alerts = Item.objects.filter(quantity__lt=F('stock_min')).select_related('category')
+    critical_stock = Item.objects.filter(quantity__lt=5).count()
+    
+    # 6. Top produits (stock et ventes)
+    top_products = Item.objects.order_by('-quantity')[:5]
+    
+    # Calcul du chiffre d'affaires (30 derniers jours)
+    thirty_days_ago = timezone.now() - timedelta(days=30)
+    total_revenue = Sale.objects.filter(
+        date_added__gte=thirty_days_ago
+    ).aggregate(total=Sum('grand_total'))['total'] or 0
+    
+    # Top produits vendus - Utilisation de la relation saledetail visible dans l'erreur
+    top_selling_products = Item.objects.annotate(
+        total_sold=Sum('saledetail__quantity')
+    ).order_by('-total_sold').exclude(total_sold=None)[:5]
+
+    # 7. Données pour les graphiques
+    # Graphique circulaire - Répartition par catégorie
+    category_counts = Category.objects.annotate(
+        item_count=Count('item'),
+        total_quantity=Sum('item__quantity')
+    ).exclude(item_count=0)
+    
     categories = [cat.name for cat in category_counts]
-    category_counts_values = [cat.item_count for cat in category_counts]
+    category_quantities = [cat.total_quantity for cat in category_counts]
 
-    sale_dates = Sale.objects.values("date_added__date").annotate(total_sales=Sum("grand_total")).order_by("date_added__date")
-    sale_dates_labels = [date["date_added__date"].strftime("%Y-%m-%d") for date in sale_dates]
-    sale_dates_values = [float(date["total_sales"]) for date in sale_dates]
+    # Graphique linéaire - Ventes sur 30 jours
+    sale_dates = Sale.objects.filter(
+        date_added__gte=thirty_days_ago
+    ).values('date_added__date').annotate(
+        total_sales=Sum('grand_total')
+    ).order_by('date_added__date')
     
-    # Contexte pour le template
-    context = {
-        "items": items,
-        "profiles": profiles,
-        "profiles_count": profiles.count(),
-        "items_count": items.count(),
-        "total_items": total_items,
-        "vendors": Vendor.objects.all(),
-        "delivery": Delivery.objects.all(),
-        "sales": Sale.objects.all(),
-        "categories": categories,  # Données pour le graphique circulaire
-        "category_counts": category_counts_values,  # Données pour le graphique circulaire
-        "sale_dates_labels": sale_dates_labels,  # Données pour le graphique linéaire
-        "sale_dates_values": sale_dates_values,  # Données pour le graphique linéaire
-        "total_finished_products": total_finished_products,
-        "total_raw_materials": total_raw_materials,
-        "recent_fabrications": recent_fabrications,
-        "low_stock_alerts": low_stock_alerts,
-        "module_name": "achat",  # Ajout du module_name
-    }
+    sale_dates_labels = [date["date_added__date"].strftime("%d/%m") for date in sale_dates]
+    sale_dates_values = [float(date["total_sales"] or 0) for date in sale_dates]
 
+    # Graphique de production - Fabrications par jour (7 derniers jours)
+    seven_days_ago = timezone.now() - timedelta(days=7)
+    fabrications_by_day = Fabrication.objects.filter(
+        date_created__gte=seven_days_ago
+    ).values('date_created__date').annotate(
+        total=Count('id'),
+        quantity_sum=Sum('quantity')
+    ).order_by('date_created__date')
+    
+    fabrication_dates = [fab["date_created__date"].strftime("%d/%m") for fab in fabrications_by_day]
+    fabrication_counts = [fab["total"] for fab in fabrications_by_day]
+    fabrication_quantities = [fab["quantity_sum"] for fab in fabrications_by_day]
+
+    # 8. Calcul des tendances (pour les indicateurs %)
+    # Calcul simplifié - en pratique vous voudrez comparer avec la période précédente
+    sales_trend = 12  # % fictif pour l'exemple
+    stock_trend = -5   # % fictif pour l'exemple
+    production_trend = 8  # % fictif pour l'exemple
+    delivery_trend = 15  # % fictif pour l'exemple
+
+    # Contexte complet
+    context = {
+        # Données de base
+        'profiles_count': profiles.count(),
+        'items_count': items.count(),
+        'total_items': total_items,
+        'delivery_count': deliveries.count(),
+        'sales_count': sales.count(),
+        
+        # Produits finis/matières premières
+        'total_finished_products': total_finished_products,
+        'total_raw_materials': total_raw_materials,
+        
+        # Production
+        'recent_fabrications': recent_fabrications,
+        'total_fabrications': total_fabrications,
+        'fabrication_dates': fabrication_dates,
+        'fabrication_counts': fabrication_counts,
+        'fabrication_quantities': fabrication_quantities,
+        
+        # Commandes
+        'client_orders': client_orders,
+        'pending_orders': pending_orders,
+        'orders_in_production': orders_in_production,
+        'completed_orders': completed_orders,
+        
+        # Stocks
+        'low_stock_alerts': low_stock_alerts,
+        'critical_stock': critical_stock,
+        'top_products': top_products,
+        
+        # Ventes
+        'total_revenue': total_revenue,
+        'top_selling_products': top_selling_products,
+        'sale_dates_labels': sale_dates_labels,
+        'sale_dates_values': sale_dates_values,
+        
+        # Catégories
+        'categories': categories,
+        'category_quantities': category_quantities,
+        
+        # Tendances
+        'sales_trend': sales_trend,
+        'stock_trend': stock_trend,
+        'production_trend': production_trend,
+        'delivery_trend': delivery_trend,
+        
+        # Pour les graphiques
+        'thirty_days_ago': thirty_days_ago,
+    }
+    
     return render(request, "store/dashboard.html", context)
 
 def stock(request):
