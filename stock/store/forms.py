@@ -170,6 +170,9 @@ class FinishedProductUpdateForm(forms.ModelForm):
 from django import forms
 from .models import ClientOrder  # Cet import doit rester
 
+from django import forms
+from .models import ClientOrder
+
 class ClientOrderForm(forms.ModelForm):
     class Meta:
         model = ClientOrder
@@ -177,7 +180,22 @@ class ClientOrderForm(forms.ModelForm):
         widgets = {
             'delivery_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
         }
+        labels = {
+            'customer': 'Client',  # Label en français
+            'product': 'Produit',  # Label en français
+            'quantity': 'Quantité',  # Label en français
+            'delivery_date': 'Date de livraison',  # Label en français
+            'notes': 'Remarques',  # Label en français
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Filtrer uniquement les produits finis (gardé en anglais)
         self.fields['product'].queryset = self.fields['product'].queryset.filter(is_finished_product=True)
+        
+        # Ajouter des help_texts en français
+        self.fields['quantity'].help_text = 'Entrez la quantité souhaitée'
+        self.fields['delivery_date'].help_text = 'Date prévue pour la livraison'
+        
+        # Validation minimum pour la quantité
+        self.fields['quantity'].min_value = 1
