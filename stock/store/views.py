@@ -193,6 +193,9 @@ def dashboard(request):
     fabrication_counts = [fab["total"] for fab in fabrications_by_day]
     fabrication_quantities = [fab["quantity_sum"] for fab in fabrications_by_day]
 
+    raw_materials_table = Item.objects.filter(is_finished_product=False).order_by('-quantity')
+    finished_products_table = Item.objects.filter(is_finished_product=True).order_by('-quantity')
+
     # 8. Calcul des tendances (pour les indicateurs %)
     # Calcul simplifié - en pratique vous voudrez comparer avec la période précédente
     sales_trend = 12  # % fictif pour l'exemple
@@ -249,6 +252,16 @@ def dashboard(request):
         
         # Pour les graphiques
         'thirty_days_ago': thirty_days_ago,
+        'raw_materials_table': raw_materials_table,
+        'finished_products_table': finished_products_table,
+
+        # Données pour les graphiques
+        'categories': categories,
+        'category_quantities': category_quantities,
+        'sale_dates_labels': sale_dates_labels,
+        'sale_dates_values': sale_dates_values,
+        'fabrication_dates': fabrication_dates,
+        'fabrication_quantities': fabrication_quantities,
     }
     
     return render(request, "store/dashboard.html", context)

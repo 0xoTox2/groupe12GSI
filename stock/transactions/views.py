@@ -519,48 +519,42 @@ def fixed_replenishment(request):
     
     return render(request, 'transactions/fixed_replenishment.html', {'form': form})
 
+import math
+from django.shortcuts import render
+from .forms import PointReplenishmentForm
+
 def point_replenishment(request):
     if request.method == 'POST':
         form = PointReplenishmentForm(request.POST)
         if form.is_valid():
-            # Récupérer les données du formulaire
-            stock_actuel = form.cleaned_data['stock_actuel']
-            delai_livraison = form.cleaned_data['delai_livraison']
-            taille_lot = form.cleaned_data['taille_lot']
-            consommation_annuelle = form.cleaned_data['consommation_annuelle']
-            prix_achat_unitaire = form.cleaned_data['prix_achat_unitaire']
-            taux_possession = form.cleaned_data['taux_possession']
-            cout_lancement = form.cleaned_data['cout_lancement']
-            stock_securite = form.cleaned_data['stock_securite']
-
-            # Créer l'objet ReapprovisionnementPointCommande
-            stock_point_commande = ReapprovisionnementPointCommande(
-                stock_actuel=stock_actuel,
-                delai_livraison=delai_livraison,
-                taille_lot=taille_lot,
-                consommation_annuelle=consommation_annuelle,
-                prix_achat_unitaire=prix_achat_unitaire,
-                taux_possession=taux_possession,
-                cout_lancement=cout_lancement,
-                stock_securite=stock_securite
-            )
-
-            # Calculer les résultats
-            qec = stock_point_commande.calculer_qec()
-            quantite_ajustee = stock_point_commande.ajuster_quantite_lot(qec)
-            point_commande = stock_point_commande.calculer_point_commande()
-            cout_lancement = stock_point_commande.calculer_cout_lancement()
-            cout_possession = stock_point_commande.calculer_cout_possession()
-            cout_total = stock_point_commande.calculer_cout_total_stock()
-
-            # Afficher les résultats
+            data = form.cleaned_data
+            
+            # Calcul du coefficient k (simplifié)
+            taux_service = data['taux_service']
+            if taux_service == 90: k = 1.28
+            elif taux_service == 95: k = 1.65
+            elif taux_service == 99: k = 2.33
+            else: k = 1.65  # Valeur par défaut
+            
+            # Calcul du stock de sécurité
+            if data['type_variation'] == 'demande':
+                ss = k * data['sigma_demande'] * math.sqrt(data['delai_livraison'])
+            elif data['type_variation'] == 'delai':
+                ss = k * data['sigma_delai'] * (data['consommation_annuelle'])
+            else:  # combinée
+                term1 = (data['delai_livraison'] * (data['sigma_demande']**2))
+                term2 = ((data['consommation_annuelle'] * data['sigma_delai'])**2)
+                ss = k * math.sqrt(term1 + term2)
+            
+            # Calcul du point de commande
+            
+            point_commande = (data['consommation_annuelle'] * data['delai_livraison']) + ss
+            
             return render(request, 'transactions/point_replenishment_results.html', {
-                'qec': qec,
-                'quantite_ajustee': quantite_ajustee,
-                'point_commande': point_commande,
-                'cout_lancement': cout_lancement,
-                'cout_possession': cout_possession,
-                'cout_total': cout_total,
+                'stock_securite': round(ss, 2),
+                'point_commande': round(point_commande, 2),
+                'type_variation': data['type_variation'],
+                'taux_service': taux_service,
             })
     else:
         form = PointReplenishmentForm()

@@ -57,14 +57,43 @@ class FixedReplenishmentForm(forms.Form):
     cout_lancement = forms.FloatField(label="Coût de lancement des commandes (en DH)")
 
 class PointReplenishmentForm(forms.Form):
-    stock_actuel = forms.IntegerField(label="Stock actuel (en unités)")
-    delai_livraison = forms.IntegerField(label="Délai de livraison (en jours)")
-    taille_lot = forms.IntegerField(label="Taille de lot (en unités)")
+    VARIATION_CHOICES = [
+        ('demande', 'Variation de la demande'),
+        ('delai', 'Variation du délai'),
+        ('combinée', 'Variation combinée'),
+    ]
+    # Paramètres de variation
+    type_variation = forms.ChoiceField(
+        choices=VARIATION_CHOICES, 
+        label="Type de variation à considérer"
+    )
+    sigma_demande = forms.FloatField(
+        label="σ demande (écart-type)", 
+        required=False
+    )
+    sigma_delai = forms.FloatField(
+        label="σ délai (écart-type)", 
+        required=False
+    )
+    
+    # Paramètres de base
     consommation_annuelle = forms.IntegerField(label="Consommation annuelle (en unités)")
-    prix_achat_unitaire = forms.FloatField(label="Prix d’achat unitaire (en DH)")
-    taux_possession = forms.FloatField(label="Taux de possession des stocks (en décimal, par exemple 0.08 pour 8%)")
-    cout_lancement = forms.FloatField(label="Coût de lancement des commandes (en DH)")
-    stock_securite = forms.FloatField(label="Stock de sécurité (en unités)")
+    delai_livraison = forms.IntegerField(label="Délai de livraison ")
+    taille_lot = forms.IntegerField(label="Taille de lot (en unités)")
+    taux_service = forms.FloatField(label="Taux de service souhaité (en %)")
+    
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        variation = cleaned_data.get('type_variation')
+        
+        if variation in ['demande', 'combinée'] and not cleaned_data.get('sigma_demande'):
+            self.add_error('sigma_demande', "Ce champ est requis")
+            
+        if variation in ['delai', 'combinée'] and not cleaned_data.get('sigma_delai'):
+            self.add_error('sigma_delai', "Ce champ est requis")
+            
+        return cleaned_data
 
 #recompletement
 class ReplenishmentForm(forms.Form):

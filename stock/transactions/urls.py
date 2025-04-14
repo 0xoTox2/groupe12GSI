@@ -51,7 +51,7 @@ urlpatterns = [
     path('degressive-replenishment/', degressive_replenishment, name='degressive-replenishment'),
     path('degressive-replenishment/results/', degressive_replenishment_results, name='degressive-replenishment-results'),
     path('degressive-remise-replenishment/', degressive_remise_replenishment, name='degressive-remise-replenishment'),
-path('degressive-remise-replenishment/results/', degressive_remise_replenishment_results, name='degressive-remise-replenishment-results'),
+    path('degressive-remise-replenishment/results/', degressive_remise_replenishment_results, name='degressive-remise-replenishment-results'),
     # Sale URLs
     path('sales/', SaleListView.as_view(), name='saleslist'),
     path('sale/<int:pk>/', SaleDetailView.as_view(), name='sale-detail'),
