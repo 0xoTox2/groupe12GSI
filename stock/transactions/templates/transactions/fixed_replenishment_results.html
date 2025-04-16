@@ -1,44 +1,60 @@
 {% extends "store/base.html" %}
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center vh-100" style="margin-top: 0px;">
-    <div class="text-center w-100" style="max-width: 600px;"> <!-- Limite la largeur du contenu -->
-        <h2>Résultats de la Méthode de Réapprovisionnement Fixe</h2>
-        <div class="results-container">
-            <p>Quantité Économique de Commande (QEC) : <strong>{{ qec|floatformat:2 }} unités</strong></p>
-            <p>Période de réapprovisionnement : <strong>{{ periode|floatformat:2 }} jours</strong></p>
-            <p>Coût de lancement des commandes : <strong>{{ cout_lancement|floatformat:2 }} DH</strong></p>
-            <p>Coût de possession des stocks : <strong>{{ cout_possession|floatformat:2 }} DH</strong></p>
-            <p>Coût total de stock : <strong>{{ cout_total|floatformat:2 }} DH</strong></p>
+<div class="container mt-4">
+    <div class="card shadow-sm border-0" style="background-color: #f5e9dc;">
+        <div class="card-header border-0" style="background-color: #d4a373; color: white;">
+            <h2 class="mb-0"><i class="fas fa-chart-line me-2"></i>Résultats - Méthode de Réapprovisionnement Fixe</h2>
         </div>
-        <a href="{% url 'purchase-create' %}?quantity={{ qec|floatformat:0 }}" class="btn btn-success">
-            <i class="fa-solid fa-cart-plus"></i> Saisir l'achat avec la quantité économique
-        </a>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="result-item p-3 mb-3 rounded" style="background-color: #f8f9fa; border-left: 4px solid #d4a373;">
+                        <h5 class="fw-bold" style="color: #6c584c;">Quantité Économique de Commande (QEC)</h5>
+                        <p class="mb-0 fs-5" style="color: #a98467;">{{ qec|floatformat:2 }} unités</p>
+                    </div>
+                    
+                    <div class="result-item p-3 mb-3 rounded" style="background-color: #f8f9fa; border-left: 4px solid #d4a373;">
+                        <h5 class="fw-bold" style="color: #6c584c;">Période de réapprovisionnement</h5>
+                        <p class="mb-0 fs-5" style="color: #a98467;">{{ periode|floatformat:2 }} jours</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="result-item p-3 mb-3 rounded" style="background-color: #f8f9fa; border-left: 4px solid #d4a373;">
+                        <h5 class="fw-bold" style="color: #6c584c;">Coût de lancement des commandes</h5>
+                        <p class="mb-0 fs-5" style="color: #a98467;">{{ cout_lancement|floatformat:2 }} DH</p>
+                    </div>
+                    
+                    <div class="result-item p-3 mb-3 rounded" style="background-color: #f8f9fa; border-left: 4px solid #d4a373;">
+                        <h5 class="fw-bold" style="color: #6c584c;">Coût total de stock</h5>
+                        <p class="mb-0 fs-5" style="color: #a98467;">{{ cout_total|floatformat:2 }} DH</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-center mt-4">
+                <a href="{% url 'purchase-create' %}?quantity={{ qec|floatformat:0 }}" class="btn px-4 py-2 mr-3" style="background-color: #d4a373; color: white;">
+                    <i class="fas fa-cart-plus me-2"></i>Saisir l'achat avec la quantité économique
+                </a>
+            </div>
+        </div>
     </div>
 </div>
+
 <style>
-    /* Centrer et réduire la taille des éléments */
-    .results-container {
-        text-align: left; /* Aligner le texte à gauche */
-        margin: 0 auto; /* Centrer le conteneur */
-        max-width: 500px; /* Limiter la largeur du conteneur */
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
     }
-
-    /* Style pour les paragraphes */
-    .results-container p {
-        font-size: 16px; /* Taille de police des paragraphes */
-        margin-bottom: 10px; /* Espacement entre les paragraphes */
+    .result-item {
+        transition: transform 0.3s ease;
     }
-
-    /* Style pour les valeurs en gras */
-    .results-container strong {
-        font-size: 16px; /* Taille de police des valeurs */
+    .result-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(108, 88, 76, 0.1);
     }
-
-    /* Style pour le bouton */
-    .btn-success {
-        margin-top: 20px; /* Espacement au-dessus du bouton */
-        padding: 8px 16px; /* Padding du bouton */
-        font-size: 16px; /* Taille de police du bouton */
+    .btn:hover {
+        opacity: 0.9;
     }
 </style>
 {% endblock %}

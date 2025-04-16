@@ -1,41 +1,53 @@
 {% extends "store/base.html" %}
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center vh-100" style="margin-top: -30px;"> <!-- Déplace vers le haut de 30px -->
-    <div class="text-center">
-        <h2>Choisissez une politique d'approvisionnement</h2>
-        <form method="post" class="my-form">
-            {% csrf_token %}
-            <div class="form-group">
-                {{ form.as_p }}
-            </div>
-            <button type="submit" class="btn btn-primary">Suivant</button>
-        </form>
+<div class="container mt-4">
+    <div class="card shadow-sm border-0" style="background-color: #f5e9dc;">
+        <div class="card-header border-0" style="background-color: #d4a373; color: white;">
+            <h2 class="mb-0"><i class="fas fa-tasks me-2"></i>Choix de politique d'approvisionnement</h2>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group mb-3">
+                    {{ form.as_p }}
+                </div>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn px-4 py-2" style="background-color: #d4a373; color: white;">
+                        <i class="fas fa-arrow-right me-2"></i>Suivant
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
 <style>
-    .my-form .form-group {
-        max-width: 500px; /* Ajustez la largeur selon vos besoins */
-        margin: 0 auto; /* Centre le formulaire */
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
     }
-
-    /* Espacement des champs */
-    .my-form .form-group p {
-        margin-bottom: 20px; /* Espacement entre les champs */
+    .form-control, .form-select {
+        border-radius: 8px;
+        padding: 10px 15px;
+        border-width: 2px;
+        background-color: #f8f9fa;
+        border-color: #d4a373;
+        color: #6c584c;
     }
-
-    .my-form .form-group input, 
-    .my-form .form-group select, 
-    .my-form .form-group textarea {
-        width: 100%; /* Les champs prennent toute la largeur disponible */
-        padding: 8px;
-        box-sizing: border-box; /* Inclut le padding dans la largeur */
+    .form-control:focus, .form-select:focus {
+        border-color: #d4a373;
+        box-shadow: 0 0 0 0.25rem rgba(212, 163, 115, 0.25);
     }
-
-    .my-form .btn {
-        display: block;
-        width: 100%;
-        max-width: 200px;
-        margin: 20px auto; /* Centre le bouton */
+    .btn:hover {
+        background-color: #b08968 !important;
+        color: white !important;
+    }
+    .form-group label {
+        font-weight: 500;
+        color: #6c584c;
+    }
+    .form-group p {
+        margin-bottom: 1rem;
     }
 </style>
 {% endblock %}

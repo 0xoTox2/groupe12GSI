@@ -2,66 +2,89 @@
 
 {% block content %}
 <div class="container mt-4">
-    <div class="card">
-        <div class="card-header bg-primary text-white">
-            <h2 class="mb-0">Nouvelle Commande Client</h2>
+    <div class="card shadow-sm border-0" style="background-color: #f5e9dc;">
+        <div class="card-header border-0" style="background-color: #d4a373; color: white;">
+            <h2 class="mb-0"><i class="fas fa-file-alt me-2"></i>Nouvelle Commande Client</h2>
         </div>
         <div class="card-body">
             <form method="post" class="needs-validation" novalidate>
                 {% csrf_token %}
                 
-                <div class="mb-3">
-                    <label for="{{ form.customer.id_for_label }}" class="form-label">
-                        {{ form.customer.label }}
-                    </label>
-                    {{ form.customer }}
-                    <div class="invalid-feedback">
-                        Veuillez sélectionner un client.
+                <div class="input-container mb-4">
+                    <h4 class="mb-3" style="color: #6c584c; border-bottom: 2px solid #d4a373; padding-bottom: 8px;">
+                        <i class="fas fa-user me-2"></i>Informations client
+                    </h4>
+                    
+                    <div class="form-group mb-3">
+                        <label for="{{ form.customer.id_for_label }}" class="form-label fw-bold" style="color: #6c584c;">
+                            {{ form.customer.label }}
+                        </label>
+                        {{ form.customer }}
+                        <div class="invalid-feedback">
+                            Veuillez sélectionner un client.
+                        </div>
                     </div>
                 </div>
                 
-                <div class="mb-3">
-                    <label for="{{ form.product.id_for_label }}" class="form-label">
-                        {{ form.product.label }}
-                    </label>
-                    {{ form.product }}
-                    <div class="invalid-feedback">
-                        Veuillez sélectionner un produit.
+                <div class="input-container mb-4">
+                    <h4 class="mb-3" style="color: #6c584c; border-bottom: 2px solid #d4a373; padding-bottom: 8px;">
+                        <i class="fas fa-box-open me-2"></i>Détails de la commande
+                    </h4>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="{{ form.product.id_for_label }}" class="form-label fw-bold" style="color: #6c584c;">
+                                    {{ form.product.label }}
+                                </label>
+                                {{ form.product }}
+                                <div class="invalid-feedback">
+                                    Veuillez sélectionner un produit.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="{{ form.quantity.id_for_label }}" class="form-label fw-bold" style="color: #6c584c;">
+                                    {{ form.quantity.label }}
+                                </label>
+                                {{ form.quantity }}
+                                <div class="invalid-feedback">
+                                    La quantité doit être au moins 1.
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="mb-3">
-                    <label for="{{ form.quantity.id_for_label }}" class="form-label">
-                        {{ form.quantity.label }}
-                    </label>
-                    {{ form.quantity }}
-                    <div class="invalid-feedback">
-                        La quantité doit être au moins 1.
+                <div class="input-container mb-4">
+                    <h4 class="mb-3" style="color: #6c584c; border-bottom: 2px solid #d4a373; padding-bottom: 8px;">
+                        <i class="fas fa-calendar-alt me-2"></i>Livraison
+                    </h4>
+                    
+                    <div class="form-group mb-3">
+                        <label for="{{ form.delivery_date.id_for_label }}" class="form-label fw-bold" style="color: #6c584c;">
+                            {{ form.delivery_date.label }}
+                        </label>
+                        {{ form.delivery_date }}
+                        <div class="invalid-feedback">
+                            Veuillez sélectionner une date valide.
+                        </div>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="{{ form.notes.id_for_label }}" class="form-label fw-bold" style="color: #6c584c;">
+                            {{ form.notes.label }}
+                        </label>
+                        {{ form.notes }}
+                        <small class="form-text" style="color: #a98467;">
+                            {{ form.notes.help_text }}
+                        </small>
                     </div>
                 </div>
                 
-                <div class="mb-3">
-                    <label for="{{ form.delivery_date.id_for_label }}" class="form-label">
-                        {{ form.delivery_date.label }}
-                    </label>
-                    {{ form.delivery_date }}
-                    <div class="invalid-feedback">
-                        Veuillez sélectionner une date valide.
-                    </div>
-                </div>
-                
-                <div class="mb-3">
-                    <label for="{{ form.notes.id_for_label }}" class="form-label">
-                        {{ form.notes.label }}
-                    </label>
-                    {{ form.notes }}
-                    <small class="form-text text-muted">
-                        {{ form.notes.help_text }}
-                    </small>
-                </div>
-                
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary btn-lg">
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn px-4" style="background-color: #d4a373; color: white;">
                         <i class="fas fa-save me-2"></i>Enregistrer la commande
                     </button>
                 </div>
@@ -69,6 +92,38 @@
         </div>
     </div>
 </div>
+
+<style>
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .input-container {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .form-control, .form-select {
+        background-color: white !important;
+        border: 2px solid #d4a373 !important;
+        border-radius: 8px !important;
+        padding: 10px 15px !important;
+        color: #495057 !important;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #b08968 !important;
+        box-shadow: 0 0 0 0.25rem rgba(212, 163, 115, 0.25) !important;
+    }
+    .btn:hover {
+        background-color: #b08968 !important;
+        color: white !important;
+    }
+    .invalid-feedback {
+        color: #dc3545;
+    }
+</style>
 
 <script>
 // Validation côté client

@@ -1,104 +1,124 @@
 {% extends "store/base.html" %}
 {% block content %}
 <div class="container mt-4">
-    <h2 class="text-center mb-4">Résultats Wagner-Whitin</h2>
-    
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card p-3 bg-light">
-                <h5><i class="fas fa-percentage"></i> Taux possession: {{ taux_possession }}%</h5>
-                <h5><i class="fas fa-coins"></i> Coût total: {{ cout_total|floatformat:2 }} UM</h5>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card p-3 bg-light">
-                <h5><i class="fas fa-calendar-week"></i> Nombre de périodes: {{ n_periodes }}</h5>
-                <h5><i class="fas fa-boxes"></i> Nombre de commandes: {{ results|length }}</h5>
-            </div>
-        </div>
-    </div>
-
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">Plan optimal de commandes</h4>
+    <div class="card shadow-sm border-0" style="background-color: #f5e9dc;">
+        <div class="card-header border-0" style="background-color: #d4a373; color: white;">
+            <h2 class="mb-0"><i class="fas fa-chart-line me-2"></i>Résultats Wagner-Whitin</h2>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th class="text-center">Période</th>
-                            <th class="text-center">Quantité</th>
-                            <th class="text-center">Coût Achat</th>
-                            <th class="text-center">Prix Moyen</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for result in results %}
-                        <tr>
-                            <td class="text-center">{{ result.periode }}</td>
-                            <td class="text-center">{{ result.quantite|floatformat:2 }}</td>
-                            <td class="text-center">{{ result.cout_achat|floatformat:2 }} UM</td>
-                            <td class="text-center">{{ result.pu_moyen|floatformat:2 }} UM</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <!-- Informations générales -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="result-item p-3 mb-3 rounded" style="background-color: #f8f9fa; border-left: 4px solid #d4a373;">
+                        <h5 class="fw-bold" style="color: #6c584c;">Taux possession</h5>
+                        <p class="mb-0 fs-5" style="color: #a98467;">{{ taux_possession }}%</p>
+                    </div>
+                    <div class="result-item p-3 mb-3 rounded" style="background-color: #f8f9fa; border-left: 4px solid #d4a373;">
+                        <h5 class="fw-bold" style="color: #6c584c;">Nombre de périodes</h5>
+                        <p class="mb-0 fs-5" style="color: #a98467;">{{ n_periodes }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="result-item p-3 mb-3 rounded" style="background-color: #f8f9fa; border-left: 4px solid #d4a373;">
+                        <h5 class="fw-bold" style="color: #6c584c;">Coût total</h5>
+                        <p class="mb-0 fs-5" style="color: #a98467;">{{ cout_total|floatformat:2 }} UM</p>
+                    </div>
+                    <div class="result-item p-3 mb-3 rounded" style="background-color: #f8f9fa; border-left: 4px solid #d4a373;">
+                        <h5 class="fw-bold" style="color: #6c584c;">Nombre de commandes</h5>
+                        <p class="mb-0 fs-5" style="color: #a98467;">{{ results|length }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plan optimal de commandes -->
+            <div class="card shadow-sm mb-4 border-0" style="background-color: #f5e9dc;">
+                <div class="card-header border-0" style="background-color: #d4a373; color: white;">
+                    <h4 class="mb-0"><i class="fas fa-table me-2"></i>Plan optimal de commandes</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr style="background-color: #d4a373; color: white;">
+                                    <th class="text-center">Période</th>
+                                    <th class="text-center">Quantité</th>
+                                    <th class="text-center">Coût Achat</th>
+                                    <th class="text-center">Prix Moyen</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for result in results %}
+                                <tr>
+                                    <td class="text-center">{{ result.periode }}</td>
+                                    <td class="text-center">{{ result.quantite|floatformat:2 }}</td>
+                                    <td class="text-center">{{ result.cout_achat|floatformat:2 }} UM</td>
+                                    <td class="text-center">{{ result.pu_moyen|floatformat:2 }} UM</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Détail des périodes -->
+            <div class="card shadow-sm border-0" style="background-color: #f5e9dc;">
+                <div class="card-header border-0" style="background-color: #d4a373; color: white;">
+                    <h4 class="mb-0"><i class="fas fa-info-circle me-2"></i>Détail des périodes</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr style="background-color: #d4a373; color: white;">
+                                    <th>Période</th>
+                                    <th>Demande</th>
+                                    <th>Prix Unitaire</th>
+                                    <th>Valeur Période</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for periode in periodes_detail %}
+                                <tr>
+                                    <td>{{ periode.numero }}</td>
+                                    <td>{{ periode.demande|floatformat:2 }}</td>
+                                    <td>{{ periode.prix_unitaire|floatformat:2 }} UM</td>
+                                    <td>{{ periode.valeur|floatformat:2 }} UM</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bouton de retour -->
+            <div class="d-flex justify-content-center mt-4">
+                <a href="{% url 'wagner-whitin-2' %}" class="btn px-4 py-2" style="background-color: #d4a373; color: white;">
+                    <i class="fas fa-redo me-2"></i>Nouveau calcul
+                </a>
             </div>
         </div>
-    </div>
-
-    <div class="card shadow-sm">
-        <div class="card-header bg-info text-white">
-            <h4 class="mb-0">Détail des périodes</h4>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr class="table-secondary">
-                            <th>Période</th>
-                            <th>Demande</th>
-                            <th>Prix Unitaire</th>
-                            <th>Valeur Période</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for periode in periodes_detail %}
-                        <tr>
-                            <td>{{ periode.numero }}</td>
-                            <td>{{ periode.demande|floatformat:2 }}</td>
-                            <td>{{ periode.prix_unitaire|floatformat:2 }} UM</td>
-                            <td>{{ periode.valeur|floatformat:2 }} UM</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div class="text-center mt-4">
-        <a href="{% url 'wagner-whitin-2' %}" class="btn btn-primary">
-            <i class="fas fa-redo"></i> Nouveau calcul
-        </a>
     </div>
 </div>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
 <style>
     .card {
-        border-radius: 8px;
-        margin-bottom: 20px;
+        border-radius: 12px;
+        overflow: hidden;
     }
-    .table th {
-        background-color: #779bbf;
-        color: white;
+    .result-item {
+        transition: transform 0.3s ease;
     }
-    .btn-primary {
-        background-color: #007bff;
-        padding: 0.5rem 2rem;
+    .result-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(108, 88, 76, 0.1);
+    }
+    .btn:hover {
+        opacity: 0.9;
+    }
+    .table-hover tbody tr:hover {
+        background-color: rgba(212, 163, 115, 0.1);
     }
 </style>
 {% endblock %}

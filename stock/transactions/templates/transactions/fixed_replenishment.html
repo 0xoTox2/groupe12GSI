@@ -1,48 +1,53 @@
 {% extends "store/base.html" %}
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center vh-100" style="margin-top: 20px;"> <!-- Descendre de 60px -->
-    <div class="text-center w-100" style="max-width: 400px;"> <!-- Limite la largeur du formulaire -->
-        <h2>Méthode de Réapprovisionnement Fixe</h2>
-        <form method="post" class="my-form">
-            {% csrf_token %}
-            <div class="form-group">
-                {{ form.as_p }}
-            </div>
-            <button type="submit" class="btn btn-primary">Calculer</button>
-        </form>
+<div class="container mt-4">
+    <div class="card shadow-sm border-0" style="background-color: #f5e9dc;">
+        <div class="card-header border-0" style="background-color: #d4a373; color: white;">
+            <h2 class="mb-0"><i class="fas fa-boxes me-2"></i>Méthode de Réapprovisionnement Fixe</h2>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group mb-3">
+                    {{ form.as_p }}
+                </div>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn px-4" style="background-color: #d4a373; color: white;">
+                        <i class="fas fa-calculator me-2"></i>Calculer
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
 <style>
-    /* Centrer et réduire la taille des champs */
-    .my-form .form-group {
-        width: 100%; /* Prend toute la largeur disponible */
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
     }
-
-    /* Réduire la taille des champs */
-    .my-form .form-group input,
-    .my-form .form-group select,
-    .my-form .form-group textarea {
-        width: 100%; /* Les champs prennent toute la largeur disponible */
-        padding: 8px; /* Réduit le padding pour diminuer la taille */
-        font-size: 14px; /* Réduit la taille de la police */
-        box-sizing: border-box; /* Inclut le padding dans la largeur */
-        margin-bottom: 10px; /* Espacement entre les champs */
+    .form-control, .form-select {
+        border-radius: 8px;
+        padding: 10px 15px;
+        border-width: 2px;
+        background-color: #f8f9fa;
+        border-color: #d4a373;
+        color: #6c584c;
     }
-
-    /* Style pour les labels */
-    .my-form .form-group label {
-        font-size: 16px; /* Taille de police des labels */
-        margin-bottom: 6px; /* Espacement entre le label et le champ */
-        display: block; /* Place le label au-dessus du champ */
+    .form-control:focus, .form-select:focus {
+        border-color: #d4a373;
+        box-shadow: 0 0 0 0.25rem rgba(212, 163, 115, 0.25);
     }
-
-    /* Style pour le bouton */
-    .my-form .btn {
-        width: 100%; /* Le bouton prend toute la largeur */
-        max-width: 200px; /* Limite la largeur du bouton */
-        padding: 8px; /* Réduit le padding du bouton */
-        font-size: 16px; /* Taille de police du bouton */
-        margin-top: 15px; /* Espacement au-dessus du bouton */
+    .btn:hover {
+        background-color: #b08968 !important;
+        color: white !important;
+    }
+    .form-group label {
+        font-weight: 500;
+        color: #6c584c;
+    }
+    .form-group p {
+        margin-bottom: 1rem;
     }
 </style>
 {% endblock %}

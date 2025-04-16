@@ -1,17 +1,23 @@
 {% extends "store/base.html" %}
 {% load static %}
 
-{% block title %}Détails de la Facture{% endblock title %}
+{% block title %}Détails de la Facture Fournisseur{% endblock %}
 
 {% block content %}
-<div class="container p-5">
-    <div class="card shadow-sm" id="printable-area">
-        <!-- En-tête commune -->
-        <div class="card-header text-white py-3" style="background-color: #2c3e50;">
+<div class="container mt-4">
+    <div class="text-center mb-4">
+        <button class="btn px-4 py-2" style="background-color: #6c584c; color: white;" onclick="window.print()">
+            <i class="fas fa-print me-2"></i>Imprimer la facture
+        </button>
+    </div>
+
+    <div class="card shadow-sm border-0" style="background-color: #f5e9dc;" id="printable-area">
+        <!-- En-tête -->
+        <div class="card-header border-0" style="background-color: #d4a373; color: white;">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h1 class="h4 mb-0">FACTURE FOURNISSEUR</h1>
-                    <p class="mb-0 small text-white-50">Original</p>
+                    <h2 class="mb-0"><i class="fas fa-file-invoice me-2"></i>FACTURE FOURNISSEUR</h2>
+                    <p class="mb-0 small">Original</p>
                 </div>
                 <div class="text-end">
                     <p class="mb-1"><strong>N°: {{ bill.id|stringformat:"05d" }}</strong></p>
@@ -21,12 +27,12 @@
         </div>
         
         <div class="card-body">
-            <!-- Coordonnées harmonisées -->
+            <!-- Coordonnées -->
             <div class="row mb-4">
                 <div class="col-md-6 mb-3 mb-md-0">
-                    <div class="border p-3 h-100" style="border-color: #e0e0e0;">
-                        <h5 class="border-bottom pb-2 mb-3" style="color: #2c3e50;">Émetteur</h5>
-                        <p class="mb-1"><strong style="color: #2c3e50;">OptiStock</strong></p>
+                    <div class="p-3 rounded" style="border: 2px solid #d4a373;">
+                        <h5 class="border-bottom pb-2 mb-3" style="color: #6c584c;">Émetteur</h5>
+                        <p class="mb-1"><strong>OptiStock</strong></p>
                         <p class="mb-1">Ain Sbaa</p>
                         <p class="mb-1">Casablanca, Maroc</p>
                         <p class="mb-1">Tél: 06 23 45 67 89</p>
@@ -34,9 +40,9 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="border p-3 h-100" style="border-color: #e0e0e0;">
-                        <h5 class="border-bottom pb-2 mb-3" style="color: #2c3e50;">Client</h5>
-                        <p class="mb-1"><strong style="color: #2c3e50;">{{ bill.institution_name }}</strong></p>
+                    <div class="p-3 rounded" style="border: 2px solid #d4a373;">
+                        <h5 class="border-bottom pb-2 mb-3" style="color: #6c584c;">Client</h5>
+                        <p class="mb-1"><strong>{{ bill.institution_name }}</strong></p>
                         {% if bill.address %}<p class="mb-1">{{ bill.address }}</p>{% endif %}
                         <p class="mb-1">{% if bill.phone_number %}Tél: {{ bill.phone_number }}{% endif %}</p>
                         <p class="mb-0">{% if bill.email %}Email: {{ bill.email }}{% endif %}</p>
@@ -44,10 +50,10 @@
                 </div>
             </div>
 
-            <!-- Tableau des produits harmonisé -->
+            <!-- Tableau des produits -->
             <div class="table-responsive mb-4">
-                <table class="table table-bordered mb-0">
-                    <thead style="background-color: #f8f9fa; color: #2c3e50;">
+                <table class="table table-bordered">
+                    <thead style="background-color: #d4a373; color: white;">
                         <tr>
                             <th width="60%">Description</th>
                             <th class="text-end">Prix Unitaire</th>
@@ -62,7 +68,7 @@
                             <td class="text-end">1</td>
                             <td class="text-end">{{ bill.amount|floatformat:2 }} €</td>
                         </tr>
-                        <tr class="table-active" style="background-color: #f8f9fa;">
+                        <tr style="background-color: #f5e9dc;">
                             <td colspan="3" class="text-end"><strong>Total HT</strong></td>
                             <td class="text-end"><strong>{{ bill.amount|floatformat:2 }} €</strong></td>
                         </tr>
@@ -70,7 +76,7 @@
                             <td colspan="3" class="text-end"><strong>TVA (0%)</strong></td>
                             <td class="text-end">0,00 €</td>
                         </tr>
-                        <tr style="background-color: #2c3e50; color: white;">
+                        <tr style="background-color: #6c584c; color: white;">
                             <td colspan="3" class="text-end"><strong>Total TTC</strong></td>
                             <td class="text-end"><strong>{{ bill.amount|floatformat:2 }} €</strong></td>
                         </tr>
@@ -78,11 +84,11 @@
                 </table>
             </div>
 
-            <!-- Conditions de paiement harmonisées -->
+            <!-- Conditions de paiement -->
             <div class="row">
                 <div class="col-md-6">
-                    <div class="p-3 rounded mb-3" style="border: 1px solid #e0e0e0;">
-                        <h5 class="border-bottom pb-2 mb-3" style="color: #2c3e50;">Conditions de paiement</h5>
+                    <div class="p-3 rounded mb-3" style="border: 2px solid #d4a373;">
+                        <h5 class="border-bottom pb-2 mb-3" style="color: #6c584c;">Conditions de paiement</h5>
                         <p class="mb-1"><strong>Mode de paiement:</strong> {{ bill.payment_details }}</p>
                         <p class="mb-1"><strong>Statut:</strong> 
                             {% if bill.status %}
@@ -95,8 +101,8 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="p-3 rounded" style="border: 1px solid #e0e0e0;">
-                        <h5 class="border-bottom pb-2 mb-3" style="color: #2c3e50;">Coordonnées bancaires</h5>
+                    <div class="p-3 rounded" style="border: 2px solid #d4a373;">
+                        <h5 class="border-bottom pb-2 mb-3" style="color: #6c584c;">Coordonnées bancaires</h5>
                         <p class="mb-1"><strong>Banque:</strong> Banque Populaire</p>
                         <p class="mb-1"><strong>IBAN:</strong> MA64 1234 5678 9123 4567 8910 123</p>
                         <p class="mb-0"><strong>BIC:</strong> BCPOMAMCXXX</p>
@@ -104,26 +110,26 @@
                 </div>
             </div>
 
-            <!-- Mentions légales harmonisées -->
-            <div class="border-top mt-4 pt-3 small text-muted">
+            <!-- Mentions légales -->
+            <div class="border-top mt-4 pt-3 small" style="color: #6c584c;">
                 <p class="mb-1">En cas de retard de paiement, pénalités de 3 fois le taux d'intérêt légal.</p>
                 <p class="mb-0">TVA non applicable - Article 293 B du CGI</p>
             </div>
         </div>
         
-        <!-- Pied de page harmonisé -->
-        <div class="card-footer py-3" style="background-color: #f8f9fa; border-top: 2px solid #2c3e50;">
+        <!-- Pied de page -->
+        <div class="card-footer py-3" style="background-color: #f5e9dc; border-top: 2px solid #d4a373;">
             <div class="d-flex justify-content-between align-items-center">
-                <button onclick="window.print()" class="btn btn-sm" style="background-color: #2c3e50; color: white;">
-                    <i class="fa-solid fa-print me-2"></i> Imprimer
+                <button onclick="window.print()" class="btn px-4 py-2" style="background-color: #6c584c; color: white;">
+                    <i class="fas fa-print me-2"></i>Imprimer
                 </button>
                 <div>
-                    <a href="{% url 'bill_list' %}" class="btn btn-secondary btn-sm me-2">
-                        <i class="fa-solid fa-arrow-left me-2"></i> Retour
+                    <a href="{% url 'bill_list' %}" class="btn px-4 py-2 mr-2" style="background-color: #a98467; color: white;">
+                        <i class="fas fa-arrow-left me-2"></i>Retour
                     </a>
                     {% if not bill.status %}
-                    <a href="{% url 'bill_update' bill.slug %}" class="btn btn-sm" style="background-color: #2c3e50; color: white;">
-                        <i class="fa-solid fa-pen me-2"></i> Modifier
+                    <a href="{% url 'bill_update' bill.slug %}" class="btn px-4 py-2" style="background-color: #d4a373; color: white;">
+                        <i class="fas fa-edit me-2"></i>Modifier
                     </a>
                     {% endif %}
                 </div>
@@ -132,20 +138,20 @@
     </div>
 </div>
 
-<!-- Style commun harmonisé -->
 <style>
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .btn:hover {
+        opacity: 0.9;
+    }
     @media print {
-        body {
-            background: white !important;
-            font-size: 11pt;
-            color: #000 !important;
-        }
         body * {
             visibility: hidden;
         }
         #printable-area, #printable-area * {
             visibility: visible;
-            color: #000 !important;
         }
         #printable-area {
             position: absolute;
@@ -157,14 +163,8 @@
             box-shadow: none;
             border: none;
         }
-        .card-header {
-            background-color: #2c3e50 !important;
-            color: white !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-        .table thead {
-            background-color: #f8f9fa !important;
+        .card-header, .table thead tr {
+            background-color: #d4a373 !important;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
@@ -175,20 +175,6 @@
             size: A4;
             margin: 1cm;
         }
-        tr:nth-child(4) {
-            background-color: #2c3e50 !important;
-            color: white !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-    }
-    
-    .table th, .table td {
-        padding: 0.5rem;
-        border-color: #e0e0e0;
-    }
-    .table-active {
-        background-color: #f8f9fa;
     }
 </style>
-{% endblock content %}
+{% endblock %}

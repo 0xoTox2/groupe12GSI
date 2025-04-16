@@ -1027,14 +1027,3 @@ def degressive_remise_replenishment_results(request):
     except Exception as e:
         messages.error(request, f"Erreur de calcul: {str(e)}")
         return redirect('degressive-remise-replenishment')
-    
-class SalesTeamCreateView(CreateView):
-    model = SalesTeam
-    fields = ['name', 'role', 'zone', 'sales_goal', 'achieved']
-    template_name = 'team_create.html'  # Nom de votre template
-    success_url = '/sales-team/'
-
-class SalesTeamListView(ListView):
-    model = SalesTeam
-    template_name = 'sales_team_list.html'
-    context_object_name = 'sales_team'

@@ -2,201 +2,125 @@
 {% block title %}Facture{% endblock %}
 {% load crispy_forms_tags %}
 {% block content %}
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Facture d'achat</title>
-<meta name="robots" content="noindex,nofollow" />
-<meta name="viewport" content="width=device-width; initial-scale=1.0;" />
+<div class="container mt-4">
+    <div class="text-center mb-4">
+        <button class="btn px-4 py-2" style="background-color: #6c584c; color: white;" onclick="window.print()">
+            <i class="fas fa-print me-2"></i>Imprimer la facture
+        </button>
+    </div>
+
+    <div class="card shadow-sm border-0" style="background-color: #f5e9dc;">
+        <div class="card-body">
+            <!-- En-tête -->
+            <div class="d-flex justify-content-between mb-4 pb-3" style="border-bottom: 2px solid #d4a373;">
+                <div>
+                    <div class="fs-4 fw-bold" style="color: #6c584c;">OptiStock</div>
+                    <div class="mt-3" style="color: #6c584c;">
+                        <strong>Adresse :</strong> Casablanca, Maroc<br>
+                        <strong>Tél :</strong> 06 23 65 67 66<br>
+                        <strong>Email :</strong> contact@OptiStock.com
+                    </div>
+                </div>
+                <div class="text-end">
+                    <h1 style="color: #d4a373;">FACTURE</h1>
+                    <div class="mt-3" style="color: #6c584c;">
+                        <strong>N° {{invoice.id}}</strong><br>
+                        <strong>Date :</strong> {{invoice.date|date:"d/m/Y"}}<br>
+                        {% if invoice.customer_email %}
+                        <strong>Client :</strong> {{invoice.customer_email}}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informations client -->
+            <div class="mb-4">
+                <h3 style="color: #6c584c; margin-bottom: 15px;">Client</h3>
+                <p style="color: #6c584c;">
+                    <strong>{{invoice.customer_name}}</strong><br>
+                    {% if invoice.contact_number %}
+                    <strong>Tél :</strong> {{invoice.contact_number}}<br>
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Détails des produits -->
+            <table class="table mb-4">
+                <thead style="background-color: #d4a373; color: white;">
+                    <tr>
+                        <th>Description</th>
+                        <th>Prix unitaire</th>
+                        <th>Quantité</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{invoice.item.name}}</td>
+                        <td>{{invoice.price_per_item}} €</td>
+                        <td>{{invoice.quantity}}</td>
+                        <td>{{invoice.total}} €</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Total -->
+            <div class="text-end">
+                <table class="table-borderless">
+                    <tr>
+                        <td><strong>Sous-total :</strong></td>
+                        <td class="text-end">{{invoice.total}} €</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Frais de livraison :</strong></td>
+                        <td class="text-end">{{invoice.shipping}} €</td>
+                    </tr>
+                    <tr class="fs-5" style="color: #d4a373; border-top: 2px solid #d4a373;">
+                        <td><strong>TOTAL :</strong></td>
+                        <td class="text-end">{{invoice.grand_total}} €</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Mentions -->
+            <div class="mt-4 pt-3 text-center" style="border-top: 2px solid #d4a373; color: #6c584c;">
+                <p>Merci pour votre achat !</p>
+                <p>Paiement effectué par carte bancaire le {{invoice.date|date:"d/m/Y"}}</p>
+                <p>En cas de question, contactez-nous à contact@OptiStock.com</p>
+            </div>
+        </div>
+    </div>
+</div>
 
 <style>
-  body {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    color: #333;
-  }
-  .facture-container {
-    max-width: 800px;
-    margin: 30px auto;
-    padding: 30px;
-    background: #fff;
-    box-shadow: 0 0 20px rgba(0,0,0,0.1);
-    border-radius: 8px;
-  }
-  .header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #f5f5f5;
-  }
-  .logo {
-    font-size: 24px;
-    font-weight: bold;
-    color: #2c3e50;
-  }
-  .titre-facture {
-    text-align: right;
-  }
-  .titre-facture h1 {
-    color: #e74c3c;
-    margin: 0;
-    font-size: 28px;
-  }
-  .infos-client {
-    margin-bottom: 30px;
-  }
-  .table-produits {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 30px;
-  }
-  .table-produits th {
-    background: #f8f9fa;
-    padding: 12px 15px;
-    text-align: left;
-    font-weight: 500;
-  }
-  .table-produits td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #eee;
-  }
-  .table-produits tr:last-child td {
-    border-bottom: 2px solid #ddd;
-  }
-  .total {
-    text-align: right;
-    margin-top: 20px;
-  }
-  .total table {
-    display: inline-block;
-  }
-  .total td {
-    padding: 5px 15px;
-  }
-  .total .montant {
-    text-align: right;
-    min-width: 100px;
-  }
-  .grand-total {
-    font-weight: bold;
-    font-size: 18px;
-    color: #e74c3c;
-    border-top: 2px solid #eee;
-    margin-top: 10px;
-  }
-  .footer {
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 2px solid #f5f5f5;
-    text-align: center;
-    color: #7f8c8d;
-    font-size: 14px;
-  }
-  .btn-print {
-    background: #2c3e50;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-bottom: 20px;
-  }
-  .btn-print:hover {
-    background: #1a252f;
-  }
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .btn:hover {
+        background-color: #b08968 !important;
+        color: white !important;
+    }
+    @media print {
+        .btn {
+            display: none !important;
+        }
+        .card {
+            box-shadow: none !important;
+            background-color: transparent !important;
+        }
+    }
 </style>
-
-<div class="container text-center m-3">
-  <button class="btn-print" onclick="window.print()">
-    <i class="fa fa-print"></i> Imprimer la facture
-  </button>
-</div>
-
-<div class="facture-container">
-  <!-- En-tête -->
-  <div class="header">
-    <div>
-      <div class="logo">OptiStock</div>
-      <div style="margin-top: 20px;">
-        <strong>Adresse :</strong> Casablanca, Maroc<br>
-        <strong>Tél :</strong> 06 23 65 67 66<br>
-        <strong>Email :</strong> contact@OptiStock.com
-      </div>
-    </div>
-    <div class="titre-facture">
-      <h1>FACTURE</h1>
-      <div style="margin-top: 20px;">
-        <strong>N° {{invoice.id}}</strong><br>
-        <strong>Date :</strong> {{invoice.date|date:"d/m/Y"}}<br>
-        {% if invoice.customer_email %}
-        <strong>Client :</strong> {{invoice.customer_email}}
-        {% endif %}
-      </div>
-    </div>
-  </div>
-
-  <!-- Informations client -->
-  <div class="infos-client">
-    <h3 style="color: #2c3e50; margin-bottom: 15px;">Client</h3>
-    <p>
-      <strong>{{invoice.customer_name}}</strong><br>
-      {% if invoice.contact_number %}
-      <strong>Tél :</strong> {{invoice.contact_number}}<br>
-      {% endif %}
-    </p>
-  </div>
-
-  <!-- Détails des produits -->
-  <table class="table-produits">
-    <thead>
-      <tr>
-        <th>Description</th>
-        <th>Prix unitaire</th>
-        <th>Quantité</th>
-        <th>Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>{{invoice.item.name}}</td>
-        <td>{{invoice.price_per_item}} €</td>
-        <td>{{invoice.quantity}}</td>
-        <td>{{invoice.total}} €</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <!-- Total -->
-  <div class="total">
-    <table>
-      <tr>
-        <td><strong>Sous-total :</strong></td>
-        <td class="montant">{{invoice.total}} €</td>
-      </tr>
-      <tr>
-        <td><strong>Frais de livraison :</strong></td>
-        <td class="montant">{{invoice.shipping}} €</td>
-      </tr>
-      <tr class="grand-total">
-        <td><strong>TOTAL :</strong></td>
-        <td class="montant">{{invoice.grand_total}} €</td>
-      </tr>
-    </table>
-  </div>
-
-  <!-- Mentions -->
-  <div class="footer">
-    <p>Merci pour votre achat !</p>
-    <p>Paiement effectué par carte bancaire le {{invoice.date|date:"d/m/Y"}}</p>
-    <p>En cas de question, contactez-nous à contact@OptiStock.com</p>
-  </div>
-</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Formatage des nombres pour afficher 2 décimales
-    document.querySelectorAll('.montant').forEach(el => {
-        let amount = parseFloat(el.textContent);
-        if (!isNaN(amount)) {
-            el.textContent = amount.toFixed(2) + ' €';
+    document.querySelectorAll('.text-end').forEach(el => {
+        if (el.textContent.includes('€')) {
+            let amount = parseFloat(el.textContent);
+            if (!isNaN(amount)) {
+                el.textContent = amount.toFixed(2) + ' €';
+            }
         }
     });
 });
