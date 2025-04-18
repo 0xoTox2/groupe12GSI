@@ -264,7 +264,7 @@ def dashboard(request):
         'fabrication_quantities': fabrication_quantities,
     }
     
-    return render(request, "store/dashboard.html", context)
+    return render(request, "store/dashboard.html", get_common_context(module_name="achat"))
 
 def stock(request):
     return render(request, "store/stock.html", get_common_context(module_name="stock"))

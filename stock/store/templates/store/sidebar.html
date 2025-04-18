@@ -30,7 +30,7 @@
     <div class="nav-container px-2">
         <ul class="nav flex-column mt-2">
             <!-- Produits -->
-            {% if module_name == "achat" or module_name == "stock" or module_name == "fournisseurs_clients"%}
+            {% if module_name == "achat" or module_name == "stock" %}
             <li class="nav-item mb-1">
                 <li class="nav-item mb-1 dropdown">
                     <a class="nav-link text-dark {% if request.resolver_match.url_name == 'productslist' %}active{% endif %} dropdown-toggle" href="#" id="productsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 10px 15px; border-radius: 6px; transition: all 0.3s ease;">
@@ -52,7 +52,7 @@
                 {% endif %}
             
             <!-- Commandes de vente "Sortie" -->
-            {% if module_name == "stock" %}
+            {% if module_name == "stock" or module_name == "achat" %}
             <li class="nav-item mb-1">
                 <a class="nav-link text-dark {% if request.resolver_match.url_name == 'saleslist' %}active{% endif %}" href="{% url 'saleslist' %}" style="padding: 10px 15px; border-radius: 6px; transition: all 0.3s ease;">
                     <i class="fas fa-shopping-bag me-2" style="color: #AB7442;"></i> Commandes de vente (Sortie)
@@ -69,7 +69,7 @@
             </li>
             {% endif %}
 
-            {% if module_name == "personnels" or module_name == "stock" %}
+            {% if module_name == "personnels" %}
             <!-- Personnels -->
             <li class="nav-item mb-1">
                 <a class="nav-link text-dark {% if request.resolver_match.url_name == 'profile_list' %}active{% endif %}" href="{% url 'profile_list' %}" style="padding: 10px 15px; border-radius: 6px; transition: all 0.3s ease;">
