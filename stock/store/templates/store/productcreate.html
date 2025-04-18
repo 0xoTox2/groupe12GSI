@@ -1,99 +1,100 @@
 {% extends "store/base.html" %}
-{% load static %}
-
-{% block title %}
-    {% if form.instance.pk %}Mise à jour produit{% else %}Ajouter produit{% endif %}
-{% endblock title %}
+{% block title %}{% if form.instance.pk %}Mise à jour{% else %}Ajout{% endif %} de produit{% endblock %}
 
 {% block content %}
-<!-- Section d'en-tête -->
-<div class="container my-4">
-    <div class="card shadow-sm rounded p-3">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <h4 class="display-6 mb-0 text-success">
-                    {% if form.instance.pk %}Mise à jour du produit{% else %}Ajouter un produit{% endif %}
-                </h4>
-            </div>
-            <div class="col-md-6 d-flex justify-content-end gap-2">
-                <a class="btn btn-secondary btn-sm rounded-pill shadow-sm" href="{% url 'productslist' %}">
-                    <i class="fas fa-arrow-left me-2"></i> Retour
-                </a>
-            </div>
+<div class="container mt-4">
+    <div class="card shadow-sm border-0" style="background-color: #f5e9dc;">
+        <div class="card-header border-0" style="background-color: #d4a373; color: white;">
+            <h2 class="mb-0">
+                <i class="fas fa-{% if form.instance.pk %}edit{% else %}plus{% endif %} me-2"></i>
+                {% if form.instance.pk %}Mise à jour du produit{% else %}Ajouter un produit{% endif %}
+            </h2>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="{{ form.name.id_for_label }}" class="form-label fw-bold" style="color: #6c584c;">
+                                Nom du produit
+                            </label>
+                            {{ form.name }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="{{ form.category.id_for_label }}" class="form-label fw-bold" style="color: #6c584c;">
+                                Catégorie
+                            </label>
+                            {{ form.category }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="{{ form.quantity.id_for_label }}" class="form-label fw-bold" style="color: #6c584c;">
+                                Quantité
+                            </label>
+                            {{ form.quantity }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="{{ form.price.id_for_label }}" class="form-label fw-bold" style="color: #6c584c;">
+                                Prix de vente
+                            </label>
+                            {{ form.price }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="{{ form.expiring_date.id_for_label }}" class="form-label fw-bold" style="color: #6c584c;">
+                                Date d'expiration
+                            </label>
+                            {{ form.expiring_date }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="{{ form.vendor.id_for_label }}" class="form-label fw-bold" style="color: #6c584c;">
+                                Fournisseur
+                            </label>
+                            {{ form.vendor }}
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label fw-bold" style="color: #6c584c;">
+                                Description
+                            </label>
+                            {{ form.description }}
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex gap-3 mt-4">
+                    <button type="submit" class="btn px-4" style="background-color: #d4a373; color: white;">
+                        <i class="fas fa-save me-2"></i>Enregistrer
+                    </button>
+                    <a href="{% url 'productslist' %}" class="btn px-4" style="background-color: #6c584c; color: white;">
+                        <i class="fas fa-arrow-left me-2"></i>Retour
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
-<div class="container px-3">
-    <div class="card shadow-sm rounded p-3">
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="{{ form.name.id_for_label }}" class="form-label">
-                        Nom du produit
-                    </label>
-                    {{ form.name }}
-                    <div class="text-danger">{{ form.name.errors }}</div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="{{ form.category.id_for_label }}" class="form-label">
-                        Catégorie
-                    </label>
-                    {{ form.category }}
-                    <div class="text-danger">{{ form.category.errors }}</div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="{{ form.quantity.id_for_label }}" class="form-label">
-                        Quantité
-                    </label>
-                    {{ form.quantity }}
-                    <div class="text-danger">{{ form.quantity.errors }}</div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="{{ form.price.id_for_label }}" class="form-label">
-                        Prix de vente
-                    </label>
-                    {{ form.price }}
-                    <div class="text-danger">{{ form.price.errors }}</div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="{{ form.expiring_date.id_for_label }}" class="form-label">
-                        Date d'expiration
-                    </label>
-                    {{ form.expiring_date }}
-                    <div class="text-danger">{{ form.expiring_date.errors }}</div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="{{ form.vendor.id_for_label }}" class="form-label">
-                        Fournisseur
-                    </label>
-                    {{ form.vendor }}
-                    <div class="text-danger">{{ form.vendor.errors }}</div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col mb-3">
-                    <label for="{{ form.description.id_for_label }}" class="form-label">
-                        Description
-                    </label>
-                    {{ form.description }}
-                    <div class="text-danger">{{ form.description.errors }}</div>
-                </div>
-            </div>
-            <div class="form-group text-center">
-                <button class="btn btn-success btn-sm rounded-pill shadow-sm" type="submit">
-                    <i class="fas fa-save me-2"></i> Enregistrer
-                </button>
-                <a href="{% url 'productslist' %}" class="btn btn-secondary btn-sm rounded-pill shadow-sm">
-                    <i class="fas fa-arrow-left me-2"></i> Annuler
-                </a>
-            </div>
-        </form>
-    </div>
-</div>
-{% endblock content %}
+<style>
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .form-control, .form-select {
+        border-radius: 8px;
+        padding: 10px 15px;
+        border: 2px solid #d4a373;
+        background-color: #f8f9fa;
+        color: #6c584c;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #d4a373;
+        box-shadow: 0 0 0 0.25rem rgba(212, 163, 115, 0.25);
+    }
+    .btn:hover {
+        background-color: #b08968 !important;
+        color: white !important;
+    }
+</style>
+{% endblock %}

@@ -60,28 +60,28 @@ class CustomerForm(forms.ModelForm):
         widgets = {
             'first_name': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Enter first name'
+                'placeholder': 'Entrez le Prénom'
             }),
             'last_name': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Enter last name'
+                'placeholder': 'Entrez le Nom'
             }),
             'address': forms.Textarea(attrs={
                 'class': 'form-control',
-                'placeholder': 'Enter address',
+                'placeholder': 'Entrez Adresse',
                 'rows': 3
             }),
             'email': forms.EmailInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Enter email'
+                'placeholder': 'Entrez Email'
             }),
             'phone': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Enter phone number'
+                'placeholder': 'Entrez Numéro de téléphone'
             }),
             'loyalty_points': forms.NumberInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Enter loyalty points'
+                'placeholder': 'Entrez les points de fidélité'
             }),
         }
 
@@ -93,12 +93,12 @@ class VendorForm(forms.ModelForm):
         fields = ['name', 'phone_number', 'address']
         widgets = {
             'name': forms.TextInput(
-                attrs={'class': 'form-control', 'placeholder': 'Vendor Name'}
+                attrs={'class': 'form-control', 'placeholder': 'Entrez le nom du fournisseur'}
             ),
             'phone_number': forms.NumberInput(
-                attrs={'class': 'form-control', 'placeholder': 'Phone Number'}
+                attrs={'class': 'form-control', 'placeholder': 'Entrez le numéro de Téléphone'}
             ),
             'address': forms.TextInput(
-                attrs={'class': 'form-control', 'placeholder': 'Address'}
+                attrs={'class': 'form-control', 'placeholder': 'Entrez Adresse'}
             ),
         }

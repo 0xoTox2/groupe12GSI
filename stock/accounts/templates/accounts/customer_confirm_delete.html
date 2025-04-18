@@ -1,15 +1,37 @@
 {% extends 'store/base.html' %}
 {% block content %}
-  <div class="container mt-5">
-    <h1 class="mb-4">Êtes-vous sûr de vouloir supprimer "{{ object }}" ?</h1>
-    <form method="post" class="mb-3">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-danger">
-        <i class="fas fa-trash-alt"></i> Confirmer
-      </button>
-      <a href="{% url 'customer_list' %}" class="btn btn-secondary">
-        <i class="fas fa-times"></i> Annuler
-      </a>
-    </form>
-  </div>
+<div class="container mt-4">
+    <div class="card shadow-sm border-0" style="background-color: #f5e9dc;">
+        <div class="card-header border-0" style="background-color: #d4a373; color: white;">
+            <h2 class="mb-0"><i class="fas fa-user-slash me-2"></i>Suppression de client</h2>
+        </div>
+        <div class="card-body">
+            <p class="mb-4" style="color: #6c584c;">
+                Êtes-vous certain de vouloir supprimer définitivement le client "{{ object }}" ?
+            </p>
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn px-4" style="background-color: #d4a373; color: white;">
+                        <i class="fas fa-check-circle me-2"></i>Confirmer
+                    </button>
+                    <a href="{% url 'customer_list' %}" class="btn px-4" style="background-color: #a98467; color: white;">
+                        <i class="fas fa-undo me-2"></i>Retour
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .btn:hover {
+        background-color: #b08968 !important;
+        color: white !important;
+    }
+</style>
 {% endblock %}

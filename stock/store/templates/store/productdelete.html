@@ -1,17 +1,39 @@
 {% extends "store/base.html" %}
-{% block title %}Confirmation {% endblock %}
+{% block title %}Confirmation de suppression{% endblock %}
+
 {% block content %}
-<div class="container pt-5">
-    <form method="POST">
-        {% csrf_token %}
-        <fieldset class="form-group">
-            <legend class="border-bottom mb-4">supprimer élément</legend>
-            <h5>Voulez vous supprimer cet élément ?"{{ object.name }}"</h5>
-        </fieldset>
-        <div class="form-group">
-            <button class="btn btn-outline-danger btn-sm" type="submit">oui, supprimer</button>
-            <a class="btn btn-outline-success btn-sm" href="{% url 'productslist' %}">Annuler</a>
+<div class="container mt-4">
+    <div class="card shadow-sm border-0" style="background-color: #f5e9dc;">
+        <div class="card-header border-0" style="background-color: #d4a373; color: white;">
+            <h2 class="mb-0"><i class="fas fa-trash-alt me-2"></i>Supprimer un produit</h2>
         </div>
-    </form>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <p class="mb-4" style="color: #6c584c;">
+                    Voulez-vous vraiment supprimer le produit <strong>"{{ object.name }}"</strong> ?
+                </p>
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn px-4" style="background-color: #d4a373; color: white;">
+                        <i class="fas fa-check me-2"></i>Confirmer
+                    </button>
+                    <a href="{% url 'productslist' %}" class="btn px-4" style="background-color: #a98467; color: white;">
+                        <i class="fas fa-times me-2"></i>Annuler
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
-{% endblock content %}
+
+<style>
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .btn:hover {
+        background-color: #b08968 !important;
+        color: white !important;
+    }
+</style>
+{% endblock %}

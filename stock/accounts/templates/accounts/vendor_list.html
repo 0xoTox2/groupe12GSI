@@ -8,32 +8,22 @@
 {% block content %}
 <!-- Section d'en-tête -->
 <div class="container my-4">
-    <div class="card shadow-sm rounded p-3">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <h4 class="display-6 mb-0 text-success">Fournisseurs</h4>
-            </div>
-            <div class="col-md-6 d-flex justify-content-end gap-2">
-                <a class="btn btn-success btn-sm rounded-pill shadow-sm" href="{% url 'vendor-create' %}">
-                    <i class="fa-solid fa-plus"></i> Ajouter un fournisseur
-                </a>
-            </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="page-title">
+            <span class="page-title-text">Fournisseurs</span>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn-action" href="{% url 'vendor-create' %}">
+                <i class="fa-solid fa-plus me-1"></i> Ajouter un fournisseur
+            </a>
         </div>
     </div>
 </div>
 
-<div class="container px-3">
-    <style>
-        .table th, .table td {
-            text-align: center;
-        }
-        .btn-custom {
-            padding: 8px 20px;
-            margin: 4px;
-        }
-    </style>
-    <table class="table table-bordered table-striped table-hover table-sm">
-        <thead class="thead-light">
+<!-- Table des fournisseurs -->
+<div class="container">
+    <table class="table">
+        <thead>
             <tr>
                 <th>Nom</th>
                 <th>Numéro</th>
@@ -48,11 +38,11 @@
                 <td>{{ vendor.phone_number }}</td>
                 <td>{{ vendor.address }}</td>
                 <td>
-                    <a href="{% url 'vendor-update' vendor.pk %}" class="btn btn-outline-warning btn-sm">
-                        <i class="fas fa-edit me-2"></i> Éditer
+                    <a class="btn btn-sm btn-outline-custom" href="{% url 'vendor-update' vendor.pk %}">
+                        <i class="fas fa-edit me-1"></i> Éditer
                     </a>
-                    <a href="{% url 'vendor-delete' vendor.pk %}" class="btn btn-outline-danger btn-sm">
-                        <i class="fas fa-trash-alt me-2"></i> Supprimer
+                    <a class="btn btn-sm btn-outline-custom mt-1" href="{% url 'vendor-delete' vendor.pk %}">
+                        <i class="fas fa-trash-alt me-1"></i> Supprimer
                     </a>
                 </td>
             </tr>
@@ -68,13 +58,13 @@
                 {% if page_obj.has_previous %}
                 <li class="page-item">
                     <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Précédent">
-                        <span aria-hidden="true">&laquo;</span>
+                        <i class="fas fa-chevron-left"></i>
                     </a>
                 </li>
                 {% else %}
                 <li class="page-item disabled">
                     <span class="page-link" aria-label="Précédent">
-                        <span aria-hidden="true">&laquo;</span>
+                        <i class="fas fa-chevron-left"></i>
                     </span>
                 </li>
                 {% endif %}
@@ -82,9 +72,9 @@
                 {% for i in paginator.page_range %}
                 {% if page_obj.number == i %}
                 <li class="page-item active">
-                    <span class="page-link">{{ i }} <span class="sr-only">(actuel)</span></span>
+                    <span class="page-link">{{ i }}</span>
                 </li>
-                {% else %}
+                {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
                 <li class="page-item">
                     <a class="page-link" href="?page={{ i }}">{{ i }}</a>
                 </li>
@@ -94,13 +84,13 @@
                 {% if page_obj.has_next %}
                 <li class="page-item">
                     <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Suivant">
-                        <span aria-hidden="true">&raquo;</span>
+                        <i class="fas fa-chevron-right"></i>
                     </a>
                 </li>
                 {% else %}
                 <li class="page-item disabled">
                     <span class="page-link" aria-label="Suivant">
-                        <span aria-hidden="true">&raquo;</span>
+                        <i class="fas fa-chevron-right"></i>
                     </span>
                 </li>
                 {% endif %}
@@ -109,4 +99,92 @@
         {% endif %}
     </div>
 </div>
+
+<style>
+    /* Style modernisé pour le titre */
+    .page-title {
+        position: relative;
+        display: inline-block;
+    }
+    .page-title-text {
+        font-size: 1.8rem;
+        font-weight: 500;
+        color: #6a5440;
+        letter-spacing: 0.5px;
+        position: relative;
+        padding-right: 15px;
+        z-index: 1;
+    }
+
+    .table {
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        border: none;
+    }
+    .table th {
+        background-color: white;
+        color: #353535;
+        font-weight: 600;
+        text-align: center;
+        border-bottom: 2px solid #AB7442;
+        padding: 12px 8px;
+    }
+    .table td {
+        text-align: center;
+        vertical-align: middle;
+        border-color: #f0f0f0;
+        padding: 12px 8px;
+    }
+    .table tr:not(:last-child) {
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .table tr:hover {
+        background-color: rgba(171, 116, 66, 0.03);
+    }
+    
+    .btn-action {
+        background: none;
+        border: none;
+        color: #AB7442;
+        font-weight: 500;
+        padding: 8px 16px;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+    }
+    .btn-action:hover {
+        background-color: rgba(171, 116, 66, 0.1);
+        color: #8B5A2B;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(171, 116, 66, 0.1);
+    }
+    .btn-action:active {
+        transform: translateY(0);
+        box-shadow: none;
+    }
+    
+    .btn-outline-custom {
+        color: #AB7442;
+        border-color: #AB7442;
+        transition: all 0.2s ease;
+        background: none;
+    }
+    .btn-outline-custom:hover {
+        background: #AB7442;
+        color: white;
+    }
+    
+    .page-item.active .page-link {
+        background-color: #AB7442;
+        border-color: #AB7442;
+    }
+    .page-link {
+        color: #AB7442;
+    }
+</style>
+
 {% endblock content %}

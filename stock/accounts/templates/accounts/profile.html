@@ -21,12 +21,12 @@
                                 <th scope="row">Rôle du personnel</th>
                                 <td>
                                     <span class="badge badge-pill bg-soft-success text-success me-2">
-                                    {% if user.profile.role == 'AD' %}
-                                    Administrateur
-                                    {% elif user.profile.role == 'EX' %}
-                                    Cadre
+                                    {% if user.profile.role == 'RGS' %}
+                                    Responsable Gestion Stock
+                                    {% elif user.profile.role == 'RPA' %}
+                                    Responsable Production/Approvisionnement
                                     {% else %}
-                                    Opérationnel
+                                    Magasinier
                                     {% endif %}
                                 </td>
                             </tr>

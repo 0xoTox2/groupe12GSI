@@ -1,18 +1,79 @@
 {% extends 'store/base.html' %}
-{% load static %}
+{% block title %}{{ form.instance.pk|yesno:"Modifier le fournisseur,Ajouter un fournisseur" }}{% endblock %}
 
 {% block content %}
-<div class="container px-5">
-    <h1 class="my-4">{{ form.instance.pk|yesno:"Modifier un fournisseur,Ajouter un fournisseur" }}</h1>
-    <form method="post" novalidate>
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">
-            <i class="fas fa-save"></i> Enregistrer
-        </button>
-        <a href="{% url 'vendor-list' %}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Retour
-        </a>
-    </form>
+<div class="container mt-4">
+    <div class="card shadow-sm border-0" style="background-color: #f5e9dc;">
+        <div class="card-header border-0" style="background-color: #d4a373; color: white;">
+            <h2 class="mb-0">
+                <i class="fas fa-user-tie me-2"></i>
+                {% if form.instance.pk %}Modifier le{% else %}Ajouter un{% endif %} fournisseur
+            </h2>
+        </div>
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="{{ form.name.id_for_label }}" class="form-label fw-bold" style="color: #6c584c;">
+                                Nom du fournisseur
+                            </label>
+                            {{ form.name }}
+                            <small class="form-text" style="color: #a98467;">Nom complet de l'entreprise</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="{{ form.address.id_for_label }}" class="form-label fw-bold" style="color: #6c584c;">
+                                Adresse 
+                            </label>
+                            {{ form.address }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="{{ form.phone_number.id_for_label }}" class="form-label fw-bold" style="color: #6c584c;">
+                                Téléphone
+                            </label>
+                            {{ form.phone_number }}
+                        </div>
+                    </div>
+
+                    
+                <div class="d-flex gap-3 mt-4">
+                    <button type="submit" class="btn px-4" style="background-color: #d4a373; color: white;">
+                        <i class="fas fa-save me-2"></i>Enregistrer
+                    </button>
+                    <a href="{% url 'vendor-list' %}" class="btn px-4" style="background-color: #a98467; color: white;">
+                        <i class="fas fa-arrow-left me-2"></i>Retour
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
+
+<style>
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .form-control, .form-select {
+        border-radius: 8px;
+        padding: 10px 15px;
+        border: 2px solid #d4a373;
+        background-color: #f8f9fa;
+        color: #6c584c;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #d4a373;
+        box-shadow: 0 0 0 0.25rem rgba(212, 163, 115, 0.25);
+    }
+    .btn:hover {
+        background-color: #b08968 !important;
+        color: white !important;
+    }
+</style>
 {% endblock %}

@@ -53,8 +53,8 @@ class CategoryForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Enter category name',
-                'aria-label': 'Category Name'
+                'placeholder': 'Entrez le nom de Catégorie',
+                'aria-label': 'Nom de Catégorie'
             }),
         }
         labels = {
