@@ -3,189 +3,187 @@
 {% block title %}Fabrication{% endblock title %}
 
 {% block content %}
-<div class="d-flex flex-column flex-lg-row h-lg-full bg-surface-secondary">
-    <div class="h-screen flex-grow-1 overflow-y-lg-auto">
-        <main class="py-6 bg-surface-secondary">
-            <div class="container-fluid">
-                <!-- Titre de la page -->
-                <h1 class="mb-4">Fabrication</h1>
-                
-                <!-- Section 1 : Commandes en attente -->
-                <div class="card mb-4">
-                    <div class="card-header bg-primary text-white">
-                        <h3 class="mb-0"><i class="fas fa-clipboard-list me-2"></i>Commandes en attente de fabrication</h3>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead class="bg-light">
-                                    <tr>
-                                        <th class="border-0"># Commande</th>
-                                        <th class="border-0">Client</th>
-                                        <th class="border-0">Produit</th>
-                                        <th class="border-0">Quantité</th>
-                                        <th class="border-0">Date</th>
-                                        <th class="border-0 text-end">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="fabrication-orders">
-                                    {% if pending_order_fabrications %}
-                                        {% for fab in pending_order_fabrications %}
-                                        <tr id="fab-row-{{ fab.id }}">
-                                            <td>#{{ fab.origin_order.id }}</td>
-                                            <td>{{ fab.origin_order.customer.name }}</td>
-                                            <td>{{ fab.product.name }}</td>
-                                            <td>{{ fab.quantity }}</td>
-                                            <td>{{ fab.date_created|date:"d/m/Y" }}</td>
-                                            <td class="text-end">
-                                                <div class="btn-group btn-group-sm">
-                                                    <button class="btn btn-success confirm-btn" data-fab-id="{{ fab.id }}">
-                                                        <i class="fas fa-check"></i> Confirmer
-                                                    </button>
-                                                    <a href="{% url 'client-order-detail' fab.origin_order.id %}" 
-                                                       class="btn btn-info">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
-                                    {% else %}
-                                        <tr>
-                                            <td colspan="6" class="text-center text-muted py-4">
-                                                <i class="fas fa-check-circle me-2"></i>
-                                                Aucune commande en attente de fabrication
-                                            </td>
-                                        </tr>
-                                    {% endif %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+<!-- Section d'en-tête -->
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="page-title">
+            <span class="page-title-text">Fabrication</span>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Section 1 : Commandes en attente -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3 class="mb-0"><i class="fas fa-clipboard-list me-2"></i>Commandes en attente de fabrication</h3>
+        </div>
+        <div class="card-body p-0">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th># Commande</th>
+                        <th>Client</th>
+                        <th>Produit</th>
+                        <th>Quantité</th>
+                        <th>Date</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="fabrication-orders">
+                    {% if pending_order_fabrications %}
+                        {% for fab in pending_order_fabrications %}
+                        <tr id="fab-row-{{ fab.id }}">
+                            <td>#{{ fab.origin_order.id }}</td>
+                            <td>{{ fab.origin_order.customer.name }}</td>
+                            <td>{{ fab.product.name }}</td>
+                            <td>{{ fab.quantity }}</td>
+                            <td>{{ fab.date_created|date:"d/m/Y" }}</td>
+                            <td class="text-end">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <button class="btn btn-sm btn-outline-custom confirm-btn" data-fab-id="{{ fab.id }}">
+                                        <i class="fas fa-check me-1"></i> Confirmer
+                                    </button>
+                                    <a href="{% url 'client-order-detail' fab.origin_order.id %}" 
+                                       class="btn btn-sm btn-outline-custom">
+                                        <i class="fas fa-eye me-1"></i> Détails
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Aucune commande en attente de fabrication
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Section 2 : Gestion des nomenclatures -->
+    <div class="row">
+        <!-- Partie création de nomenclature -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h3 class="mb-0"><i class="fas fa-list-alt me-2"></i>Nomenclature</h3>
                 </div>
-
-                <!-- Section 2 : Gestion des nomenclatures -->
-                <div class="row">
-                    <!-- Partie création de nomenclature -->
-                    <div class="col-lg-6 mb-4">
-                        <div class="card h-100">
-                            <div class="card-header">
-                                <h3 class="card-title">Nomenclature</h3>
-                            </div>
-                            <div class="card-body">
-                                <form method="post" action="{% url 'fabrication' %}">
-                                    {% csrf_token %}
-                                    <div class="mb-3">
-                                        <label for="product_name" class="form-label">Produit fini</label>
-                                        <input type="text" class="form-control" id="product_name" name="product_name" required placeholder="Nom du produit fini">
-                                    </div>
-
-                                    <div id="components-list">
-                                        <div class="component-item mb-3">
-                                            <div class="row g-2">
-                                                <div class="col-md-6">
-                                                    <label class="form-label">Matière première</label>
-                                                    <select class="form-control" name="component[]" required>
-                                                        <option value="">Sélectionnez une matière première</option>
-                                                        {% for item in raw_materials %}
-                                                            <option value="{{ item.id }}">{{ item.name }} (Stock: {{ item.quantity }})</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label">Quantité nécessaire</label>
-                                                    <input type="number" class="form-control" name="quantity[]" min="1" required placeholder="Quantité">
-                                                </div>
-                                                <div class="col-md-2 d-flex align-items-end">
-                                                    <button type="button" class="btn btn-danger btn-remove-component" disabled>
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <button type="button" id="add-component" class="btn btn-outline-secondary mb-3">
-                                        <i class="fas fa-plus"></i> Ajouter une matière première
-                                    </button>
-
-                                    <button type="submit" class="btn btn-primary w-100">
-                                        <i class="fas fa-save"></i> Enregistrer la nomenclature
-                                    </button>
-                                </form>
-                            </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'fabrication' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="product_name" class="form-label">Produit fini</label>
+                            <input type="text" class="form-control" id="product_name" name="product_name" required placeholder="Nom du produit fini">
                         </div>
-                    </div>
 
-                    <!-- Partie nomenclatures existantes -->
-                    <div class="col-lg-6 mb-4">
-                        <div class="card h-100">
-                            <div class="card-header">
-                                <h3 class="card-title">Nomenclatures enregistrées</h3>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Produit fini</th>
-                                                <th>Matière première</th>
-                                                <th>Quantité nécessaire</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for nomenclature in nomenclatures %}
-                                            <tr>
-                                                <td>{{ nomenclature.product.name }}</td>
-                                                <td>{{ nomenclature.component.name }}</td>
-                                                <td>{{ nomenclature.quantity }}</td>
-                                            </tr>
-                                            {% empty %}
-                                            <tr>
-                                                <td colspan="3" class="text-center text-muted">Aucune nomenclature enregistrée</td>
-                                            </tr>
+                        <div id="components-list">
+                            <div class="component-item mb-3">
+                                <div class="row g-2">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Matière première</label>
+                                        <select class="form-control" name="component[]" required>
+                                            <option value="">Sélectionnez une matière première</option>
+                                            {% for item in raw_materials %}
+                                                <option value="{{ item.id }}">{{ item.name }} (Stock: {{ item.quantity }})</option>
                                             {% endfor %}
-                                        </tbody>
-                                    </table>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Quantité nécessaire</label>
+                                        <input type="number" class="form-control" name="quantity[]" min="1" required placeholder="Quantité">
+                                    </div>
+                                    <div class="col-md-2 d-flex align-items-end">
+                                        <button type="button" class="btn btn-outline-danger btn-remove-component" disabled>
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Section 3 : Lancement de fabrication manuelle -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Lancement de fabrication</h3>
-                    </div>
-                    <div class="card-body">
-                        <form method="post" action="{% url 'fabrication' %}">
-                            {% csrf_token %}
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label for="product_to_manufacture" class="form-label">Produit à fabriquer</label>
-                                    <select class="form-control" id="product_to_manufacture" name="product_to_manufacture" required>
-                                        <option value="">Sélectionnez un produit</option>
-                                        {% for product in products %}
-                                            <option value="{{ product }}">{{ product }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="quantity" class="form-label">Quantité</label>
-                                    <input type="number" class="form-control" id="quantity" name="quantity" min="1" required placeholder="Quantité">
-                                </div>
-                                <div class="col-md-2 d-flex align-items-end">
-                                    <button type="submit" class="btn btn-success w-100">
-                                        <i class="fas fa-play"></i> Lancer
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                        <button type="button" id="add-component" class="btn btn-outline-secondary mb-3">
+                            <i class="fas fa-plus me-1"></i> Ajouter une matière première
+                        </button>
+
+                        <button type="submit" class="btn btn-outline-custom w-100">
+                            <i class="fas fa-save me-1"></i> Enregistrer la nomenclature
+                        </button>
+                    </form>
                 </div>
             </div>
-        </main>
+        </div>
+
+        <!-- Partie nomenclatures existantes -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h3 class="mb-0"><i class="fas fa-tasks me-2"></i>Nomenclatures enregistrées</h3>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Produit fini</th>
+                                <th>Matière première</th>
+                                <th>Quantité nécessaire</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for nomenclature in nomenclatures %}
+                            <tr>
+                                <td>{{ nomenclature.product.name }}</td>
+                                <td>{{ nomenclature.component.name }}</td>
+                                <td>{{ nomenclature.quantity }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted py-4">
+                                    <i class="fas fa-box-open me-2"></i>Aucune nomenclature enregistrée
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 3 : Lancement de fabrication manuelle -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="mb-0"><i class="fas fa-play-circle me-2"></i>Lancement de fabrication</h3>
+        </div>
+        <div class="card-body">
+            <form method="post" action="{% url 'fabrication' %}">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="product_to_manufacture" class="form-label">Produit à fabriquer</label>
+                        <select class="form-control" id="product_to_manufacture" name="product_to_manufacture" required>
+                            <option value="">Sélectionnez un produit</option>
+                            {% for product in products %}
+                                <option value="{{ product }}">{{ product }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="quantity" class="form-label">Quantité</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" min="1" required placeholder="Quantité">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-outline-custom w-100">
+                            <i class="fas fa-play me-1"></i> Lancer
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -221,7 +219,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <input type="number" class="form-control" name="quantity[]" min="1" required placeholder="Quantité">
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
-                    <button type="button" class="btn btn-danger btn-remove-component">
+                    <button type="button" class="btn btn-outline-danger btn-remove-component">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
@@ -253,63 +251,63 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // fabrication.html
-function confirmFabrication(fabId) {
-    const csrfToken = getCookie('csrftoken'); // Utilisation d'une fonction plus fiable
-    const btn = document.querySelector(`button[data-fab-id="${fabId}"]`);
-    
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement...';
+    function confirmFabrication(fabId) {
+        const csrfToken = getCookie('csrftoken');
+        const btn = document.querySelector(`button[data-fab-id="${fabId}"]`);
+        
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Traitement...';
 
-    // Configuration de la requête
-    const requestOptions = {
-        method: 'POST',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRFToken': csrfToken,
-            'Content-Type': 'application/json'
-        },
-        credentials: 'include' // Important pour les cookies
-    };
+        // Configuration de la requête
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        };
 
-    fetch(`/store/fabrication/confirm/${fabId}/`, requestOptions)
-    .then(handleResponse)
-    .then(handleSuccess)
-    .catch(handleError);
+        fetch(`/store/fabrication/confirm/${fabId}/`, requestOptions)
+        .then(handleResponse)
+        .then(handleSuccess)
+        .catch(handleError);
 
-    function handleResponse(response) {
-        if (!response.ok) {
-            return response.json().then(err => { 
-                throw new Error(err.error || err.message || 'Erreur serveur'); 
-            });
+        function handleResponse(response) {
+            if (!response.ok) {
+                return response.json().then(err => { 
+                    throw new Error(err.error || err.message || 'Erreur serveur'); 
+                });
+            }
+            return response.json();
         }
-        return response.json();
-    }
 
-    function handleSuccess(data) {
-        if(data.success) {
-            // Suppression de la ligne
-            const row = document.getElementById(`fab-row-${fabId}`);
-            if (row) row.remove();
-            
-            // Mise à jour des compteurs
-            updateCounters(data);
-            
-            // Mise à jour des stocks
-            updateStocks(data.stock_updates);
-            
-            showToast('success', data.message);
-            checkEmptyTable();
-        } else {
-            throw new Error(data.message);
+        function handleSuccess(data) {
+            if(data.success) {
+                // Suppression de la ligne
+                const row = document.getElementById(`fab-row-${fabId}`);
+                if (row) row.remove();
+                
+                // Mise à jour des compteurs
+                updateCounters(data);
+                
+                // Mise à jour des stocks
+                updateStocks(data.stock_updates);
+                
+                showToast('success', data.message);
+                checkEmptyTable();
+            } else {
+                throw new Error(data.message);
+            }
         }
-    }
 
-    function handleError(error) {
-        showToast('error', error.message);
-        console.error('Erreur:', error);
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-check"></i> Confirmer';
+        function handleError(error) {
+            showToast('error', error.message);
+            console.error('Erreur:', error);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check me-1"></i> Confirmer';
+        }
     }
 
     // Fonction pour récupérer le cookie CSRF
@@ -357,7 +355,6 @@ function confirmFabrication(fabId) {
                 </tr>`;
         }
     }
-}
 
     function showToast(type, message) {
         const toast = `<div class="toast align-items-center text-white bg-${type} border-0 show" role="alert">
@@ -372,4 +369,100 @@ function confirmFabrication(fabId) {
     }
 });
 </script>
+
+<style>
+    /* Style modernisé pour le titre */
+    .page-title {
+        position: relative;
+        display: inline-block;
+    }
+    .page-title-text {
+        font-size: 1.8rem;
+        font-weight: 500;
+        color: #6a5440;
+        letter-spacing: 0.5px;
+        position: relative;
+        padding-right: 15px;
+        z-index: 1;
+    }
+
+    .table {
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        border: none;
+    }
+    .table th {
+        background-color: white;
+        color: #353535;
+        font-weight: 600;
+        text-align: center;
+        border-bottom: 2px solid #AB7442;
+        padding: 12px 8px;
+    }
+    .table td {
+        text-align: center;
+        vertical-align: middle;
+        border-color: #f0f0f0;
+        padding: 12px 8px;
+    }
+    .table tr:not(:last-child) {
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .table tr:hover {
+        background-color: rgba(171, 116, 66, 0.03);
+    }
+    
+    .card {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    }
+    .card-header {
+        background-color: white;
+        border-bottom: 2px solid #AB7442;
+        padding: 12px 16px;
+    }
+    
+    .btn-outline-custom {
+        color: #AB7442;
+        border-color: #AB7442;
+        transition: all 0.2s ease;
+        background: none;
+    }
+    .btn-outline-custom:hover {
+        background: #AB7442;
+        color: white;
+    }
+    
+    .btn-outline-danger {
+        color: #dc3545;
+        border-color: #dc3545;
+    }
+    .btn-outline-danger:hover {
+        background: #dc3545;
+        color: white;
+    }
+    
+    .btn-outline-secondary {
+        color: #6c757d;
+        border-color: #6c757d;
+    }
+    .btn-outline-secondary:hover {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .badge {
+        padding: 5px 10px;
+        border-radius: 50px;
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+    
+    .toast {
+        border-radius: 8px;
+    }
+</style>
 {% endblock %}

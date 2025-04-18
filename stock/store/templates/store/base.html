@@ -28,26 +28,24 @@
             /* Barre de navigation stylisée */
             .custom-navbar {
                 background: #AB7442;
-                backdrop-filter: blur(10px); /* Effet de verre */
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Ombre portée */
-                padding: 8px 20px; /* Padding réduit pour une barre plus mince */
-                height: 60px; /* Réduire la hauteur de la barre */
+                backdrop-filter: blur(10px);
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+                padding: 8px 20px;
+                height: 60px;
                 display: flex;
                 align-items: center;
                 transition: all 0.3s ease-in-out;
-                margin-top: 10px; /* Remonter la barre */
-                border-radius: 5px; /* Coins arrondis pour un look moderne */
+                margin-top: 10px;
+                border-radius: 5px;
             }
         
-            /* Effet de survol pour la barre */
             .custom-navbar:hover {
-                background: #353535; /* Fond plus intense au survol */
+                background: #353535;
             }
         
-            /* Titre et logo */
             .navbar-brand {
-                font-size: 26px; /* Taille du texte plus petite */
-                color: #f5f5f5; /* Texte blanc */
+                font-size: 26px;
+                color: #f5f5f5;
                 font-weight: 600;
                 display: flex;
                 align-items: center;
@@ -55,23 +53,22 @@
             }
         
             .navbar-brand:hover {
-                color: #ffd54f; /* Jaune doré au survol */
+                color: #ffd54f;
             }
         
             .navbar-brand img {
-                margin-left: 10px; /* Réduire l'espace entre le texte et le logo */
+                margin-left: 10px;
                 width: auto;
-                height: 45px; /* Hauteur du logo plus petite */
+                height: 45px;
                 object-fit: cover;
-                border-radius: 50%; /* Rendre le logo rond */
+                border-radius: 50%;
                 transition: transform 0.3s ease;
             }
         
             .navbar-brand:hover img {
-                transform: scale(1.1); /* Zoom du logo au survol */
+                transform: scale(1.1);
             }
         
-            /* Bouton toggle pour mobile */
             .navbar-toggler {
                 color: #f5f5f5;
                 border: none;
@@ -79,44 +76,64 @@
             }
         
             .navbar-toggler:hover {
-                color: #ffd54f; /* Jaune doré au survol */
+                color: #ffd54f;
             }
         
             .navbar-toggler:focus {
                 box-shadow: none;
             }
+
+            /* Barre de défilement globale */
+            body {
+                overflow-y: auto;
+                scrollbar-width: thin;
+                scrollbar-color: #AB7442 #f5f5f5;
+            }
+
+            /* Style pour Chrome/Edge/Safari */
+            body::-webkit-scrollbar {
+                width: 8px;
+            }
+            body::-webkit-scrollbar-track {
+                background: #f5f5f5;
+                border-radius: 10px;
+            }
+            body::-webkit-scrollbar-thumb {
+                background-color: #AB7442;
+                border-radius: 10px;
+                border: 2px solid #f5f5f5;
+            }
+            body::-webkit-scrollbar-thumb:hover {
+                background-color: #8B5A2B;
+            }
         </style>
-        
     </head>
-    <body id="wrapper" style="overflow: hidden;">
+    <body id="wrapper">
         <!-- Condition pour masquer la sidebar -->
         {% if not hide_sidebar %}
             {% include "store/sidebar.html" %}
         {% endif %}
 
-       
-            <!-- Barre de navigation -->
-            <nav class="navbar navbar-expand-md custom-navbar">
-                <div class="container-fluid mx-2">
-                    
-                    <div class="collapse navbar-collapse" id="toggle-navbar">
-                        <ul class="navbar-nav ms-auto">
-                            <!-- Liens supplémentaires ici -->
-                        </ul>
-                        <!-- Déplacer le nom et le logo à droite -->
-                        <a class="navbar-brand" href="{% url 'module' %}">
-                            <!-- Texte -->
-                            Opti<span class="text-warning">stock</span>
-                            <!-- Logo -->
-                            <img src="{% static 'images/logo/logo.png' %}" alt="Logo Optistock" />
-                        </a>
-                    </div>
+        <!-- Barre de navigation -->
+        <nav class="navbar navbar-expand-md custom-navbar">
+            <div class="container-fluid mx-2">
+                <div class="collapse navbar-collapse" id="toggle-navbar">
+                    <ul class="navbar-nav ms-auto">
+                        <!-- Liens supplémentaires ici -->
+                    </ul>
+                    <a class="navbar-brand" href="{% url 'module' %}">
+                        Opti<span class="text-warning">stock</span>
+                        <img src="{% static 'images/logo/logo.png' %}" alt="Logo Optistock" />
+                    </a>
                 </div>
-            </nav>
+            </div>
+        </nav>
 
-            <!-- Contenu principal -->
+        <!-- Contenu principal avec défilement -->
+        <div class="main-content">
             {% block content %}
             {% endblock content %}
+        </div>
 
         <!-- Scripts -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
