@@ -1,33 +1,31 @@
 {% extends "store/base.html" %}
+{% load static %}
+
+{% block title %}Catégories{% endblock title %}
 
 {% block content %}
-<!-- Header Section -->
+<!-- Section d'en-tête -->
 <div class="container my-4">
-    <div class="card shadow-sm rounded p-3">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <h4 class="display-6 mb-0 text-success">Categories</h4>
-            </div>
-            <div class="col-md-6 d-flex justify-content-end gap-2">
-                <a class="btn btn-success btn-sm rounded-pill shadow-sm" href="{% url 'category-create' %}">
-                    <i class="fa-solid fa-plus"></i> Add Category
-                </a>
-            </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="page-title">
+            <span class="page-title-text">Catégories</span>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn-action" href="{% url 'category-create' %}">
+                <i class="fa-solid fa-plus me-1"></i> Ajouter une catégorie
+            </a>
         </div>
     </div>
 </div>
-<div class="container px-3">
-    <style>
-        .table th, .table td {
-            text-align: center;
-        }
-    </style>
-    <table class="table table-sm table-striped table-bordered">
-        <thead class="thead-light">
+
+<!-- Table des catégories -->
+<div class="container">
+    <table class="table">
+        <thead>
             <tr>
                 <th>ID</th>
-                <th>Name</th>
-                <th>Action</th>
+                <th>Nom</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -36,72 +34,173 @@
                 <td>{{ category.pk }}</td>
                 <td>{{ category.name }}</td>
                 <td>
-                    <a href="{% url 'category-detail' category.pk %}" class="btn btn-outline-primary btn-sm">
-                        <i class="fa-solid fa-info-circle me-2"></i> View Details
+                    <a class="btn btn-sm btn-outline-custom" href="{% url 'category-detail' category.pk %}">
+                        <i class="fa-solid fa-eye me-1"></i> Détails
+                    </a>
+                    <a class="btn btn-sm btn-outline-custom mt-1" href="{% url 'category-update' category.pk %}">
+                        <i class="fa-solid fa-pen me-1"></i> Modifier
+                    </a>
+                    <a class="btn btn-sm btn-outline-custom mt-1" href="{% url 'category-delete' category.pk %}">
+                        <i class="fa-solid fa-trash me-1"></i> Supprimer
                     </a>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <!-- Pagination -->
     <div class="d-flex justify-content-center mt-4">
-        <nav aria-label="Page navigation">
+        <nav aria-label="Navigation des pages">
             <ul class="pagination">
                 {% if page_obj.has_previous %}
                 <li class="page-item">
-                    <a class="page-link" href="?page=1" aria-label="First">
-                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    <a class="page-link" href="?page=1" aria-label="Première">
+                        <i class="fas fa-angle-double-left"></i>
                     </a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Précédente">
+                        <i class="fas fa-angle-left"></i>
                     </a>
                 </li>
                 {% else %}
                 <li class="page-item disabled">
-                    <a class="page-link" aria-label="First">
-                        <span aria-hidden="true">&laquo;&laquo;</span>
-                    </a>
+                    <span class="page-link" aria-label="Première">
+                        <i class="fas fa-angle-double-left"></i>
+                    </span>
                 </li>
                 <li class="page-item disabled">
-                    <a class="page-link" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
+                    <span class="page-link" aria-label="Précédente">
+                        <i class="fas fa-angle-left"></i>
+                    </span>
                 </li>
                 {% endif %}
+
                 {% for num in page_obj.paginator.page_range %}
                 {% if page_obj.number == num %}
-                <li class="page-item active"><a class="page-link">{{ num }}</a></li>
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
                 {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
                 {% endif %}
                 {% endfor %}
+
                 {% if page_obj.has_next %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Suivante">
+                        <i class="fas fa-angle-right"></i>
                     </a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
-                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Dernière">
+                        <i class="fas fa-angle-double-right"></i>
                     </a>
                 </li>
                 {% else %}
                 <li class="page-item disabled">
-                    <a class="page-link" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
+                    <span class="page-link" aria-label="Suivante">
+                        <i class="fas fa-angle-right"></i>
+                    </span>
                 </li>
                 <li class="page-item disabled">
-                    <a class="page-link" aria-label="Last">
-                        <span aria-hidden="true">&raquo;&raquo;</span>
-                    </a>
+                    <span class="page-link" aria-label="Dernière">
+                        <i class="fas fa-angle-double-right"></i>
+                    </span>
                 </li>
                 {% endif %}
             </ul>
         </nav>
     </div>
 </div>
+
+<style>
+    /* Style modernisé pour le titre */
+    .page-title {
+        position: relative;
+        display: inline-block;
+    }
+    .page-title-text {
+        font-size: 1.8rem;
+        font-weight: 500;
+        color: #6a5440;
+        letter-spacing: 0.5px;
+        position: relative;
+        padding-right: 15px;
+        z-index: 1;
+    }
+
+    .table {
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        border: none;
+    }
+    .table th {
+        background-color: white;
+        color: #353535;
+        font-weight: 600;
+        text-align: center;
+        border-bottom: 2px solid #AB7442;
+        padding: 12px 8px;
+    }
+    .table td {
+        text-align: center;
+        vertical-align: middle;
+        border-color: #f0f0f0;
+        padding: 12px 8px;
+    }
+    .table tr:not(:last-child) {
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .table tr:hover {
+        background-color: rgba(171, 116, 66, 0.03);
+    }
+    
+    .btn-action {
+        background: none;
+        border: none;
+        color: #AB7442;
+        font-weight: 500;
+        padding: 8px 16px;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+    }
+    .btn-action:hover {
+        background-color: rgba(171, 116, 66, 0.1);
+        color: #8B5A2B;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(171, 116, 66, 0.1);
+    }
+    .btn-action:active {
+        transform: translateY(0);
+        box-shadow: none;
+    }
+    
+    .btn-outline-custom {
+        color: #AB7442;
+        border-color: #AB7442;
+        transition: all 0.2s ease;
+        background: none;
+    }
+    .btn-outline-custom:hover {
+        background: #AB7442;
+        color: white;
+    }
+    
+    .page-item.active .page-link {
+        background-color: #AB7442;
+        border-color: #AB7442;
+    }
+    .page-link {
+        color: #AB7442;
+    }
+</style>
 {% endblock %}

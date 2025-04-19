@@ -1,23 +1,85 @@
 {% extends "store/base.html" %}
+{% load static %}
+
+{% block title %}Détails Commande #{{ order.id }}{% endblock title %}
 
 {% block content %}
-<div class="container">
-    <h2>Détails de la Commande #{{ order.id }}</h2>
-    
-    <div class="card">
+<div class="container mt-4">
+    <div class="card shadow-sm border-0" style="background-color: #f5e9dc;">
+        <div class="card-header border-0" style="background-color: #d4a373; color: white;">
+            <h2 class="mb-0">
+                <i class="fas fa-file-invoice me-2"></i>Détails de la Commande #{{ order.id }}
+            </h2>
+        </div>
         <div class="card-body">
-            <p><strong>Client:</strong> {{ order.customer.name }}</p>
-            <p><strong>Produit:</strong> {{ order.product.name }}</p>
-            <p><strong>Quantité:</strong> {{ order.quantity }}</p>
-            <p><strong>Date de commande:</strong> {{ order.order_date|date:"d/m/Y H:i" }}</p>
-            <p><strong>Date de livraison prévue:</strong> {{ order.delivery_date|date:"d/m/Y H:i" }}</p>
-            <p><strong>Statut:</strong> {{ order.get_status_display }}</p>
-            <p><strong>Notes:</strong> {{ order.notes|default:"-" }}</p>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <span class="fw-bold" style="color: #6c584c;">Client :</span>
+                        <span>{{ order.customer.name }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="fw-bold" style="color: #6c584c;">Produit :</span>
+                        <span>{{ order.product.name }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="fw-bold" style="color: #6c584c;">Quantité :</span>
+                        <span>{{ order.quantity }}</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <span class="fw-bold" style="color: #6c584c;">Date de commande :</span>
+                        <span>{{ order.order_date|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="fw-bold" style="color: #6c584c;">Date de livraison prévue :</span>
+                        <span>{{ order.delivery_date|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="fw-bold" style="color: #6c584c;">Statut :</span>
+                        <span class="badge 
+                            {% if order.status == 'completed' %}bg-success
+                            {% elif order.status == 'pending' %}bg-warning
+                            {% elif order.status == 'cancelled' %}bg-danger
+                            {% else %}bg-secondary{% endif %}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <span class="fw-bold" style="color: #6c584c;">Notes :</span>
+                <p class="mt-2">{{ order.notes|default:"Aucune note" }}</p>
+            </div>
+            
+            <div class="d-flex gap-3 mt-4">
+                <a href="{% url 'client-orders-list' %}" class="btn px-4" style="background-color: #6c584c; color: white;">
+                    <i class="fas fa-arrow-left me-2"></i> Retour
+                </a>
+            </div>
         </div>
     </div>
-    
-    <a href="{% url 'client-orders-list' %}" class="btn btn-secondary mt-3">
-        <i class="fas fa-arrow-left"></i> Retour à la liste
-    </a>
 </div>
+
+<style>
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .btn:hover {
+        background-color: #b08968 !important;
+        color: white !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    .badge {
+        padding: 5px 10px;
+        border-radius: 50px;
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+</style>
 {% endblock %}
