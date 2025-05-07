@@ -36,7 +36,8 @@
             {% for order in orders %}
             <tr>
                 <td>{{ order.id }}</td>
-                <td>{{ order.customer.name }}</td>
+                <td>{{ order.customer.first_name }} {{ order.customer.last_name }}  </td>
+    
                 <td>{{ order.product.name }}</td>
                 <td>{{ order.quantity }}</td>
                 <td>{{ order.order_date|date:"d/m/Y" }}</td>

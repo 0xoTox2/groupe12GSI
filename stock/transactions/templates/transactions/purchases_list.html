@@ -137,7 +137,8 @@
                 <th scope="col">ID</th>
                 <th scope="col">Nom</th>
                 <th scope="col">Quantité</th>
-                <th scope="col">Prix</th>
+                <th scope="col">Prix unitaire</th>
+                <th scope="col">Prix total</th> 
                 <th scope="col">Statut</th>
                 <th scope="col">Actions</th>
             </tr>
@@ -148,17 +149,12 @@
                 <td>{{ purchase.id }}</td>
                 <td>{{ purchase.item.name }}</td>
                 <td>{{ purchase.quantity }}</td>
-                <td>{{ purchase.total_value }}</td>
+                <td>{{ purchase.price }}</td>
+                <td>{{ purchase.total_value|floatformat:2 }}</td>  
                 <td>
-                    {% if purchase.delivery_status == 'P' %}
-                        <span class="badge badge-pill bg-soft-danger text-danger">
-                            En attente
-                        </span>
-                    {% else %}
                         <span class="badge badge-pill bg-soft-success text-success">
                             Livré
                         </span>
-                    {% endif %}
                 </td>
                 <td>
                     <div class="action-icons">

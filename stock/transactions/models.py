@@ -109,11 +109,15 @@ class SaleDetail(models.Model):
         )
 
 
-
-
+import uuid
+from django.db import models
+from django.utils.text import slugify
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+from time import timezone
 class Purchase(models.Model):
     # Champs existants
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, blank=True, editable=False) 
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     description = models.TextField(max_length=300, blank=True, null=True)
     vendor = models.ForeignKey(Vendor, related_name="purchases", on_delete=models.CASCADE)
@@ -130,11 +134,27 @@ class Purchase(models.Model):
 
     def __str__(self):
         return str(self.item.name)
-
+    def create_purchase_slug(sender, instance, **kwargs):
+        if not instance.slug:
+            # Créez un slug basé sur l'ID et un timestamp pour le rendre unique
+            instance.slug = slugify(f"purchase-{instance.id}-{timezone.now().timestamp()}")
     class Meta:
         ordering = ["order_date"]
+    @property
+    def total_price(self):
+        return self.price * self.quantity
 
-    
+    def save(self, *args, **kwargs):
+        # Calcul automatique du total_value avant sauvegarde
+        self.total_value = self.total_price
+        super().save(*args, **kwargs)
+
+@receiver(pre_save, sender=Purchase)
+def create_purchase_slug(sender, instance, **kwargs):
+    if not instance.slug:
+        # Crée un slug unique en utilisant UUID
+        instance.slug = slugify(f"purchase-{uuid.uuid4().hex[:8]}")
+
 from django.db import models
 from decimal import Decimal
 from math import sqrt

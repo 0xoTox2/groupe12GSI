@@ -375,16 +375,16 @@ class PurchaseCreateView(LoginRequiredMixin, CreateView):
     form_class = PurchaseForm
     template_name = "transactions/purchases_form.html"
 
-    def get_initial(self):
-        """
-        Récupère la quantité passée dans l'URL et la pré-remplit dans le formulaire.
-        """
-        initial = super().get_initial()
-        quantity = self.request.GET.get('quantity')  # Récupère la quantité depuis l'URL
-        if quantity:
-            initial['quantity'] = int(float(quantity))  # Convertit en entier
-        return initial
+    def form_valid(self, form):
+        # Calcul automatique du total_value avant sauvegarde
+        purchase = form.save(commit=False)
+        purchase.total_value = purchase.price * purchase.quantity
+        purchase.save()  # Le slug sera généré par le signal pre_save
+        return super().form_valid(form)
 
+    def get_success_url(self):
+        return reverse("purchaseslist")
+    
     def form_valid(self, form):
         """
         Calcule total_value avant d'enregistrer l'objet.
@@ -392,19 +392,10 @@ class PurchaseCreateView(LoginRequiredMixin, CreateView):
         # Récupère l'instance de l'achat sans l'enregistrer dans la base de données
         purchase = form.save(commit=False)
 
-        # Calcule total_value en fonction du prix et de la quantité
-        purchase.total_value = purchase.price * purchase.quantity
-
         # Enregistre l'objet dans la base de données
         purchase.save()
 
         return super().form_valid(form)
-
-    def get_success_url(self):
-        """
-        Redirige vers la liste des achats après la création.
-        """
-        return reverse("purchaseslist")
 
 
 class PurchaseUpdateView(LoginRequiredMixin, UpdateView):
@@ -422,20 +413,15 @@ class PurchaseUpdateView(LoginRequiredMixin, UpdateView):
         """
         return reverse("purchaseslist")
 
-
-class PurchaseDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    """
-    View to delete a purchase.
-    """
-
+from django.urls import reverse_lazy
+class PurchaseDeleteView(LoginRequiredMixin, DeleteView):  # Retirez UserPassesTestMixin si vous ne voulez pas de restriction
     model = Purchase
     template_name = "transactions/purchasedelete.html"
+    success_url = reverse_lazy("purchaseslist")
 
-    def get_success_url(self):
-        """
-        Redirect to the purchases list after successful deletion.
-        """
-        return reverse("purchaseslist")
+    # Retirez cette méthode si vous ne voulez pas de restriction
+    def test_func(self):
+        return self.request.user.is_superuser
 
     def test_func(self):
         """

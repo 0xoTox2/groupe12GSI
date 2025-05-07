@@ -36,10 +36,7 @@ urlpatterns = [
     path('purchase/<slug:slug>/', PurchaseDetailView.as_view(),name='purchase-detail'),
     path('new-purchase/', PurchaseCreateView.as_view(),name='purchase-create' ),
     path('purchase/<int:pk>/update/', PurchaseUpdateView.as_view(),name='purchase-update'),
-    path(
-         'purchase/<int:pk>/delete/', PurchaseDeleteView.as_view(),
-         name='purchase-delete'
-     ),
+    path('purchase/<int:pk>/delete/', PurchaseDeleteView.as_view(), name='purchase-delete'),
     path('select-policy/', select_policy, name='select-policy'),
     path('fixed-replenishment/', fixed_replenishment, name='fixed-replenishment'),
     path('point-replenishment/', point_replenishment, name='point-replenishment'),

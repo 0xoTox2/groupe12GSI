@@ -1,0 +1,67 @@
+{% extends "store/purchases_form.html" %}
+{% block title %}Mettre à jour un achat{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm border-0" style="background-color: #f5e9dc;">
+        <div class="card-header border-0" style="background-color: #d4a373; color: white;">
+            <h2 class="mb-0"><i class="fas fa-edit me-2"></i>Mettre à jour l'achat #{{ object.id }}</h2>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div class="row mt-3">
+                    <div class="form-group col-md-4 mb-3">
+                        <label for="{{ form.item.id_for_label }}" class="form-label" style="color: #6c584c; font-weight: 500;">{{ form.item.label }}</label>
+                        {{ form.item }}
+                        {{ form.item.errors }}
+                    </div>
+                    <div class="form-group col-md-4 mb-3">
+                        <label for="{{ form.vendor.id_for_label }}" class="form-label" style="color: #6c584c; font-weight: 500;">{{ form.vendor.label }}</label>
+                        {{ form.vendor }}
+                        {{ form.vendor.errors }}
+                    </div>
+                    <div class="form-group col-md-4 mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label" style="color: #6c584c; font-weight: 500;">{{ form.description.label }}</label>
+                        {{ form.description }}
+                        {{ form.description.errors }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6 mb-3">
+                        <label for="{{ form.delivery_date.id_for_label }}" class="form-label" style="color: #6c584c; font-weight: 500;">{{ form.delivery_date.label }}</label>
+                        {{ form.delivery_date }}
+                        {{ form.delivery_date.errors }}
+                    </div>
+                    <div class="form-group col-md-6 mb-3">
+                        <label for="{{ form.quantity.id_for_label }}" class="form-label" style="color: #6c584c; font-weight: 500;">{{ form.quantity.label }}</label>
+                        {{ form.quantity }}
+                        {{ form.quantity.errors }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-4 mb-3">
+                        <label for="{{ form.delivery_status.id_for_label }}" class="form-label" style="color: #6c584c; font-weight: 500;">{{ form.delivery_status.label }}</label>
+                        {{ form.delivery_status }}
+                        {{ form.delivery_status.errors }}
+                    </div>
+                    <div class="form-group col-md-4 mb-3">
+                        <label for="{{ form.price.id_for_label }}" class="form-label" style="color: #6c584c; font-weight: 500;">{{ form.price.label }}</label>
+                        {{ form.price }}
+                        {{ form.price.errors }}
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end mt-3">
+                    <button type="submit" class="btn px-4 py-2" style="background-color: #d4a373; color: white;">
+                        <i class="fas fa-save me-2"></i>Mettre à jour
+                    </button>
+                    <a href="{% url 'purchaseslist' %}" class="btn btn-secondary px-4 py-2 ms-2">
+                        <i class="fas fa-times me-2"></i>Annuler
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
