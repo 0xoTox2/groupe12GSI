@@ -462,7 +462,7 @@ from django.shortcuts import render
 from .forms import FixedReplenishmentForm, PointReplenishmentForm, ReplenishmentForm
 from .models import Purchase, Item
 from .policies import ReapprovisionnementPointCommande ,ReapprovisionnementFixe
-
+from math import floor
 
 
 def fixed_replenishment(request):
@@ -486,8 +486,8 @@ def fixed_replenishment(request):
             )
 
             # Calculer les résultats
-            qec = stock_fixe.calculer_qec()
-            periode = stock_fixe.calculer_periode_reapprovisionnement()
+            qec = stock_fixe.calculer_qec
+            periode = stock_fixe.calculer_periode_reapprovisionnement
             cout_lancement = stock_fixe.calculer_cout_lancement()
             cout_possession = stock_fixe.calculer_cout_possession()
             cout_total = stock_fixe.calculer_cout_total_stock()
@@ -505,7 +505,7 @@ def fixed_replenishment(request):
     
     return render(request, 'transactions/fixed_replenishment.html', {'form': form})
 
-import math
+from math import ceil
 from django.shortcuts import render
 from .forms import PointReplenishmentForm
 
@@ -534,8 +534,8 @@ def point_replenishment(request):
             
             # Calcul du point de commande
             
-            point_commande = (data['consommation_annuelle'] * data['delai_livraison']) + ss
-            
+            point_commande = ceil((data['consommation_annuelle'] * data['delai_livraison']) + ss)
+
             return render(request, 'transactions/point_replenishment_results.html', {
                 'stock_securite': round(ss, 2),
                 'point_commande': round(point_commande, 2),
@@ -567,10 +567,9 @@ def replenishment(request):
             qc = demande_moyenne * (periode_reapprovisionnement + delai_livraison) + stock_securite - stock_actuel
             if qc < 0:
                 qc = 0
-            qc_ajuste = math.ceil(qc / taille_lot) * taille_lot
-
+            qc_ajuste = ceil(qc / taille_lot) * taille_lot 
             # Calculer le nombre de commandes dans une année (N)
-            nombre_commandes_annuelles = 365 / periode_reapprovisionnement
+            nombre_commandes_annuelles = floor(365 / periode_reapprovisionnement)
 
             # Afficher les résultats
             return render(request, 'transactions/replenishment_results.html', {
@@ -861,8 +860,8 @@ def degressive_replenishment_results(request):
             q_commande = max(qmin, min(q_eco, qmax))
             
             # Calcul des indicateurs
-            n_commandes = D / q_commande if q_commande != 0 else Decimal(0)
-            periodicite = Decimal(365) / n_commandes if n_commandes != 0 else Decimal(0)
+            n_commandes = ceil(D / q_commande) if q_commande != 0 else Decimal(0)
+            periodicite = floor(Decimal(365) / n_commandes) if n_commandes != 0 else Decimal(0)
             cout_achat = D * pu
             cout_possession = (q_commande / 2) * pu * t
             cout_commande = n_commandes * C

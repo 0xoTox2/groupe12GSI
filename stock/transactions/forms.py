@@ -1,9 +1,17 @@
 from django import forms
 from .models import Purchase
 from django.core.validators import MinValueValidator, MaxValueValidator
+from store.models import Item
 
-
-
+class SaleItemForm(forms.Form):
+    product = forms.ModelChoiceField(
+        queryset=Item.objects.filter(is_finished_product=True),
+        label="Produit fini"
+    )
+    quantity = forms.IntegerField(
+        min_value=1,
+        label="Quantité"
+    )
 class BootstrapMixin(forms.ModelForm):
     """
     Un mixin pour ajouter les classes Bootstrap aux champs du formulaire.

@@ -157,14 +157,14 @@ def create_purchase_slug(sender, instance, **kwargs):
 
 from django.db import models
 from decimal import Decimal
-from math import sqrt
+from math import sqrt,ceil,floor
 from scipy.stats import norm  # Pour récupérer k selon le taux de service
 
 class ReapprovisionnementFixe(models.Model):
     delai_livraison = models.IntegerField(verbose_name="Délai de livraison (en jours)")
     consommation_annuelle = models.IntegerField(verbose_name="Consommation annuelle (en unités)")
     prix_achat_unitaire = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Prix d’achat unitaire (en DH)")
-    taux_possession = models.FloatField(verbose_name="Taux de possession des stocks (en décimal, par exemple 0.08 pour 8%)")
+    taux_possession = models.FloatField(verbose_name="Taux de possession des stocks (en décimal, par exemple 0.1 pour 10%)")
     cout_lancement = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Coût de lancement des commandes (en DH)")
     stock_securite = models.FloatField(verbose_name="Stock de sécurité (en unités)", default=0.0)
     case_a_cocher_de_stock_securite = models.BooleanField(verbose_name="Calculer le stock de sécurité", default=False)
@@ -173,6 +173,7 @@ class ReapprovisionnementFixe(models.Model):
     ecart_type_demande = models.FloatField(verbose_name="Écart type de la demande", default=0.0)
     ecart_type_delai = models.FloatField(verbose_name="Écart type du délai de livraison", default=0.0)
     Taux_de_service = models.FloatField(verbose_name="Taux de service (en %)", default=95.0)
+    taille_lot = models.PositiveIntegerField(verbose_name="Taille de lot", default=1)
 
     def calculer_qec(self):
         # Convertir les valeurs en Decimal avant de faire les calculs
@@ -212,7 +213,7 @@ class ReapprovisionnementFixe(models.Model):
     def calculer_Periode_d_approvisionnement(self):
         N = self.calculer_Cadence_d_approvisionnement()
         T = Decimal('365') / N
-        return round(T) + 1
+        return floor(T)  # Arrondi à l'entier inférieur
 
     def calculer_cout_lancement(self):
         qec = self.calculer_qec()
@@ -229,3 +230,11 @@ class ReapprovisionnementFixe(models.Model):
         cout_possession = self.calculer_cout_possession()
         return cout_lancement + cout_possession
     
+    def calculer_qec_avec_arrondi(self):
+        qec = self.calculer_qec()
+        if hasattr(self, 'taille_lot') and self.taille_lot > 1:
+            # Arrondi au multiple supérieur de la taille de lot
+            return ceil(qec / self.taille_lot) * self.taille_lot
+        else:
+            # Arrondi à l'entier supérieur
+            return ceil(qec)
