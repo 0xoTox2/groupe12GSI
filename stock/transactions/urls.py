@@ -25,6 +25,7 @@ from .views import (
     SaleDetailView,
     SaleCreateView,
     SaleDeleteView,
+    AutoSaleDetailView,
     export_sales_to_excel,
     export_purchases_to_excel
 )
@@ -32,6 +33,7 @@ from .views import (
 # URL patterns
 urlpatterns = [
     # Purchase URLs
+    path('auto-sale/<int:order_id>/',AutoSaleDetailView.as_view(), name='auto-sale-detail'),
     path('purchases/', PurchaseListView.as_view(), name='purchaseslist'),
     path('purchase/<slug:slug>/', PurchaseDetailView.as_view(),name='purchase-detail'),
     path('new-purchase/', PurchaseCreateView.as_view(),name='purchase-create' ),

@@ -811,9 +811,8 @@ class LaunchFabricationView(LoginRequiredMixin, View):
                 
                 messages.success(request, "Fabrication confirmée et lancée avec succès!")
         return redirect('client-order-detail', pk=order.pk)
-       
-       
-    
+
+from transactions.views import create_sale_from_order       
 class DeliverOrderView(LoginRequiredMixin, View):
     def post(self, request, pk):
         order = get_object_or_404(ClientOrder, pk=pk)
@@ -821,13 +820,19 @@ class DeliverOrderView(LoginRequiredMixin, View):
         if order.status == 'ready':
             # Vérifier le stock avant livraison
             if order.product.quantity >= order.quantity:
-                # Diminuer le stock du produit fini
-                order.product.quantity = F('quantity') - order.quantity
-                order.product.save()
-                
-                order.status = 'delivered'
-                order.save()
-                messages.success(request, "Livraison confirmée!")
+                with transaction.atomic():
+                    # Diminuer le stock du produit fini
+                    order.product.quantity = F('quantity') - order.quantity
+                    order.product.save()
+                    
+                    # Créer la vente automatique
+                    sale = create_sale_from_order(order)
+                    
+                    order.status = 'delivered'
+                    order.save()
+                    
+                    messages.success(request, 
+                        f"Livraison confirmée! Vente #{sale.id} créée automatiquement.")
             else:
                 messages.error(request, "Stock insuffisant pour livrer la commande")
         else:

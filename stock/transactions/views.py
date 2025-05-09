@@ -1012,3 +1012,50 @@ def degressive_remise_replenishment_results(request):
     except Exception as e:
         messages.error(request, f"Erreur de calcul: {str(e)}")
         return redirect('degressive-remise-replenishment')
+    
+from django.shortcuts import get_object_or_404
+from django.db import transaction
+from django.contrib import messages
+from store.models import ClientOrder
+from .models import Sale, SaleDetail
+
+def create_sale_from_order(order):
+    """
+    Fonction utilitaire pour créer une vente à partir d'une commande
+    """
+    with transaction.atomic():
+        # Création de la vente
+        sale = Sale.objects.create(
+            customer=order.customer,
+            sub_total=order.product.price * order.quantity,
+            grand_total=order.product.price * order.quantity,
+            tax_amount=0,
+            tax_percentage=0,
+            amount_paid=order.product.price * order.quantity,
+            amount_change=0,
+            order=order
+        )
+        
+        # Création du détail de vente
+        SaleDetail.objects.create(
+            sale=sale,
+            item=order.product,
+            price=order.product.price,
+            quantity=order.quantity,
+            total_detail=order.product.price * order.quantity
+        )
+        
+        return sale
+    
+class AutoSaleDetailView(LoginRequiredMixin, DetailView):
+    template_name = 'transactions/auto_sale_detail.html'
+    context_object_name = 'sale'
+    
+    def get_object(self):
+        order_id = self.kwargs.get('order_id')
+        return get_object_or_404(Sale, order_id=order_id)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['order'] = self.object.order
+        return context

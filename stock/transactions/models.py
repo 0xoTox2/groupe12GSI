@@ -11,7 +11,13 @@ class Sale(models.Model):
     """
     Represents a sale transaction involving a customer.
     """
-
+    order = models.ForeignKey(
+        'store.ClientOrder', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name='sales'
+    )
     date_added = models.DateTimeField(
         auto_now_add=True,
         verbose_name="Sale Date"
@@ -185,7 +191,16 @@ class ReapprovisionnementFixe(models.Model):
         # Calcul de la Quantité Économique de Commande (QEC)
         qec = sqrt((2 * consommation_annuelle * cout_lancement) / (prix_achat_unitaire * taux_possession))
         return qec
-
+    
+    def calculer_qec_avec_arrondi(self):
+        qec = self.calculer_qec()
+        if hasattr(self, 'taille_lot') and self.taille_lot > 1:
+            # Arrondi au multiple supérieur de la taille de lot
+            return ceil(qec / self.taille_lot) * self.taille_lot
+        else:
+            # Arrondi à l'entier supérieur
+            return ceil(qec)
+        
     def calculer_stock_de_securite(self):
         # Calculer le stock de sécurité en cas de variation de la demande et du délai de livraison
         consommation_journaliere = Decimal(self.consommation_annuelle) / Decimal('365')
@@ -230,11 +245,4 @@ class ReapprovisionnementFixe(models.Model):
         cout_possession = self.calculer_cout_possession()
         return cout_lancement + cout_possession
     
-    def calculer_qec_avec_arrondi(self):
-        qec = self.calculer_qec()
-        if hasattr(self, 'taille_lot') and self.taille_lot > 1:
-            # Arrondi au multiple supérieur de la taille de lot
-            return ceil(qec / self.taille_lot) * self.taille_lot
-        else:
-            # Arrondi à l'entier supérieur
-            return ceil(qec)
+    
