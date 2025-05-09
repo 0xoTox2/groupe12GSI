@@ -827,7 +827,21 @@ class MarkAsReadyView(LoginRequiredMixin, View):
         else:
             messages.error(request, "La commande doit être en production")
         return redirect('client-order-detail', pk=order.pk)
+
+from django.views.generic import DeleteView
+from django.urls import reverse_lazy
+from .models import ClientOrder
+
+class ClientOrderDeleteView(DeleteView):
+    model = ClientOrder
+    template_name = 'store/client_order_delete.html'
+    success_url = reverse_lazy('client-orders-list')
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['order'] = self.object
+        return context
+   
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404

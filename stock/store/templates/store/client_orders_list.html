@@ -1,9 +1,8 @@
 {% extends "store/base.html" %}
 {% load static %}
-
 {% block title %}Commandes Clients{% endblock title %}
-
 {% block content %}
+
 <!-- Section d'en-tête -->
 <div class="container my-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -51,11 +50,14 @@
                     </span>
                 </td>
                 <td>
-                    <a class="btn btn-sm btn-outline-custom" href="{% url 'client-order-detail' order.pk %}">
-                        <i class="fa-solid fa-eye me-1"></i> Détails
-                    </a>
-
-                    </a>
+                    <div class="d-flex gap-2">
+                        <a class="btn btn-sm btn-outline-custom" href="{% url 'client-order-detail' order.pk %}">
+                            <i class="fa-solid fa-eye me-1"></i> Détails
+                        </a>
+                        <a class="btn btn-sm btn-outline-danger" href="{% url 'client-order-delete' order.pk %}">
+                            <i class="fa-solid fa-trash me-1"></i> Supprimer
+                        </a>
+                    </div>
                 </td>
             </tr>
             {% endfor %}

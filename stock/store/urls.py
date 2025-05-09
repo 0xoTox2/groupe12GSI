@@ -56,6 +56,7 @@ urlpatterns = [
     path('client-orders/<int:pk>/launch/', LaunchFabricationView.as_view(), name='launch-fabrication'),
     path('client-orders/<int:pk>/ready/', MarkAsReadyView.as_view(), name='mark-as-ready'),
     path('client-orders/<int:pk>/deliver/', DeliverOrderView.as_view(), name='deliver-order'),
+    path('orders/<int:pk>/delete/', views.ClientOrderDeleteView.as_view(), name='client-order-delete'),
     path('fabrication/confirm/<int:fabrication_id>/', confirm_fabrication, name='confirm-fabrication'),
     # Product URLs
     path(

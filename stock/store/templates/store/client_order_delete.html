@@ -1,0 +1,98 @@
+[file name]: client_order_delete.html
+[file content begin]
+{% extends "store/base.html" %}
+{% load static %}
+
+{% block title %}Supprimer Commande #{{ order.id }}{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm border-0" style="background-color: #f5e9dc;">
+        <div class="card-header border-0" style="background-color: #dc3545; color: white;">
+            <h2 class="mb-0">
+                <i class="fas fa-exclamation-triangle me-2"></i>Confirmer la suppression
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                Êtes-vous sûr de vouloir supprimer cette commande ? Cette action est irréversible.
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <span class="fw-bold" style="color: #6c584c;">Client :</span>
+                        <span>{{ order.customer.first_name }} {{ order.customer.last_name }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="fw-bold" style="color: #6c584c;">Produit :</span>
+                        <span>{{ order.product.name }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="fw-bold" style="color: #6c584c;">Quantité :</span>
+                        <span>{{ order.quantity }}</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <span class="fw-bold" style="color: #6c584c;">Date de commande :</span>
+                        <span>{{ order.order_date|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="fw-bold" style="color: #6c584c;">Statut :</span>
+                        <span class="badge 
+                            {% if order.status == 'completed' %}bg-success
+                            {% elif order.status == 'pending' %}bg-warning
+                            {% elif order.status == 'cancelled' %}bg-danger
+                            {% else %}bg-secondary{% endif %}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <form method="post" class="mt-4">
+                {% csrf_token %}
+                <div class="d-flex gap-3">
+                    <a href="{% url 'client-orders-list' %}" class="btn px-4" style="background-color: #6c584c; color: white;">
+                        <i class="fas fa-arrow-left me-2"></i> Annuler
+                    </a>
+                    <button type="submit" class="btn btn-danger px-4">
+                        <i class="fas fa-trash me-2"></i> Confirmer la suppression
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .btn:hover {
+        background-color: #b08968 !important;
+        color: white !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    .btn-danger:hover {
+        background-color: #c82333 !important;
+    }
+    .badge {
+        padding: 5px 10px;
+        border-radius: 50px;
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+    .alert-danger {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+</style>
+{% endblock %}
+[file content end]
