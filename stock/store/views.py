@@ -736,12 +736,11 @@ class ClientOrderListView(LoginRequiredMixin, ListView):
     ordering = ['-order_date']
     paginate_by = 10
 
-
 class ClientOrderCreateView(LoginRequiredMixin, CreateView):
-    model = ClientOrder  # Ajout du modèle
-    form_class = ClientOrderForm  # Utilisation du formulaire
-    template_name = 'store/client_order_form.html'  # Spécification du template
-    success_url = reverse_lazy('client-orders-list')  # URL de redirection après succès
+    model = ClientOrder
+    form_class = ClientOrderForm
+    template_name = 'store/client_order_form.html'
+    success_url = reverse_lazy('client-orders-list')
 
     def form_valid(self, form):
         order = form.save(commit=False)
@@ -749,13 +748,14 @@ class ClientOrderCreateView(LoginRequiredMixin, CreateView):
         order.status = 'pending'
         order.save()
         
-        # Création de la fabrication associée
-        Fabrication.objects.create(
-            product=order.product,
-            quantity=order.quantity,
-            origin_order=order,
-            is_confirmed=False
-        )
+        # Vérifier si une fabrication existe déjà pour cette commande
+        if not Fabrication.objects.filter(origin_order=order).exists():
+            Fabrication.objects.create(
+                product=order.product,
+                quantity=order.quantity,
+                origin_order=order,
+                is_confirmed=False
+            )
         
         return super().form_valid(form)
 class ClientOrderDetailView(LoginRequiredMixin, DetailView):
@@ -765,56 +765,73 @@ class ClientOrderDetailView(LoginRequiredMixin, DetailView):
 
 from django.contrib import messages
 from django.views import View
+
 class LaunchFabricationView(LoginRequiredMixin, View):
     def post(self, request, pk):
         fabrication = get_object_or_404(Fabrication, origin_order_id=pk)
         order = fabrication.origin_order
+        
+        # Vérifier si la fabrication est déjà confirmée
+        if fabrication.is_confirmed:
+            messages.error(request, "Cette fabrication a déjà été confirmée")
+            return redirect('client-order-detail', pk=order.pk)
         
         # Vérifier les matières premières
         nomenclatures = Nomenclature.objects.filter(product=fabrication.product)
         can_produce = True
         
         for nomenclature in nomenclatures:
-            if nomenclature.component.quantity < nomenclature.quantity * fabrication.quantity:
+            required = nomenclature.quantity * fabrication.quantity
+            if nomenclature.component.quantity < required:
                 can_produce = False
+                messages.error(request, f"Stock insuffisant pour {nomenclature.component.name}")
                 break
         
         if can_produce:
-            # Diminuer les matières premières
-            for nomenclature in nomenclatures:
-                component = nomenclature.component
-                required = nomenclature.quantity * fabrication.quantity
-                component.quantity = F('quantity') - required
-                component.save()
-            
-            # Augmenter le produit fini
-            fabrication.product.quantity = F('quantity') + fabrication.quantity
-            fabrication.product.save()
-            
-            # Mettre à jour le statut
-            order.status = 'processing'
-            order.save()
-            
-            messages.success(request, "Fabrication lancée avec succès!")
-        else:
-            messages.error(request, "Stock insuffisant pour lancer la fabrication")
-        
+            with transaction.atomic():
+                # Diminuer les matières premières
+                for nomenclature in nomenclatures:
+                    component = nomenclature.component
+                    required = nomenclature.quantity * fabrication.quantity
+                    component.quantity = F('quantity') - required
+                    component.save()
+                
+                # Augmenter le produit fini
+                fabrication.product.quantity = F('quantity') + fabrication.quantity
+                fabrication.product.save()
+                
+                # Mettre à jour le statut et confirmer la fabrication
+                fabrication.is_confirmed = True
+                fabrication.confirmed_by = request.user
+                fabrication.confirmation_date = timezone.now()
+                fabrication.save()
+                
+                order.status = 'processing'
+                order.save()
+                
+                messages.success(request, "Fabrication confirmée et lancée avec succès!")
         return redirect('client-order-detail', pk=order.pk)
+       
+       
     
 class DeliverOrderView(LoginRequiredMixin, View):
     def post(self, request, pk):
         order = get_object_or_404(ClientOrder, pk=pk)
         
         if order.status == 'ready':
-            # Diminuer le stock du produit fini
-            order.product.quantity = F('quantity') - order.quantity
-            order.product.save()
-            
-            order.status = 'delivered'
-            order.save()
-            messages.success(request, "Livraison confirmée!")
+            # Vérifier le stock avant livraison
+            if order.product.quantity >= order.quantity:
+                # Diminuer le stock du produit fini
+                order.product.quantity = F('quantity') - order.quantity
+                order.product.save()
+                
+                order.status = 'delivered'
+                order.save()
+                messages.success(request, "Livraison confirmée!")
+            else:
+                messages.error(request, "Stock insuffisant pour livrer la commande")
         else:
-            messages.error(request, "La commande doit être prête avant livraison")
+            messages.error(request, "Seules les commandes prêtes peuvent être livrées")
         
         return redirect('client-order-detail', pk=order.pk)
 class MarkAsReadyView(LoginRequiredMixin, View):
@@ -823,10 +840,11 @@ class MarkAsReadyView(LoginRequiredMixin, View):
         if order.status == 'processing':
             order.status = 'ready'
             order.save()
-            messages.success(request, "Commande marquée comme prête!")
+            messages.success(request, "Commande marquée comme prête pour livraison!")
         else:
-            messages.error(request, "La commande doit être en production")
+            messages.error(request, "Seules les commandes en production peuvent être marquées comme prêtes")
         return redirect('client-order-detail', pk=order.pk)
+
 
 from django.views.generic import DeleteView
 from django.urls import reverse_lazy

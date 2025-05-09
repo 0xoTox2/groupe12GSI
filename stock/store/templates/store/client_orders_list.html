@@ -54,11 +54,39 @@
                         <a class="btn btn-sm btn-outline-custom" href="{% url 'client-order-detail' order.pk %}">
                             <i class="fa-solid fa-eye me-1"></i> Détails
                         </a>
-                        <a class="btn btn-sm btn-outline-danger" href="{% url 'client-order-delete' order.pk %}">
-                            <i class="fa-solid fa-trash me-1"></i> Supprimer
-                        </a>
-                    </div>
-                </td>
+                        {% if order.status == 'pending' %}
+            <form method="post" action="{% url 'launch-fabrication' order.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-primary">
+                    <i class="fa-solid fa-gears me-1"></i> Lancer fabrication
+                </button>
+            </form>
+        {% endif %}
+        
+        {% if order.status == 'processing' %}
+            <form method="post" action="{% url 'mark-as-ready' order.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-success">
+                    <i class="fa-solid fa-check me-1"></i> Prêt pour livraison
+                </button>
+            </form>
+        {% endif %}
+        
+        {% if order.status == 'ready' %}
+            <form method="post" action="{% url 'deliver-order' order.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-info">
+                    <i class="fa-solid fa-truck me-1"></i> Livrer
+                </button>
+            </form>
+        {% endif %}
+        
+        <a class="btn btn-sm btn-outline-danger" href="{% url 'client-order-delete' order.pk %}">
+            <i class="fa-solid fa-trash me-1"></i> Supprimer
+        </a>
+    </div>
+</td>
+                
             </tr>
             {% endfor %}
         </tbody>
