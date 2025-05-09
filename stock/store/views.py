@@ -811,8 +811,8 @@ class LaunchFabricationView(LoginRequiredMixin, View):
                 
                 messages.success(request, "Fabrication confirmée et lancée avec succès!")
         return redirect('client-order-detail', pk=order.pk)
-
-from transactions.views import create_sale_from_order       
+        
+from transactions.views import create_sale_from_order     
 class DeliverOrderView(LoginRequiredMixin, View):
     def post(self, request, pk):
         order = get_object_or_404(ClientOrder, pk=pk)
