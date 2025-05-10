@@ -14,7 +14,6 @@ from .views import (
 
 # URL patterns
 urlpatterns = [
-    # Invoice URLs
     path('invoices/', InvoiceListView.as_view(), name='invoicelist'),
     path('invoice/<slug:slug>/', InvoiceDetailView.as_view(), name='invoice-detail'),
     path('invoice/<slug:slug>/update/', InvoiceUpdateView.as_view(), name='invoice-update'),

@@ -62,45 +62,28 @@ class InvoiceCreateView(LoginRequiredMixin, CreateView):
         return reverse('invoicelist')
 
 
-class InvoiceUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    """
-    View for updating an existing invoice.
-    """
+from django.contrib import messages
+
+class InvoiceUpdateView(LoginRequiredMixin, UpdateView):
     model = Invoice
     template_name = 'invoice/invoiceupdate.html'
-    fields = [
-        'customer_name', 'contact_number', 'item',
-        'price_per_item', 'quantity', 'shipping'
-    ]
-
+    fields = ['customer_name', 'contact_number', 'item', 'price_per_item', 'quantity', 'shipping']
+    
+    def form_valid(self, form):
+        messages.success(self.request, "Facture mise à jour avec succès")
+        return super().form_valid(form)
+    
     def get_success_url(self):
-        """
-        Return the URL to redirect to after a successful update.
-        """
         return reverse('invoicelist')
 
-    def test_func(self):
-        """
-        Determine if the user has permission to update the invoice.
-        """
-        return self.request.user.is_superuser
-
-
-class InvoiceDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    """
-    View for deleting an invoice.
-    """
+# Delete View
+class InvoiceDeleteView(LoginRequiredMixin, DeleteView):
     model = Invoice
     template_name = 'invoice/invoicedelete.html'
-
+    
+    def post(self, request, *args, **kwargs):
+        messages.success(request, "Facture supprimée avec succès")
+        return self.delete(request, *args, **kwargs)
+    
     def get_success_url(self):
-        """
-        Return the URL to redirect to after a successful deletion.
-        """
         return reverse('invoicelist')
-
-    def test_func(self):
-        """
-        Determine if the user has permission to delete the invoice.
-        """
-        return self.request.user.is_superuser

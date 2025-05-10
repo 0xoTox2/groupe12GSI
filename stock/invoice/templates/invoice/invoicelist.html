@@ -53,16 +53,27 @@
                 <td>{{ invoice.shipping }}</td>
                 <td>{{ invoice.grand_total }}</td>
                 <td>
-                    <a class="btn btn-sm btn-outline-custom" href="{% url 'invoice-update' invoice.slug %}">
-                        <i class="fa-solid fa-pen me-1"></i> Modifier
-                    </a>
-                    <a class="btn btn-sm btn-outline-custom mt-1" href="{% url 'invoice-delete' invoice.pk %}">
-                        <i class="fa-solid fa-trash me-1"></i> Supprimer
-                    </a>
-                    <a class="btn btn-sm btn-outline-custom mt-1" href="{% url 'invoice-detail' invoice.slug %}">
-                        <i class="fa-solid fa-file-invoice me-1"></i> Détails
-                    </a>
-                </td>
+    <!-- Bouton Modifier -->
+    <form action="{% url 'invoice-update' invoice.slug %}" method="GET" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline-primary">
+            <i class="fa-solid fa-pen me-1"></i> Modifier
+        </button>
+    </form>
+
+    <!-- Bouton Supprimer -->
+    <form action="{% url 'invoice-delete' invoice.slug %}" method="POST" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline-danger mt-1">
+            <i class="fa-solid fa-trash me-1"></i> Supprimer
+        </button>
+    </form>
+
+    <!-- Bouton Détails -->
+    <a href="{% url 'invoice-detail' invoice.slug %}" class="btn btn-sm btn-outline-info mt-1">
+        <i class="fa-solid fa-file-invoice me-1"></i> Détails
+    </a>
+</td>
             </tr>
             {% endfor %}
         </tbody>
