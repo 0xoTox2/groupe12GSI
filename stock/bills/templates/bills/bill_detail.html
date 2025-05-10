@@ -56,29 +56,30 @@
                     <thead style="background-color: #d4a373; color: white;">
                         <tr>
                             <th width="60%">Description</th>
-                            <th class="text-end">Prix Unitaire</th>
-                            <th class="text-end">Quantité</th>
-                            <th class="text-end">Total</th>
+                            <th width="60%">total</th>
+                        
+                            
+                            
                         </tr>
+                        
                     </thead>
                     <tbody>
                         <tr>
                             <td>{{ bill.description|default:"Prestation de services" }}</td>
-                            <td class="text-end">{{ bill.amount|floatformat:2 }} €</td>
-                            <td class="text-end">1</td>
-                            <td class="text-end">{{ bill.amount|floatformat:2 }} €</td>
+                            
+                            
                         </tr>
                         <tr style="background-color: #f5e9dc;">
                             <td colspan="3" class="text-end"><strong>Total HT</strong></td>
-                            <td class="text-end"><strong>{{ bill.amount|floatformat:2 }} €</strong></td>
+                            <td class="text-end"><strong>{{ bill.amount|floatformat:2 }} DH</strong></td>
                         </tr>
                         <tr>
                             <td colspan="3" class="text-end"><strong>TVA (0%)</strong></td>
-                            <td class="text-end">0,00 €</td>
+                            <td class="text-end">0,00 DH</td>
                         </tr>
                         <tr style="background-color: #6c584c; color: white;">
                             <td colspan="3" class="text-end"><strong>Total TTC</strong></td>
-                            <td class="text-end"><strong>{{ bill.amount|floatformat:2 }} €</strong></td>
+                            <td class="text-end"><strong>{{ bill.amount|floatformat:2 }} DH</strong></td>
                         </tr>
                     </tbody>
                 </table>

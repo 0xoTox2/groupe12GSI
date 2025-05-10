@@ -13,44 +13,45 @@ class Bill(models.Model):
     institution_name = models.CharField(
         max_length=30,
         blank=False,
-        null=False
+        null=False,
+        verbose_name='fournisseur',
+        
     )
+
     phone_number = models.PositiveIntegerField(
         blank=True,
         null=True,
-        help_text='Phone number of the institution'
+        verbose_name='numéro fournisseur'
     )
     email = models.EmailField(
         blank=True,
         null=True,
-        help_text='Email address of the institution'
+        verbose_name='Email '
     )
     address = models.CharField(
         max_length=255,
         blank=True,
         null=True,
-        help_text='Address of the institution'
+        verbose_name= 'Addresse '
     )
     description = models.CharField(
         max_length=255,
         blank=True,
         null=True,
-        help_text='Description of the bill'
+        verbose_name='Description de la facture'
     )
     payment_details = models.CharField(
         max_length=255,
         blank=False,
         null=False,
-        help_text='Details of the payment'
+        verbose_name='Details de paiement'
     )
     amount = models.FloatField(
-        verbose_name='Total Amount Owing (Ksh)',
-        help_text='Total amount due for payment'
+        verbose_name='Prix total',
     )
     status = models.BooleanField(
         default=False,
-        verbose_name='Paid',
-        help_text='Payment status of the bill'
+        verbose_name='Payé',
     )
 
     def __str__(self):
