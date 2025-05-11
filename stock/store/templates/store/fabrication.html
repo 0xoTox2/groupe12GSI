@@ -35,7 +35,7 @@
                         {% for fab in pending_order_fabrications %}
                         <tr id="fab-row-{{ fab.id }}">
                             <td>#{{ fab.origin_order.id }}</td>
-                            <td>{{ fab.origin_order.customer.name }}</td>
+                            <td>{{ fab.origin_order.customer.first_name}} {{ fab.origin_order.customer.last_name }}</td>
                             <td>{{ fab.product.name }}</td>
                             <td>{{ fab.quantity }}</td>
                             <td>{{ fab.date_created|date:"d/m/Y" }}</td>
