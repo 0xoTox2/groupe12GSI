@@ -1,124 +1,139 @@
 {% extends "store/base.html" %}
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="mb-0">Méthode Dégressive avec Remise - Saisie des Données</h3>
+<div class="container mt-4">
+    <div class="card shadow-sm border-0" style="background-color: #f5e9dc;">
+        <div class="card-header border-0" style="background-color: #d4a373; color: white;">
+            <h2 class="mb-0"><i class="fas fa-calculator me-2"></i>Méthode Dégressive avec Remise</h2>
+        </div>
+        <div class="card-body">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <div class="card-body">
-                    {% if messages %}
-                        {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-                            {{ message }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" id="degressiveForm" action="{% url 'degressive-remise-replenishment' %}">
+                {% csrf_token %}
+                
+                <h4 class="mb-3" style="color: #6c584c;">Paramètres de base</h4>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label for="id_consommation_annuelle" class="form-label fw-bold" style="color: #6c584c;">
+                                Consommation annuelle (D)
+                            </label>
+                            <input type="number" class="form-control" id="id_consommation_annuelle" 
+                                   name="consommation_annuelle" min="1" required
+                                   value="{{ form_data.consommation_annuelle }}">
+                            <small class="form-text" style="color: #a98467;">Quantité consommée annuellement</small>
                         </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label for="id_taux_possession" class="form-label fw-bold" style="color: #6c584c;">
+                                Taux de possession (t%)
+                            </label>
+                            <input type="number" class="form-control" id="id_taux_possession" 
+                                   name="taux_possession" step="0.1" min="0.1" max="100" required
+                                   value="{{ form_data.taux_possession }}">
+                            <small class="form-text" style="color: #a98467;">En pourcentage (ex: 20 pour 20%)</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label for="id_cout_commande" class="form-label fw-bold" style="color: #6c584c;">
+                                Coût de commande (C)
+                            </label>
+                            <input type="number" class="form-control" id="id_cout_commande" 
+                                   name="cout_commande" step="0.01" min="0" required
+                                   value="{{ form_data.cout_commande }}">
+                            <small class="form-text" style="color: #a98467;">Coût fixe par commande</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="id_prix_achat_base" class="form-label fw-bold" style="color: #6c584c;">
+                        Prix d'achat de base (DH)
+                    </label>
+                    <input type="number" class="form-control" id="id_prix_achat_base" 
+                           name="prix_achat_base" step="0.01" min="0" required
+                           value="{{ form_data.prix_achat_base }}">
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="id_nombre_paliers" class="form-label fw-bold" style="color: #6c584c;">
+                        Nombre de paliers
+                    </label>
+                    <select class="form-select" id="id_nombre_paliers" name="nombre_paliers">
+                        {% for i in "12345" %}
+                            <option value="{{ i }}" {% if nombre_paliers == i|add:0 %}selected{% endif %}>{{ i }}</option>
                         {% endfor %}
-                    {% endif %}
+                    </select>
+                </div>
 
-                    <form method="post" id="degressiveForm" action="{% url 'degressive-remise-replenishment' %}">
-                        {% csrf_token %}
-                        
-                        <h4 class="mb-4">Paramètres de base</h4>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="id_consommation_annuelle">Consommation annuelle (D)</label>
-                                    <input type="number" class="form-control" id="id_consommation_annuelle" 
-                                           name="consommation_annuelle" min="1" required
-                                           value="{{ form_data.consommation_annuelle }}">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="id_taux_possession">Taux de possession (t%)</label>
-                                    <input type="number" class="form-control" id="id_taux_possession" 
-                                           name="taux_possession" step="0.1" min="0.1" max="100" required
-                                           value="{{ form_data.taux_possession }}">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="id_cout_commande">Coût de commande (C)</label>
-                                    <input type="number" class="form-control" id="id_cout_commande" 
-                                           name="cout_commande" step="0.01" min="0" required
-                                           value="{{ form_data.cout_commande }}">
-                                </div>
-                            </div>
+                <hr class="my-4" style="border-color: #d4a373;">
+
+                <h4 class="mb-3" style="color: #6c584c;">Définition des paliers (remises)</h4>
+                <div id="paliersContainer">
+                    {% for palier in paliers %}
+                    <div class="card mb-3 border-0 palier-card" id="palier-{{ forloop.counter }}" 
+                         style="background-color: #f8f9fa; {% if forloop.counter > nombre_paliers %}display:none{% endif %}">
+                        <div class="card-header border-0" style="background-color: #d4a373; color: white;">
+                            Palier {{ forloop.counter }}
                         </div>
-
-                        <div class="form-group">
-                            <label for="id_prix_achat_base">Prix d'achat de base (DH)</label>
-                            <input type="number" class="form-control" id="id_prix_achat_base" 
-                                   name="prix_achat_base" step="0.01" min="0" required
-                                   value="{{ form_data.prix_achat_base }}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="id_nombre_paliers">Nombre de paliers</label>
-                            <select class="form-control" id="id_nombre_paliers" name="nombre_paliers">
-                                {% for i in "12345" %}
-                                    <option value="{{ i }}" {% if nombre_paliers == i|add:0 %}selected{% endif %}>{{ i }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-
-                        <hr class="my-4">
-
-                        <h4 class="mb-4">Définition des paliers (remises)</h4>
-                        <div id="paliersContainer">
-                            {% for palier in paliers %}
-                            <div class="card mb-3 palier-card" id="palier-{{ forloop.counter }}" 
-                                 {% if forloop.counter > nombre_paliers %}style="display:none"{% endif %}>
-                                <div class="card-header bg-secondary text-white">
-                                    Palier {{ forloop.counter }}
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        <label for="remise_{{ forloop.counter }}" class="form-label fw-bold" style="color: #6c584c;">
+                                            Remise (%)
+                                        </label>
+                                        <input type="number" class="form-control" 
+                                               id="remise_{{ forloop.counter }}" name="remise_{{ forloop.counter }}" 
+                                               step="0.1" min="0" max="100" required
+                                               value="{{ palier.remise }}">
+                                    </div>
                                 </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="remise_{{ forloop.counter }}">Remise (%)</label>
-                                                <input type="number" class="form-control" 
-                                                       id="remise_{{ forloop.counter }}" name="remise_{{ forloop.counter }}" 
-                                                       step="0.1" min="0" max="100" required
-                                                       value="{{ palier.remise }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="qmin_{{ forloop.counter }}">Quantité minimale</label>
-                                                <input type="number" class="form-control" 
-                                                       id="qmin_{{ forloop.counter }}" name="qmin_{{ forloop.counter }}" 
-                                                       min="0" required
-                                                       value="{{ palier.qmin }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="qmax_{{ forloop.counter }}">Quantité maximale</label>
-                                                <input type="number" class="form-control" 
-                                                       id="qmax_{{ forloop.counter }}" name="qmax_{{ forloop.counter }}" 
-                                                       min="1" required
-                                                       value="{{ palier.qmax }}">
-                                            </div>
-                                        </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        <label for="qmin_{{ forloop.counter }}" class="form-label fw-bold" style="color: #6c584c;">
+                                            Quantité minimale
+                                        </label>
+                                        <input type="number" class="form-control" 
+                                               id="qmin_{{ forloop.counter }}" name="qmin_{{ forloop.counter }}" 
+                                               min="0" required
+                                               value="{{ palier.qmin }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        <label for="qmax_{{ forloop.counter }}" class="form-label fw-bold" style="color: #6c584c;">
+                                            Quantité maximale
+                                        </label>
+                                        <input type="number" class="form-control" 
+                                               id="qmax_{{ forloop.counter }}" name="qmax_{{ forloop.counter }}" 
+                                               min="1" required
+                                               value="{{ palier.qmax }}">
                                     </div>
                                 </div>
                             </div>
-                            {% endfor %}
                         </div>
-
-                        <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-calculator"></i> Calculer
-                            </button>
-                        </div>
-                    </form>
+                    </div>
+                    {% endfor %}
                 </div>
-            </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <button type="submit" class="btn px-4" style="background-color: #d4a373; color: white;">
+                        <i class="fas fa-calculator me-2"></i>Calculer
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -140,19 +155,36 @@ document.addEventListener('DOMContentLoaded', function() {
     
     document.getElementById('id_nombre_paliers').addEventListener('change', updatePaliers);
     updatePaliers(); // Initialisation
+    
+    // Stylisation des inputs
+    document.querySelectorAll('input, select').forEach(element => {
+        element.style.backgroundColor = '#f8f9fa';
+        element.style.borderColor = '#d4a373';
+        element.style.color = '#6c584c';
+    });
 });
 </script>
 
 <style>
-.card {
-    border-radius: 10px;
-}
-.card-header {
-    font-weight: bold;
-    border-radius: 10px 10px 0 0 !important;
-}
-.form-group label {
-    font-weight: 500;
-}
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .form-control, .form-select {
+        border-radius: 8px;
+        padding: 10px 15px;
+        border-width: 2px;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #d4a373;
+        box-shadow: 0 0 0 0.25rem rgba(212, 163, 115, 0.25);
+    }
+    .btn:hover {
+        background-color: #b08968 !important;
+        color: white !important;
+    }
+    .alert {
+        border-radius: 8px;
+    }
 </style>
 {% endblock %}
